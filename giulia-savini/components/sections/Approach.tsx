@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { content } from '@/data/profile';
 import { Reveal } from '@/components/ui/Reveal';
 
@@ -25,8 +26,12 @@ export function Approach() {
                             aria-label="Contesti di vita considerati nel percorso"
                             className="mt-10 grid grid-cols-2 gap-x-6 border-t border-cream/15 sm:grid-cols-3"
                         >
-                            {approach.contexts.map((c) => (
-                                <li key={c} className="flex items-center gap-3 border-b border-cream/15 py-4 text-[0.95rem] text-cream/90">
+                            {approach.contexts.map((c, i) => (
+                                <li
+                                    key={c}
+                                    style={{ '--i': i } as CSSProperties}
+                                    className="stagger flex items-center gap-3 border-b border-cream/15 py-4 text-[0.95rem] text-cream/90"
+                                >
                                     <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
                                     {c}
                                 </li>
@@ -52,29 +57,78 @@ function SystemDiagram({ center, middle, outer }: { center: string; middle: stri
                 aria-label={`${center}, all’interno delle ${middle.toLowerCase()} e del ${outer.toLowerCase()}`}
                 className="h-auto w-full"
             >
-                <g fill="none" stroke="#F7F4EF">
-                    <circle cx="260" cy="260" r="245" strokeOpacity="0.22" strokeDasharray="2 7" strokeLinecap="round" strokeWidth="1.5" />
-                    <circle cx="260" cy="260" r="165" strokeOpacity="0.35" />
+                {/* Contesto: anello tratteggiato che ruota lentissimo, con i suoi punti */}
+                <g className="spin-slow">
+                    <circle
+                        cx="260"
+                        cy="260"
+                        r="245"
+                        fill="none"
+                        stroke="#F7F4EF"
+                        strokeOpacity="0.22"
+                        strokeDasharray="2 7"
+                        strokeLinecap="round"
+                        strokeWidth="1.5"
+                    />
+                    <g fill="#C5CEC3" fillOpacity="0.8">
+                        {[
+                            [23, 197],
+                            [497, 323],
+                            [382, 473],
+                            [138, 47]
+                        ].map(([cx, cy], i) => (
+                            <circle key={i} cx={cx} cy={cy} r="4" className="pop" style={{ '--draw-delay': `${1300 + i * 120}ms` } as CSSProperties} />
+                        ))}
+                    </g>
                 </g>
-                <circle cx="260" cy="260" r="84" fill="#F7F4EF" fillOpacity="0.08" stroke="#B89D83" strokeOpacity="0.8" />
+
+                {/* Relazioni: l'anello si disegna */}
+                <circle
+                    cx="260"
+                    cy="260"
+                    r="165"
+                    fill="none"
+                    stroke="#F7F4EF"
+                    strokeOpacity="0.35"
+                    pathLength={1}
+                    className="draw"
+                    style={{ '--draw-delay': '250ms' } as CSSProperties}
+                />
+
+                {/* Persona: si disegna e poi "respira" */}
+                <g className="breathe-soft">
+                    <circle cx="260" cy="260" r="84" fill="#F7F4EF" fillOpacity="0.08" stroke="#B89D83" strokeOpacity="0.8" pathLength={1} className="draw" />
+                </g>
+
+                {/* connessioni sottili */}
+                <g stroke="#F7F4EF" strokeOpacity="0.18">
+                    {[
+                        [333, 218, 403, 178],
+                        [187, 302, 117, 342],
+                        [260, 344, 260, 425]
+                    ].map(([x1, y1, x2, y2], i) => (
+                        <line
+                            key={i}
+                            x1={x1}
+                            y1={y1}
+                            x2={x2}
+                            y2={y2}
+                            pathLength={1}
+                            className="draw"
+                            style={{ '--draw-delay': `${900 + i * 150}ms` } as CSSProperties}
+                        />
+                    ))}
+                </g>
 
                 {/* nodi sulle orbite */}
                 <g fill="#B89D83">
-                    <circle cx="403" cy="178" r="5" />
-                    <circle cx="117" cy="342" r="5" />
-                    <circle cx="260" cy="425" r="5" />
-                </g>
-                <g fill="#C5CEC3" fillOpacity="0.8">
-                    <circle cx="23" cy="197" r="4" />
-                    <circle cx="497" cy="323" r="4" />
-                    <circle cx="382" cy="473" r="4" />
-                    <circle cx="138" cy="47" r="4" />
-                </g>
-                {/* connessioni sottili */}
-                <g stroke="#F7F4EF" strokeOpacity="0.18">
-                    <line x1="333" y1="218" x2="403" y2="178" />
-                    <line x1="187" y1="302" x2="117" y2="342" />
-                    <line x1="260" y1="344" x2="260" y2="425" />
+                    {[
+                        [403, 178],
+                        [117, 342],
+                        [260, 425]
+                    ].map(([cx, cy], i) => (
+                        <circle key={i} cx={cx} cy={cy} r="5" className="pop" style={{ '--draw-delay': `${1150 + i * 150}ms` } as CSSProperties} />
+                    ))}
                 </g>
 
                 <text x="260" y="270" textAnchor="middle" fontFamily="var(--font-serif), Georgia, serif" fontStyle="italic" fontSize="38" fill="#F7F4EF">

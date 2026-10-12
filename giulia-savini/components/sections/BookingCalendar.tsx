@@ -265,203 +265,206 @@ export function BookingCalendar({ alternative, alternativeCta, note }: { alterna
 
                 {/* -------- PANNELLO ORARI / DATI -------- */}
                 <div ref={panelRef} tabIndex={-1} className="p-5 outline-none sm:p-8" aria-live="polite">
-                    {status === 'success' && result ? (
-                        <Success date={date!} time={time!} mode={form.mode} result={result} slotMinutes={data.slotMinutes} onRestart={restart} />
-                    ) : !hasAny ? (
-                        <EmptyState alternative={alternative} alternativeCta={alternativeCta} />
-                    ) : !date ? (
-                        <p className="text-ink-soft">Scegli un giorno dal calendario.</p>
-                    ) : !time ? (
-                        <>
-                            <p className="text-eyebrow font-semibold uppercase text-forest">Orari disponibili</p>
-                            <h3 className="mt-2 font-serif text-[1.75rem] leading-tight text-ink">{longDate(date)}</h3>
-                            {message && <Alert>{message}</Alert>}
-                            <div className="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-3">
-                                {slots.map((t) => (
-                                    <button
-                                        key={t}
-                                        type="button"
-                                        onClick={() => pickTime(t)}
-                                        aria-label={`${longDate(date)} alle ${t}`}
-                                        className="min-h-12 rounded-xl border border-forest/25 bg-white/70 text-[0.98rem] font-medium tabular-nums text-forest-deep transition-colors duration-200 hover:border-forest hover:bg-forest hover:text-cream active:scale-[0.98]"
-                                    >
-                                        {t}
-                                    </button>
-                                ))}
-                            </div>
-                            <p className="mt-6 text-sm leading-relaxed text-ink-soft">
-                                Durata dell’incontro: circa {data.slotMinutes} minuti. Orari riferiti all’ora italiana.
-                            </p>
-                        </>
-                    ) : (
-                        <form noValidate onSubmit={submit} className="relative">
-                            <button
-                                type="button"
-                                onClick={() => setTime(null)}
-                                className="group -ml-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-forest"
-                            >
-                                <ArrowLeft aria-hidden className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" strokeWidth={1.6} />
-                                <span className="link-underline">Cambia orario</span>
-                            </button>
-                            <div className="mt-2 rounded-2xl bg-sage-pale/60 px-4 py-3">
-                                <p className="font-serif text-xl leading-snug text-ink">
-                                    {longDate(date)} · {time}
-                                </p>
-                                <p className="text-sm text-ink-soft">Primo colloquio · circa {data.slotMinutes} minuti</p>
-                            </div>
-
-                            <fieldset className="mt-5">
-                                <legend className="text-[0.9rem] font-medium text-ink">Modalità</legend>
-                                <div className="mt-2 grid grid-cols-2 gap-2">
-                                    {(['studio', 'online'] as const).map((m) => (
-                                        <label
-                                            key={m}
-                                            className={cn(
-                                                'flex min-h-12 cursor-pointer items-center gap-2.5 rounded-xl border px-3 text-[0.92rem] transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-forest',
-                                                form.mode === m ? 'border-forest bg-forest/[0.06]' : 'border-ink/15 hover:border-ink/35'
-                                            )}
+                    {/* Ogni cambio di pannello entra con una transizione morbida */}
+                    <div key={status === 'success' ? 'success' : `${date}-${time ?? ''}`} className="panel-in">
+                        {status === 'success' && result ? (
+                            <Success date={date!} time={time!} mode={form.mode} result={result} slotMinutes={data.slotMinutes} onRestart={restart} />
+                        ) : !hasAny ? (
+                            <EmptyState alternative={alternative} alternativeCta={alternativeCta} />
+                        ) : !date ? (
+                            <p className="text-ink-soft">Scegli un giorno dal calendario.</p>
+                        ) : !time ? (
+                            <>
+                                <p className="text-eyebrow font-semibold uppercase text-forest">Orari disponibili</p>
+                                <h3 className="mt-2 font-serif text-[1.75rem] leading-tight text-ink">{longDate(date)}</h3>
+                                {message && <Alert>{message}</Alert>}
+                                <div className="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-3">
+                                    {slots.map((t) => (
+                                        <button
+                                            key={t}
+                                            type="button"
+                                            onClick={() => pickTime(t)}
+                                            aria-label={`${longDate(date)} alle ${t}`}
+                                            className="min-h-12 rounded-xl border border-forest/25 bg-white/70 text-[0.98rem] font-medium tabular-nums text-forest-deep transition-colors duration-200 hover:border-forest hover:bg-forest hover:text-cream active:scale-[0.98]"
                                         >
-                                            <input
-                                                type="radio"
-                                                name="mode"
-                                                value={m}
-                                                checked={form.mode === m}
-                                                onChange={() => update('mode', m)}
-                                                className="h-4 w-4 accent-forest"
-                                            />
-                                            {m === 'studio' ? (
-                                                <MapPin aria-hidden className="h-4 w-4 text-sage" strokeWidth={1.5} />
-                                            ) : (
-                                                <Video aria-hidden className="h-4 w-4 text-sage" strokeWidth={1.5} />
-                                            )}
-                                            {m === 'studio' ? 'In studio' : 'Online'}
-                                        </label>
+                                            {t}
+                                        </button>
                                     ))}
                                 </div>
-                            </fieldset>
+                                <p className="mt-6 text-sm leading-relaxed text-ink-soft">
+                                    Durata dell’incontro: circa {data.slotMinutes} minuti. Orari riferiti all’ora italiana.
+                                </p>
+                            </>
+                        ) : (
+                            <form noValidate onSubmit={submit} className="relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setTime(null)}
+                                    className="group -ml-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-forest"
+                                >
+                                    <ArrowLeft aria-hidden className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" strokeWidth={1.6} />
+                                    <span className="link-underline">Cambia orario</span>
+                                </button>
+                                <div className="mt-2 rounded-2xl bg-sage-pale/60 px-4 py-3">
+                                    <p className="font-serif text-xl leading-snug text-ink">
+                                        {longDate(date)} · {time}
+                                    </p>
+                                    <p className="text-sm text-ink-soft">Primo colloquio · circa {data.slotMinutes} minuti</p>
+                                </div>
 
-                            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                                <Field id={`${uid}-name`} label="Nome" required error={errors.name}>
+                                <fieldset className="mt-5">
+                                    <legend className="text-[0.9rem] font-medium text-ink">Modalità</legend>
+                                    <div className="mt-2 grid grid-cols-2 gap-2">
+                                        {(['studio', 'online'] as const).map((m) => (
+                                            <label
+                                                key={m}
+                                                className={cn(
+                                                    'flex min-h-12 cursor-pointer items-center gap-2.5 rounded-xl border px-3 text-[0.92rem] transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-forest',
+                                                    form.mode === m ? 'border-forest bg-forest/[0.06]' : 'border-ink/15 hover:border-ink/35'
+                                                )}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="mode"
+                                                    value={m}
+                                                    checked={form.mode === m}
+                                                    onChange={() => update('mode', m)}
+                                                    className="h-4 w-4 accent-forest"
+                                                />
+                                                {m === 'studio' ? (
+                                                    <MapPin aria-hidden className="h-4 w-4 text-sage" strokeWidth={1.5} />
+                                                ) : (
+                                                    <Video aria-hidden className="h-4 w-4 text-sage" strokeWidth={1.5} />
+                                                )}
+                                                {m === 'studio' ? 'In studio' : 'Online'}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </fieldset>
+
+                                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                                    <Field id={`${uid}-name`} label="Nome" required error={errors.name}>
+                                        <input
+                                            id={`${uid}-name`}
+                                            name="name"
+                                            autoComplete="name"
+                                            required
+                                            maxLength={100}
+                                            value={form.name}
+                                            onChange={(e) => update('name', e.target.value)}
+                                            aria-invalid={!!errors.name}
+                                            aria-describedby={errors.name ? `${uid}-name-error` : undefined}
+                                            className={inputClass(!!errors.name)}
+                                        />
+                                    </Field>
+                                    <Field id={`${uid}-email`} label="Email" required error={errors.email}>
+                                        <input
+                                            id={`${uid}-email`}
+                                            name="email"
+                                            type="email"
+                                            autoComplete="email"
+                                            inputMode="email"
+                                            required
+                                            maxLength={160}
+                                            value={form.email}
+                                            onChange={(e) => update('email', e.target.value)}
+                                            aria-invalid={!!errors.email}
+                                            aria-describedby={errors.email ? `${uid}-email-error` : undefined}
+                                            className={inputClass(!!errors.email)}
+                                        />
+                                    </Field>
+                                </div>
+                                <Field id={`${uid}-phone`} label="Telefono" hint="facoltativo" error={errors.phone} className="mt-4">
                                     <input
-                                        id={`${uid}-name`}
-                                        name="name"
-                                        autoComplete="name"
-                                        required
-                                        maxLength={100}
-                                        value={form.name}
-                                        onChange={(e) => update('name', e.target.value)}
-                                        aria-invalid={!!errors.name}
-                                        aria-describedby={errors.name ? `${uid}-name-error` : undefined}
-                                        className={inputClass(!!errors.name)}
+                                        id={`${uid}-phone`}
+                                        name="phone"
+                                        type="tel"
+                                        autoComplete="tel"
+                                        inputMode="tel"
+                                        maxLength={30}
+                                        value={form.phone}
+                                        onChange={(e) => update('phone', e.target.value)}
+                                        aria-invalid={!!errors.phone}
+                                        aria-describedby={errors.phone ? `${uid}-phone-error` : undefined}
+                                        className={inputClass(!!errors.phone)}
                                     />
                                 </Field>
-                                <Field id={`${uid}-email`} label="Email" required error={errors.email}>
-                                    <input
-                                        id={`${uid}-email`}
-                                        name="email"
-                                        type="email"
-                                        autoComplete="email"
-                                        inputMode="email"
-                                        required
-                                        maxLength={160}
-                                        value={form.email}
-                                        onChange={(e) => update('email', e.target.value)}
-                                        aria-invalid={!!errors.email}
-                                        aria-describedby={errors.email ? `${uid}-email-error` : undefined}
-                                        className={inputClass(!!errors.email)}
-                                    />
-                                </Field>
-                            </div>
-                            <Field id={`${uid}-phone`} label="Telefono" hint="facoltativo" error={errors.phone} className="mt-4">
-                                <input
-                                    id={`${uid}-phone`}
-                                    name="phone"
-                                    type="tel"
-                                    autoComplete="tel"
-                                    inputMode="tel"
-                                    maxLength={30}
-                                    value={form.phone}
-                                    onChange={(e) => update('phone', e.target.value)}
-                                    aria-invalid={!!errors.phone}
-                                    aria-describedby={errors.phone ? `${uid}-phone-error` : undefined}
-                                    className={inputClass(!!errors.phone)}
-                                />
-                            </Field>
-                            <Field
-                                id={`${uid}-note`}
-                                label="Una nota"
-                                hint="facoltativa"
-                                error={errors.note}
-                                className="mt-4"
-                                description="Non è necessario condividere dettagli personali o clinici."
-                            >
-                                <textarea
+                                <Field
                                     id={`${uid}-note`}
-                                    name="note"
-                                    rows={2}
-                                    maxLength={500}
-                                    value={form.note}
-                                    onChange={(e) => update('note', e.target.value)}
-                                    aria-invalid={!!errors.note}
-                                    aria-describedby={[`${uid}-note-desc`, errors.note && `${uid}-note-error`].filter(Boolean).join(' ')}
-                                    className={cn(inputClass(!!errors.note), 'resize-y py-2.5')}
-                                />
-                            </Field>
+                                    label="Una nota"
+                                    hint="facoltativa"
+                                    error={errors.note}
+                                    className="mt-4"
+                                    description="Non è necessario condividere dettagli personali o clinici."
+                                >
+                                    <textarea
+                                        id={`${uid}-note`}
+                                        name="note"
+                                        rows={2}
+                                        maxLength={500}
+                                        value={form.note}
+                                        onChange={(e) => update('note', e.target.value)}
+                                        aria-invalid={!!errors.note}
+                                        aria-describedby={[`${uid}-note-desc`, errors.note && `${uid}-note-error`].filter(Boolean).join(' ')}
+                                        className={cn(inputClass(!!errors.note), 'resize-y py-2.5')}
+                                    />
+                                </Field>
 
-                            {/* Honeypot anti-spam */}
-                            <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
-                                <label htmlFor={`${uid}-hp`}>Non compilare questo campo</label>
-                                <input
-                                    id={`${uid}-hp`}
-                                    name="booking_hp"
-                                    tabIndex={-1}
-                                    autoComplete="off"
-                                    value={form.booking_hp}
-                                    onChange={(e) => update('booking_hp', e.target.value)}
-                                />
-                            </div>
+                                {/* Honeypot anti-spam */}
+                                <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                                    <label htmlFor={`${uid}-hp`}>Non compilare questo campo</label>
+                                    <input
+                                        id={`${uid}-hp`}
+                                        name="booking_hp"
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                        value={form.booking_hp}
+                                        onChange={(e) => update('booking_hp', e.target.value)}
+                                    />
+                                </div>
 
-                            <div className="mt-5 flex items-start gap-3">
-                                <input
-                                    id={`${uid}-privacy`}
-                                    name="privacy"
-                                    type="checkbox"
-                                    required
-                                    checked={form.privacy}
-                                    onChange={(e) => update('privacy', e.target.checked)}
-                                    aria-invalid={!!errors.privacy}
-                                    aria-describedby={errors.privacy ? `${uid}-privacy-error` : undefined}
-                                    className="mt-1 h-5 w-5 shrink-0 accent-forest"
-                                />
-                                <label htmlFor={`${uid}-privacy`} className="text-[0.88rem] leading-relaxed text-ink-soft">
-                                    Ho letto l’
-                                    <Link href="/privacy" target="_blank" className="link-underline link-underline-static text-forest">
-                                        informativa privacy
-                                        <span className="sr-only"> (si apre in una nuova finestra)</span>
-                                    </Link>{' '}
-                                    e acconsento al trattamento dei dati per la gestione dell’appuntamento. <span aria-hidden>*</span>
-                                </label>
-                            </div>
-                            {errors.privacy && <ErrorText id={`${uid}-privacy-error`}>{errors.privacy}</ErrorText>}
+                                <div className="mt-5 flex items-start gap-3">
+                                    <input
+                                        id={`${uid}-privacy`}
+                                        name="privacy"
+                                        type="checkbox"
+                                        required
+                                        checked={form.privacy}
+                                        onChange={(e) => update('privacy', e.target.checked)}
+                                        aria-invalid={!!errors.privacy}
+                                        aria-describedby={errors.privacy ? `${uid}-privacy-error` : undefined}
+                                        className="mt-1 h-5 w-5 shrink-0 accent-forest"
+                                    />
+                                    <label htmlFor={`${uid}-privacy`} className="text-[0.88rem] leading-relaxed text-ink-soft">
+                                        Ho letto l’
+                                        <Link href="/privacy" target="_blank" className="link-underline link-underline-static text-forest">
+                                            informativa privacy
+                                            <span className="sr-only"> (si apre in una nuova finestra)</span>
+                                        </Link>{' '}
+                                        e acconsento al trattamento dei dati per la gestione dell’appuntamento. <span aria-hidden>*</span>
+                                    </label>
+                                </div>
+                                {errors.privacy && <ErrorText id={`${uid}-privacy-error`}>{errors.privacy}</ErrorText>}
 
-                            {status === 'error' && message && <Alert>{message}</Alert>}
+                                {status === 'error' && message && <Alert>{message}</Alert>}
 
-                            <button
-                                type="submit"
-                                disabled={status === 'loading'}
-                                className="mt-6 inline-flex min-h-[3.25rem] w-full items-center justify-center gap-2.5 rounded-full bg-forest px-6 font-medium text-cream transition-colors hover:bg-forest-deep active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
-                            >
-                                {status === 'loading' ? (
-                                    <>
-                                        <LoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> Prenotazione in corso…
-                                    </>
-                                ) : (
-                                    'Conferma prenotazione'
-                                )}
-                            </button>
-                            <p className="mt-3 text-center text-[0.8rem] leading-relaxed text-ink-soft">{note}</p>
-                        </form>
-                    )}
+                                <button
+                                    type="submit"
+                                    disabled={status === 'loading'}
+                                    className="mt-6 inline-flex min-h-[3.25rem] w-full items-center justify-center gap-2.5 rounded-full bg-forest px-6 font-medium text-cream transition-colors hover:bg-forest-deep active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
+                                >
+                                    {status === 'loading' ? (
+                                        <>
+                                            <LoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> Prenotazione in corso…
+                                        </>
+                                    ) : (
+                                        'Conferma prenotazione'
+                                    )}
+                                </button>
+                                <p className="mt-3 text-center text-[0.8rem] leading-relaxed text-ink-soft">{note}</p>
+                            </form>
+                        )}
+                    </div>
                 </div>
             </div>
         </Shell>

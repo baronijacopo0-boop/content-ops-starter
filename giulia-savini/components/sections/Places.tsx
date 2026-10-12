@@ -96,6 +96,7 @@ function MapIllustration() {
                     <rect x="300" y="20" width="80" height="36" rx="8" />
                 </g>
                 <circle cx="300" cy="125" r="34" fill="#788879" fillOpacity="0.16" />
+                <circle cx="300" cy="125" r="16" fill="none" stroke="#44564B" strokeOpacity="0.5" className="ripple" />
                 <circle cx="300" cy="125" r="9" fill="#44564B" />
                 <circle cx="300" cy="125" r="3.5" fill="#F7F4EF" />
             </svg>

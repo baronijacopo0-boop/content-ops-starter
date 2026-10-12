@@ -176,19 +176,242 @@
     }
 }
 
+/* ============================================================================
+ * MOTION DESIGN
+ * Filo conduttore: il "respiro". Movimenti lenti, solo transform/opacity
+ * (e stroke per i tracciati SVG). Tutto si disattiva con prefers-reduced-motion.
+ * ========================================================================== */
+
+:root {
+    --ease-gentle: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-breath: cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* --- Keyframes ------------------------------------------------------------ */
+@keyframes line-up {
+    from { transform: translateY(105%); }
+    to { transform: translateY(0); }
+}
+@keyframes unveil {
+    from { clip-path: inset(0 0 100% 0); }
+    to { clip-path: inset(0 0 0 0); }
+}
+@keyframes settle {
+    from { transform: scale(1.08); }
+    to { transform: scale(1); }
+}
+@keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.035); opacity: 1; }
+}
+@keyframes breathe-soft {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+@keyframes spin-slow {
+    to { transform: rotate(360deg); }
+}
+@keyframes ripple {
+    0% { transform: scale(0.6); opacity: 0.5; }
+    100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes float-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* --- Hero ----------------------------------------------------------------- */
+.mask-line {
+    display: block;
+    overflow: hidden;
+    /* spazio per discendenti e corsivo, senza tagliare le lettere */
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+}
+.mask-line > span {
+    display: block;
+    /* Smartphone: il titolo è visibile da subito (non ritarda il caricamento percepito), con un leggero movimento */
+    animation: rise 800ms var(--ease-gentle) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+}
+@keyframes rise {
+    from { transform: translateY(10px); }
+    to { transform: translateY(0); }
+}
+/* Schermi grandi: ogni riga emerge dalla maschera */
+@media (min-width: 1024px) {
+    .mask-line > span {
+        animation-name: line-up;
+        animation-duration: 900ms;
+        animation-delay: calc(var(--i, 0) * 100ms + 60ms);
+    }
+}
+.unveil {
+    animation: unveil 1200ms var(--ease-gentle) 200ms both;
+}
+.unveil-inner {
+    animation: settle 1600ms var(--ease-gentle) 200ms both;
+}
+.float-in {
+    animation: float-in 800ms var(--ease-gentle) both;
+    animation-delay: var(--delay, 0ms);
+}
+.breathe {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: breathe 8s var(--ease-breath) infinite;
+}
+.breathe-soft {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: breathe-soft 7s var(--ease-breath) infinite;
+}
+.spin-slow {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: spin-slow 140s linear infinite;
+}
+.ripple {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: ripple 3.2s var(--ease-gentle) infinite;
+}
+
+/* Parallax leggero legato allo scroll (solo browser che lo supportano, nessun JS) */
+@supports (animation-timeline: scroll()) {
+    @keyframes drift {
+        to { transform: translateY(18%); }
+    }
+    .parallax {
+        animation: drift linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 100vh;
+    }
+
+    /* Barra di avanzamento della lettura */
+    @keyframes progress {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+    .scroll-progress {
+        display: block;
+        transform-origin: left;
+        animation: progress linear both;
+        animation-timeline: scroll(root);
+    }
+}
+
+/* --- Elementi rivelati allo scroll (attivi solo con JS) ------------------ */
+
+/* Lineetta dell'eyebrow che si allunga */
+.js [data-reveal] .eyebrow::before {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 900ms var(--ease-gentle) 200ms;
+}
+.js [data-reveal].is-visible .eyebrow::before {
+    transform: scaleX(1);
+}
+
+/* Tracciati SVG che si disegnano (usare pathLength="1") */
+.js [data-reveal] .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1800ms var(--ease-gentle);
+    transition-delay: var(--draw-delay, 0ms);
+}
+.js [data-reveal].is-visible .draw {
+    stroke-dashoffset: 0;
+}
+
+/* Elementi che compaiono in sequenza dentro un blocco rivelato */
+.js [data-reveal] .stagger {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+        opacity 600ms var(--ease-gentle),
+        transform 600ms var(--ease-gentle);
+    transition-delay: calc(var(--i, 0) * var(--stagger-step, 45ms) + var(--stagger-base, 120ms));
+}
+.js [data-reveal].is-visible .stagger {
+    opacity: 1;
+    transform: none;
+}
+
+/* Nodi SVG che appaiono con un piccolo "pop" */
+.js [data-reveal] .pop {
+    transform-origin: center;
+    transform-box: fill-box;
+    transform: scale(0);
+    transition: transform 700ms var(--ease-gentle);
+    transition-delay: var(--draw-delay, 900ms);
+}
+.js [data-reveal].is-visible .pop {
+    transform: scale(1);
+}
+
+/* Parole della citazione, una dopo l'altra */
+.js [data-reveal] .word {
+    display: inline-block;
+    opacity: 0.12;
+    transition: opacity 700ms var(--ease-gentle);
+    transition-delay: calc(var(--i, 0) * 70ms + 150ms);
+}
+.js [data-reveal].is-visible .word {
+    opacity: 1;
+}
+
+/* Cambio di pannello nel calendario */
+.panel-in {
+    animation: float-in 450ms var(--ease-gentle) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
         scroll-behavior: auto !important;
     }
 
     .js [data-reveal] {
         opacity: 1;
         transform: none;
+    }
+
+    .breathe,
+    .breathe-soft,
+    .spin-slow,
+    .ripple,
+    .parallax,
+    .scroll-progress,
+    .mask-line > span,
+    .unveil,
+    .unveil-inner,
+    .float-in,
+    .panel-in {
+        animation: none !important;
+    }
+
+    .ripple,
+    .scroll-progress {
+        display: none;
+    }
+
+    .js [data-reveal] .eyebrow::before,
+    .js [data-reveal] .pop,
+    .js [data-reveal] .stagger,
+    .js [data-reveal] .word {
+        opacity: 1;
+        transform: none;
+    }
+
+    .js [data-reveal] .draw {
+        stroke-dashoffset: 0;
     }
 }
 

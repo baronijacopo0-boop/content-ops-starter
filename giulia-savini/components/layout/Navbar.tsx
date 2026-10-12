@@ -151,6 +151,8 @@ export function Navbar() {
                         </button>
                     </div>
                 </nav>
+                {/* Barra di avanzamento della lettura (solo browser con scroll-timeline) */}
+                <span aria-hidden className="scroll-progress absolute inset-x-0 bottom-0 hidden h-px bg-forest/50" />
             </header>
 
             {/* Fuori dall'header: il backdrop-filter dell'header altrimenti farebbe da contenitore per l'elemento fixed */}

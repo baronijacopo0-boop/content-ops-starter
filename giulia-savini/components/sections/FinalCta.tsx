@@ -13,9 +13,9 @@ export function FinalCta() {
                     className="pointer-events-none absolute -bottom-1/2 left-1/2 h-[52rem] w-[52rem] -translate-x-1/2 text-clay/40"
                 >
                     <g fill="none" stroke="currentColor" strokeWidth="0.8">
-                        <circle cx="400" cy="400" r="390" />
-                        <circle cx="400" cy="400" r="300" />
-                        <circle cx="400" cy="400" r="210" />
+                        <circle cx="400" cy="400" r="390" className="breathe" />
+                        <circle cx="400" cy="400" r="300" className="breathe" style={{ animationDelay: '-2.6s' }} />
+                        <circle cx="400" cy="400" r="210" className="breathe" style={{ animationDelay: '-5.2s' }} />
                     </g>
                 </svg>
                 <Reveal className="container relative py-24 text-center sm:py-32 lg:py-40">
