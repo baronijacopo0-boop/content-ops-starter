@@ -79,6 +79,14 @@ export default function PrivacyPage() {
                 commerciali.
             </p>
 
+            <h2>5-bis. Prenotazione online</h2>
+            <p>
+                Se l’utente prenota un appuntamento tramite il calendario online, i dati inseriti (ad esempio nome, email ed eventuale telefono) sono raccolti
+                tramite il servizio Google Calendar e trasmessi al calendario della Dott.ssa per la gestione dell’appuntamento. Base giuridica: esecuzione di
+                misure precontrattuali richieste dall’interessato.{' '}
+                <Todo>verificare il ruolo di Google (titolare autonomo o responsabile) in base al tipo di account utilizzato</Todo>
+            </p>
+
             <h2>6. Dati relativi ai percorsi psicologici</h2>
             <p>
                 Il presente sito non raccoglie dati relativi alla salute. I dati trattati nell’ambito dei colloqui e dei percorsi psicologici sono oggetto di

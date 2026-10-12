@@ -40,6 +40,14 @@ Il sito rileva automaticamente i file al momento della build. Finché mancano mo
 Inserire in `profile.reviews` **solo** testi realmente pubblicati e verificabili, riportati fedelmente con autore/iniziali, data e fonte. Con l'array vuoto la sezione mostra solo la valutazione (4,9/5 · 4 opinioni su GuidaPsicologi) con il link alla fonte. Per nasconderla: `rating.show = false`.
 La valutazione **non** è inserita nei dati strutturati Schema.org, perché le linee guida Google escludono le recensioni di terze parti.
 
+### Prenotazione online (Google Calendar)
+
+1. Su Google Calendar della Dott.ssa: **Crea → Programma di appuntamenti**. Impostare durata, disponibilità, eventuale Google Meet per gli incontri online e le domande del modulo (evitare domande cliniche).
+2. Aprire il programma → **Condividi → Pagina di prenotazione** e copiare il link (`https://calendar.google.com/calendar/appointments/schedules/…`).
+3. Inserirlo in `GOOGLE_CALENDAR_BOOKING_URL` e rifare la build.
+
+Il calendario viene caricato **solo dopo il clic** del visitatore su "Mostra le disponibilità": prima non c'è alcuna connessione a Google, quindi non serve un banner cookie. Le prenotazioni compaiono direttamente nel calendario della Dott.ssa, con email di conferma automatiche.
+
 ## Variabili d'ambiente
 
 Vedi `.env.example`.
@@ -49,7 +57,8 @@ Vedi `.env.example`.
 | `NEXT_PUBLIC_SITE_URL` | URL definitivo (es. `https://www.dominio.it`). Usato per canonical, sitemap e OpenGraph. Su Netlify, se vuoto, viene usato `URL`. |
 | `WHATSAPP_NUMBER` | Numero professionale, solo cifre con prefisso (es. `39…`). Se vuoto, il pulsante WhatsApp non compare. |
 | `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL` | Invio delle richieste del form via [Resend](https://resend.com) (il dominio mittente va verificato). |
-| `SHOW_PHOTO_PLACEHOLDERS` | Solo per la demo: `true` mostra le cornici con le indicazioni al posto delle foto mancanti. Da rimuovere al lancio. |
+| `GOOGLE_CALENDAR_BOOKING_URL` | Link della pagina di prenotazione di Google Calendar della Dott.ssa (vedi sotto). Se vuoto, la sezione "Prenota online" non compare. |
+| `SHOW_DEMO_PLACEHOLDERS` | Solo per la demo: `true` mostra le cornici al posto delle foto mancanti e un'anteprima del calendario finché non è collegato. Da rimuovere al lancio. |
 | `CONTACT_FORM_DEMO` | Solo per la demo: `true` simula un invio riuscito se l'email non è configurata. Da rimuovere in produzione. |
 
 Senza configurazione email, in produzione il form mostra un messaggio di errore gentile (stato "error"); in sviluppo l'invio viene simulato.

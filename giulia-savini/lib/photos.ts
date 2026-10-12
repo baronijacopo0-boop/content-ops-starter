@@ -15,7 +15,10 @@ export function publicFileExists(src: string) {
     }
 }
 
-/** Cornici demo visibili al posto delle foto mancanti (variabile d'ambiente SHOW_PHOTO_PLACEHOLDERS=true). */
+/**
+ * Modalità demo: mostra cornici e anteprime al posto dei contenuti mancanti (foto, calendario).
+ * Si attiva con SHOW_DEMO_PLACEHOLDERS=true (accettato anche il vecchio SHOW_PHOTO_PLACEHOLDERS).
+ */
 export function photoPlaceholdersEnabled() {
-    return process.env.SHOW_PHOTO_PLACEHOLDERS === 'true';
+    return process.env.SHOW_DEMO_PLACEHOLDERS === 'true' || process.env.SHOW_PHOTO_PLACEHOLDERS === 'true';
 }

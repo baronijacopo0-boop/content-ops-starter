@@ -32,6 +32,18 @@ export default function CookiePolicyPage() {
             </p>
             <p>I caratteri tipografici sono ospitati direttamente sul sito: la loro visualizzazione non comporta connessioni a server di terze parti.</p>
 
+            <h2>Calendario di prenotazione (Google Calendar)</h2>
+            <p>
+                Se è attiva la prenotazione online, il calendario delle disponibilità è un servizio di Google LLC incorporato nel sito.{' '}
+                <strong>Viene caricato solo se l’utente sceglie di visualizzarlo</strong> premendo il pulsante “Mostra le disponibilità”: prima di quel momento
+                non avviene alcuna connessione ai server di Google. Una volta caricato, Google può utilizzare cookie e trattare dati di navigazione secondo la
+                propria{' '}
+                <a href="https://policies.google.com/privacy?hl=it" target="_blank" rel="noopener noreferrer">
+                    informativa privacy
+                </a>
+                . In alternativa è sempre possibile aprire il calendario in una nuova finestra o usare il modulo di contatto.
+            </p>
+
             <h2>Link a siti esterni</h2>
             <p>
                 Il sito contiene collegamenti a servizi esterni (ad esempio Google Maps, WhatsApp o piattaforme di recensioni). Questi servizi vengono raggiunti

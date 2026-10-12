@@ -281,6 +281,18 @@ export const content = {
         secondary: 'Contattami'
     },
 
+    booking: {
+        eyebrow: 'Prenota online',
+        title: 'Scegli tu il momento',
+        text: 'Puoi vedere le disponibilità e prenotare direttamente il primo colloquio, in studio o online. Riceverai una conferma via email.',
+        loadCta: 'Mostra le disponibilità',
+        consent:
+            'Il calendario è fornito da Google. Caricandolo, Google potrà trattare alcuni dati di navigazione e impostare cookie secondo la propria informativa.',
+        externalCta: 'Apri il calendario in una nuova finestra',
+        alternative: 'Preferisci scrivermi prima?',
+        alternativeCta: 'Usa il modulo di contatto'
+    },
+
     contact: {
         eyebrow: 'Contatti',
         title: 'Scrivimi',
@@ -436,4 +448,21 @@ export const faqs: { question: string; answer: string }[] = [
 export const legal = {
     reviewed: false,
     lastUpdated: '2026-10-12'
+};
+
+/* ---------------------------------------------------------------------------
+ * Prenotazione online (Google Calendar)
+ *
+ * Come collegarlo:
+ * 1. Su Google Calendar: Crea → Programma di appuntamenti (Appointment schedule),
+ *    imposta durata, disponibilità e, se serve, il link Google Meet per gli incontri online.
+ * 2. Apri il programma → Condividi → "Pagina di prenotazione" e copia il link
+ *    (inizia con https://calendar.google.com/calendar/appointments/schedules/...).
+ * 3. Inseriscilo nella variabile d'ambiente GOOGLE_CALENDAR_BOOKING_URL (oppure qui sotto).
+ *
+ * Gli appuntamenti prenotati compaiono direttamente nel Google Calendar della Dott.ssa.
+ * Se il link è vuoto la sezione non compare (in modalità demo mostra un'anteprima).
+ * ------------------------------------------------------------------------- */
+export const bookingConfig = {
+    url: null as string | null
 };
