@@ -29,8 +29,11 @@ Caricare in `public/images/`:
 | --- | --- | --- |
 | `giulia-savini.jpg` | Hero (verticale 4:5) | almeno 1200×1500 px |
 | `giulia-savini-studio.jpg` | Sezione "Chi sono" (verticale 4:5) | almeno 1000×1250 px |
+| `studio-1.jpg` | Galleria "Lo studio" (verticale 4:5) | almeno 1000×1250 px |
+| `studio-2.jpg` | Galleria "Lo studio" (verticale 3:4) | almeno 900×1200 px |
+| `studio-3.jpg` | Galleria "Lo studio" (quadrata o orizzontale) | almeno 1000×1000 px |
 
-Il sito rileva automaticamente i file al momento della build: finché mancano, mostra una composizione grafica astratta (mai foto stock). Next.js converte le immagini in AVIF/WebP responsive.
+Il sito rileva automaticamente i file al momento della build. Finché mancano mostra una composizione grafica astratta (mai foto stock), oppure, con `SHOW_PHOTO_PLACEHOLDERS=true`, una cornice demo che indica quale foto inserire e con quale nome. La galleria "Lo studio" compare solo se c'è almeno una foto o se le cornici demo sono attive. Next.js converte le immagini in AVIF/WebP responsive.
 
 ### Recensioni
 
@@ -46,6 +49,7 @@ Vedi `.env.example`.
 | `NEXT_PUBLIC_SITE_URL` | URL definitivo (es. `https://www.dominio.it`). Usato per canonical, sitemap e OpenGraph. Su Netlify, se vuoto, viene usato `URL`. |
 | `WHATSAPP_NUMBER` | Numero professionale, solo cifre con prefisso (es. `39…`). Se vuoto, il pulsante WhatsApp non compare. |
 | `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL` | Invio delle richieste del form via [Resend](https://resend.com) (il dominio mittente va verificato). |
+| `SHOW_PHOTO_PLACEHOLDERS` | Solo per la demo: `true` mostra le cornici con le indicazioni al posto delle foto mancanti. Da rimuovere al lancio. |
 | `CONTACT_FORM_DEMO` | Solo per la demo: `true` simula un invio riuscito se l'email non è configurata. Da rimuovere in produzione. |
 
 Senza configurazione email, in produzione il form mostra un messaggio di errore gentile (stato "error"); in sviluppo l'invio viene simulato.

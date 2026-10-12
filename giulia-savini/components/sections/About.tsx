@@ -12,6 +12,8 @@ export function About() {
                     <Portrait
                         src={profile.photos.about.src}
                         alt={profile.photos.about.alt}
+                        hint={profile.photos.about.hint}
+                        frameClassName="rounded-br-[7rem]"
                         sizes="(min-width: 1024px) 40vw, (min-width: 640px) 70vw, 92vw"
                         variant="about"
                         className="mx-auto aspect-[4/5] max-w-[26rem] rounded-[1.75rem] rounded-br-[8rem] lg:mx-0 lg:max-w-none"

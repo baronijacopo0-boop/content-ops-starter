@@ -14,3 +14,8 @@ export function publicFileExists(src: string) {
         return false;
     }
 }
+
+/** Cornici demo visibili al posto delle foto mancanti (variabile d'ambiente SHOW_PHOTO_PLACEHOLDERS=true). */
+export function photoPlaceholdersEnabled() {
+    return process.env.SHOW_PHOTO_PLACEHOLDERS === 'true';
+}

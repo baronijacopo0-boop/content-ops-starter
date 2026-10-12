@@ -56,6 +56,8 @@ export function Hero() {
                         <Portrait
                             src={profile.photos.hero.src}
                             alt={profile.photos.hero.alt}
+                            hint={profile.photos.hero.hint}
+                            frameClassName="rounded-tl-[8rem] sm:rounded-tl-[11rem]"
                             sizes="(min-width: 1280px) 520px, (min-width: 1024px) 46vw, (min-width: 640px) 480px, 92vw"
                             priority
                             className="aspect-[4/5] rounded-[1.75rem] rounded-tl-[9rem] sm:rounded-tl-[12rem]"

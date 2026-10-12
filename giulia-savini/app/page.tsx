@@ -11,6 +11,7 @@ import { Quote } from '@/components/sections/Quote';
 import { Reviews } from '@/components/sections/Reviews';
 import { Services } from '@/components/sections/Services';
 import { Steps } from '@/components/sections/Steps';
+import { StudioGallery } from '@/components/sections/StudioGallery';
 
 export default function HomePage() {
     return (
@@ -24,6 +25,7 @@ export default function HomePage() {
             <Quote />
             <Steps />
             <Places />
+            <StudioGallery />
             <Reviews />
             <Faq />
             <FinalCta />

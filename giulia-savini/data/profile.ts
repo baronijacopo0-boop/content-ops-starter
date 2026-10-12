@@ -107,10 +107,29 @@ export const profile = {
      */
     reviews: [] as Review[],
 
-    /** Foto: è sufficiente caricare i file con questi nomi in /public/images */
+    /**
+     * Foto: è sufficiente caricare i file con questi nomi in /public/images.
+     * Finché un file manca, al suo posto compare una grafica astratta oppure,
+     * con SHOW_PHOTO_PLACEHOLDERS=true, una cornice demo con le indicazioni.
+     * `hint` è il testo mostrato nella cornice demo.
+     */
     photos: {
-        hero: { src: '/images/giulia-savini.jpg', alt: 'Ritratto della Dott.ssa Giulia Savini, psicologa e sessuologa a Teramo' },
-        about: { src: '/images/giulia-savini-studio.jpg', alt: 'La Dott.ssa Giulia Savini nel suo studio di Teramo' }
+        hero: {
+            src: '/images/giulia-savini.jpg',
+            alt: 'Ritratto della Dott.ssa Giulia Savini, psicologa e sessuologa a Teramo',
+            hint: 'Ritratto della Dott.ssa'
+        },
+        about: {
+            src: '/images/giulia-savini-studio.jpg',
+            alt: 'La Dott.ssa Giulia Savini nel suo studio di Teramo',
+            hint: 'Foto della Dott.ssa in studio'
+        },
+        /** Galleria "Lo studio": se nessuna foto è presente (e la demo è spenta) la sezione non compare. */
+        studio: [
+            { src: '/images/studio-1.jpg', alt: 'Lo studio della Dott.ssa Giulia Savini a Teramo', hint: 'Lo studio' },
+            { src: '/images/studio-2.jpg', alt: 'Uno scorcio dello studio', hint: 'Uno scorcio dello studio' },
+            { src: '/images/studio-3.jpg', alt: 'Un dettaglio dello studio', hint: 'Un dettaglio' }
+        ]
     },
 
     quote: 'Guarire non significa che la ferita non sia mai esistita, ma che non controlla più la tua vita.'
@@ -239,6 +258,12 @@ export const content = {
         }
     },
 
+    studioGallery: {
+        eyebrow: 'Lo studio',
+        title: 'Lo spazio dei nostri incontri',
+        text: 'Alcune immagini dello studio di Teramo, dove si svolgono i colloqui in presenza.'
+    },
+
     reviews: {
         eyebrow: 'Opinioni',
         title: 'Le parole di chi ha scelto questo percorso'
@@ -281,8 +306,10 @@ export const services: Service[] = [
             'Chi affronta un cambiamento o una scelta importante',
             'Chi desidera conoscersi meglio e prendersi cura di sé'
         ],
-        howItWorks: 'Il percorso inizia con un primo colloquio, in cui accolgo la tua richiesta. Da lì definiamo insieme modalità, tempi e obiettivi, che possono essere rivisti man mano.',
-        seoDescription: 'Sostegno psicologico individuale a Teramo e online con la Dott.ssa Giulia Savini, psicologa. Uno spazio di ascolto per adulti e adolescenti.'
+        howItWorks:
+            'Il percorso inizia con un primo colloquio, in cui accolgo la tua richiesta. Da lì definiamo insieme modalità, tempi e obiettivi, che possono essere rivisti man mano.',
+        seoDescription:
+            'Sostegno psicologico individuale a Teramo e online con la Dott.ssa Giulia Savini, psicologa. Uno spazio di ascolto per adulti e adolescenti.'
     },
     {
         slug: 'percorsi-di-coppia',
@@ -296,8 +323,10 @@ export const services: Service[] = [
             'Cambiamenti importanti: convivenza, nascita di un figlio, trasferimenti',
             'Coppie che vogliono comprendere meglio le proprie dinamiche'
         ],
-        howItWorks: 'Gli incontri coinvolgono entrambi i partner. In un’ottica sistemico-relazionale l’attenzione è rivolta alla relazione: a come ciascuno partecipa alle dinamiche della coppia e a ciò che potrebbe cambiare.',
-        seoDescription: 'Percorsi di coppia a Teramo e online con la Dott.ssa Giulia Savini: comunicazione, conflitti, crisi e cambiamenti, in ottica sistemico-relazionale.'
+        howItWorks:
+            'Gli incontri coinvolgono entrambi i partner. In un’ottica sistemico-relazionale l’attenzione è rivolta alla relazione: a come ciascuno partecipa alle dinamiche della coppia e a ciò che potrebbe cambiare.',
+        seoDescription:
+            'Percorsi di coppia a Teramo e online con la Dott.ssa Giulia Savini: comunicazione, conflitti, crisi e cambiamenti, in ottica sistemico-relazionale.'
     },
     {
         slug: 'consulenza-sessuologica',
@@ -311,8 +340,10 @@ export const services: Service[] = [
             'Chi desidera uno spazio per riflettere sulla propria identità e sul proprio vissuto',
             'Chi ha dubbi o domande che non sa a chi rivolgere'
         ],
-        howItWorks: 'Dopo un primo colloquio conoscitivo valutiamo insieme la richiesta e la forma più adatta del percorso, individuale o di coppia. Quando utile, il lavoro può integrarsi con quello di altri professionisti della salute.',
-        seoDescription: 'Consulenza sessuologica a Teramo e online con la Dott.ssa Giulia Savini, psicologa specializzata in Sessuologia Clinica. Uno spazio riservato e privo di giudizio.'
+        howItWorks:
+            'Dopo un primo colloquio conoscitivo valutiamo insieme la richiesta e la forma più adatta del percorso, individuale o di coppia. Quando utile, il lavoro può integrarsi con quello di altri professionisti della salute.',
+        seoDescription:
+            'Consulenza sessuologica a Teramo e online con la Dott.ssa Giulia Savini, psicologa specializzata in Sessuologia Clinica. Uno spazio riservato e privo di giudizio.'
     },
     {
         slug: 'supporto-alla-genitorialita',
@@ -326,8 +357,10 @@ export const services: Service[] = [
             'Genitori di adolescenti che faticano a ritrovare un dialogo',
             'Chi si sta preparando a diventare genitore'
         ],
-        howItWorks: 'Gli incontri possono coinvolgere uno o entrambi i genitori. Lo sguardo sistemico aiuta a leggere le difficoltà all’interno delle relazioni familiari, valorizzando le risorse già presenti.',
-        seoDescription: 'Supporto alla genitorialità a Teramo e online con la Dott.ssa Giulia Savini, psicologa: uno spazio per genitori e famiglie che attraversano cambiamenti.'
+        howItWorks:
+            'Gli incontri possono coinvolgere uno o entrambi i genitori. Lo sguardo sistemico aiuta a leggere le difficoltà all’interno delle relazioni familiari, valorizzando le risorse già presenti.',
+        seoDescription:
+            'Supporto alla genitorialità a Teramo e online con la Dott.ssa Giulia Savini, psicologa: uno spazio per genitori e famiglie che attraversano cambiamenti.'
     },
     {
         slug: 'consulenza-online',
@@ -341,7 +374,8 @@ export const services: Service[] = [
             'Chi si sente più a proprio agio in un ambiente familiare',
             'Chi desidera proseguire un percorso già avviato in studio'
         ],
-        howItWorks: 'Gli incontri si svolgono in videochiamata. È sufficiente una connessione stabile e un luogo tranquillo e riservato, in cui sentirsi liberi di parlare.',
+        howItWorks:
+            'Gli incontri si svolgono in videochiamata. È sufficiente una connessione stabile e un luogo tranquillo e riservato, in cui sentirsi liberi di parlare.',
         seoDescription: 'Consulenza psicologica e sessuologica online con la Dott.ssa Giulia Savini: percorsi individuali e di coppia in videochiamata.'
     }
 ];
