@@ -283,12 +283,9 @@ export const content = {
 
     booking: {
         eyebrow: 'Prenota online',
-        title: 'Scegli tu il momento',
-        text: 'Puoi vedere le disponibilità e prenotare direttamente il primo colloquio, in studio o online. Riceverai una conferma via email.',
-        loadCta: 'Mostra le disponibilità',
-        consent:
-            'Il calendario è fornito da Google. Caricandolo, Google potrà trattare alcuni dati di navigazione e impostare cookie secondo la propria informativa.',
-        externalCta: 'Apri il calendario in una nuova finestra',
+        title: 'Scegli giorno e orario',
+        text: 'Puoi prenotare direttamente il primo colloquio, in studio a Teramo o online. Scegli un giorno, poi l’orario che preferisci.',
+        note: 'Se l’orario non dovesse più andare bene, potrai sempre scrivermi per spostarlo.',
         alternative: 'Preferisci scrivermi prima?',
         alternativeCta: 'Usa il modulo di contatto'
     },
@@ -451,18 +448,49 @@ export const legal = {
 };
 
 /* ---------------------------------------------------------------------------
- * Prenotazione online (Google Calendar)
+ * Prenotazione online con calendario (collegato a Google Calendar)
  *
- * Come collegarlo:
- * 1. Su Google Calendar: Crea → Programma di appuntamenti (Appointment schedule),
- *    imposta durata, disponibilità e, se serve, il link Google Meet per gli incontri online.
- * 2. Apri il programma → Condividi → "Pagina di prenotazione" e copia il link
- *    (inizia con https://calendar.google.com/calendar/appointments/schedules/...).
- * 3. Inseriscilo nella variabile d'ambiente GOOGLE_CALENDAR_BOOKING_URL (oppure qui sotto).
- *
- * Gli appuntamenti prenotati compaiono direttamente nel Google Calendar della Dott.ssa.
- * Se il link è vuoto la sezione non compare (in modalità demo mostra un'anteprima).
+ * Il calendario del sito mostra i giorni e gli orari liberi calcolati da:
+ *   orari di lavoro qui sotto  −  impegni già presenti nel Google Calendar della Dott.ssa.
+ * Ogni prenotazione viene creata come evento nel suo Google Calendar.
+ * Il collegamento a Google si configura con variabili d'ambiente (vedi README).
  * ------------------------------------------------------------------------- */
+export type TimeRange = [start: string, end: string];
+
 export const bookingConfig = {
-    url: null as string | null
+    /**
+     * TODO: impostare a true solo dopo aver inserito gli orari reali della Dott.ssa.
+     * Finché è false, il calendario compare solo in modalità demo, con l'avviso "orari di esempio".
+     */
+    hoursConfirmed: false,
+    timeZone: 'Europe/Rome',
+    /** TODO: durata di un incontro, in minuti */
+    slotMinutes: 50,
+    /** Pausa tra un incontro e il successivo, in minuti */
+    bufferMinutes: 10,
+    /** Preavviso minimo per prenotare, in ore */
+    minNoticeHours: 24,
+    /** Quanti giorni in avanti si può prenotare */
+    daysAhead: 45,
+    /**
+     * TODO: orari di ricevimento (ESEMPIO). Chiavi: 1 = lunedì … 6 = sabato, 0 = domenica.
+     * Più fasce per giorno sono ammesse, es. mattina e pomeriggio.
+     */
+    weeklyHours: {
+        1: [
+            ['09:00', '13:00'],
+            ['15:00', '19:00']
+        ],
+        2: [['15:00', '20:00']],
+        3: [
+            ['09:00', '13:00'],
+            ['15:00', '19:00']
+        ],
+        4: [['15:00', '20:00']],
+        5: [['09:00', '13:00']]
+    } as Partial<Record<0 | 1 | 2 | 3 | 4 | 5 | 6, TimeRange[]>>,
+    /** Giorni di chiusura (ferie, festività) nel formato 'AAAA-MM-GG' */
+    closedDates: [] as string[],
+    /** Titolo dell'evento creato nel Google Calendar */
+    eventTitle: 'Primo colloquio'
 };
