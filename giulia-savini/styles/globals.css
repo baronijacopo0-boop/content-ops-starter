@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --nav-height: 4.5rem;
+        color-scheme: light;
+    }
+
+    html {
+        -webkit-text-size-adjust: 100%;
+        scroll-padding-top: calc(var(--nav-height) + 1rem);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        html {
+            scroll-behavior: smooth;
+        }
+    }
+
+    body {
+        @apply bg-cream font-sans text-ink antialiased;
+        font-feature-settings: 'ss01', 'cv11';
+        text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3 {
+        @apply font-serif font-normal text-ink;
+        text-wrap: balance;
+        letter-spacing: -0.01em;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    a,
+    button,
+    summary,
+    label,
+    [role='button'] {
+        touch-action: manipulation;
+    }
+
+    ::selection {
+        @apply bg-sage-light text-ink;
+    }
+
+    :focus-visible {
+        outline: 2px solid theme('colors.forest.DEFAULT');
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+}
+
+@layer components {
+    .eyebrow {
+        @apply inline-flex items-center gap-3 font-sans text-eyebrow font-semibold uppercase text-forest;
+    }
+
+    .eyebrow::before {
+        content: '';
+        @apply block h-px w-8 bg-clay;
+    }
+
+    .section {
+        @apply py-20 sm:py-24 lg:py-32;
+    }
+
+    .h-display {
+        @apply font-serif text-[2.6rem] leading-[1.04] sm:text-6xl lg:text-[4.6rem] xl:text-[5.1rem];
+    }
+
+    .h-section {
+        @apply font-serif text-[2.2rem] leading-[1.08] sm:text-5xl lg:text-[3.6rem];
+    }
+
+    .lead {
+        @apply text-[1.0625rem] leading-relaxed text-ink-soft sm:text-lg;
+    }
+
+    /* Link con sottolineatura animata */
+    .link-underline {
+        background-image: linear-gradient(currentColor, currentColor);
+        background-size: 0% 1px;
+        background-position: 0 100%;
+        background-repeat: no-repeat;
+        transition: background-size 300ms theme('transitionTimingFunction.gentle');
+    }
+
+    .link-underline:hover,
+    .link-underline:focus-visible {
+        background-size: 100% 1px;
+    }
+
+    .link-underline-static {
+        background-size: 100% 1px;
+    }
+
+    .link-underline-static:hover {
+        background-size: 0% 1px;
+    }
+
+    /* Rivelazione allo scroll: attiva solo con JS e senza riduzione movimento */
+    .js [data-reveal] {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+            opacity 600ms theme('transitionTimingFunction.gentle'),
+            transform 600ms theme('transitionTimingFunction.gentle');
+        transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    .js [data-reveal].is-visible {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* Accordion FAQ */
+    .faq-item summary {
+        list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .faq-item .faq-icon {
+        transition: transform 300ms theme('transitionTimingFunction.gentle');
+    }
+
+    .faq-item[open] .faq-icon {
+        transform: rotate(45deg);
+    }
+
+    @supports (interpolate-size: allow-keywords) {
+        .faq-item {
+            interpolate-size: allow-keywords;
+        }
+
+        .faq-item::details-content {
+            height: 0;
+            overflow: clip;
+            transition:
+                height 350ms theme('transitionTimingFunction.gentle'),
+                content-visibility 350ms allow-discrete;
+        }
+
+        .faq-item[open]::details-content {
+            height: auto;
+        }
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .js [data-reveal] {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Testi delle pagine legali */
+.legal-prose {
+    @apply leading-relaxed text-ink-soft;
+}
+.legal-prose h2 {
+    @apply mb-4 mt-12 font-serif text-[1.9rem] leading-tight text-ink;
+}
+.legal-prose p,
+.legal-prose ul {
+    @apply mt-4;
+}
+.legal-prose ul {
+    @apply list-disc space-y-2 pl-5 marker:text-clay;
+}
+.legal-prose a {
+    @apply text-forest underline decoration-1 underline-offset-4 hover:decoration-2;
+}
+.legal-prose strong {
+    @apply font-semibold text-ink;
+}
