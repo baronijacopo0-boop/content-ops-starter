@@ -41,13 +41,13 @@ export default async function ServicePage({ params }: { params: Params }) {
                     <nav aria-label="Percorso di navigazione" className="text-sm text-ink-soft">
                         <ol className="flex flex-wrap items-center gap-2">
                             <li>
-                                <Link href="/" className="link-underline hover:text-ink">
+                                <Link href="/" className="link-underline tap-target hover:text-ink">
                                     Home
                                 </Link>
                             </li>
                             <li aria-hidden>/</li>
                             <li>
-                                <Link href="/#percorsi" className="link-underline hover:text-ink">
+                                <Link href="/#percorsi" className="link-underline tap-target hover:text-ink">
                                     Percorsi
                                 </Link>
                             </li>
@@ -120,7 +120,7 @@ export default async function ServicePage({ params }: { params: Params }) {
                             </li>
                         ))}
                     </ul>
-                    <Link href="/#percorsi" className="group mt-10 inline-flex items-center gap-2 font-medium text-forest">
+                    <Link href="/#percorsi" className="group mt-8 inline-flex min-h-11 items-center gap-2 font-medium text-forest">
                         <ArrowLeft aria-hidden className="h-4 w-4 transition-transform group-hover:-translate-x-1" strokeWidth={1.6} />
                         <span className="link-underline">Torna alla home</span>
                     </Link>

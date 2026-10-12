@@ -25,7 +25,7 @@ export function Intro() {
                             {p}
                         </p>
                     ))}
-                    <Link href="/#approccio" className="group mt-9 inline-flex items-center gap-2 font-medium text-forest">
+                    <Link href="/#approccio" className="group mt-7 inline-flex min-h-11 items-center gap-2 font-medium text-forest">
                         <span className="link-underline">{intro.cta}</span>
                         <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.6} />
                     </Link>

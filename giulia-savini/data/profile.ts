@@ -286,7 +286,13 @@ export const content = {
         title: 'Scrivimi',
         text: 'Compila il modulo per richiedere un primo colloquio o qualche informazione. Non è necessario entrare nei dettagli: ne parleremo con calma, insieme.',
         reassurance: 'Ti ricontatterò appena possibile.',
-        privacyNote: 'I dati inviati sono trattati con riservatezza e utilizzati solo per risponderti.'
+        privacyNote: 'I dati inviati sono trattati con riservatezza e utilizzati solo per risponderti.',
+        /** Indicazioni per le emergenze: il sito non è un servizio di pronto intervento. */
+        emergency: {
+            title: 'In caso di emergenza',
+            text: 'Questo modulo non è adatto alle situazioni urgenti. Se tu o qualcuno vicino a te è in pericolo, chiama subito il numero di emergenza 112 o rivolgiti al pronto soccorso più vicino.',
+            phone: '112'
+        }
     }
 };
 

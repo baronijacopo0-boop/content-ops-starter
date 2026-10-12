@@ -54,6 +54,12 @@
         outline-offset: 3px;
         border-radius: 4px;
     }
+
+    /* Sezioni su fondo scuro: anello di focus chiaro per mantenere il contrasto ≥ 3:1 */
+    .on-dark:focus-visible,
+    .on-dark :focus-visible {
+        outline-color: theme('colors.cream');
+    }
 }
 
 @layer components {
@@ -156,10 +162,18 @@
 }
 
 @layer utilities {
+    /* Area di tocco minima 44px per link testuali isolati */
+    .tap-target {
+        display: inline-block;
+        padding-block: 0.75rem;
+        /* la sottolineatura animata resta attaccata al testo, non al bordo dell'area */
+        background-origin: content-box;
+        background-clip: content-box;
+    }
+
     .text-balance {
         text-wrap: balance;
     }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -197,4 +211,29 @@
 }
 .legal-prose strong {
     @apply font-semibold text-ink;
+}
+
+/* Contrasto elevato richiesto dal sistema */
+@media (prefers-contrast: more) {
+    .text-ink-soft {
+        color: theme('colors.ink.DEFAULT');
+    }
+    .border-ink\/10,
+    .border-ink\/15 {
+        border-color: theme('colors.ink.soft');
+    }
+}
+
+/* Modalità a colori forzati (Windows High Contrast): i fondi spariscono, i bordi restano */
+@media (forced-colors: active) {
+    a[class*='rounded-full'],
+    button {
+        border: 1px solid ButtonText;
+    }
+    [data-photo-slot] > div {
+        border-color: CanvasText;
+    }
+    :focus-visible {
+        outline-color: Highlight;
+    }
 }

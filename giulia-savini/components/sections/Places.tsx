@@ -36,7 +36,7 @@ export function Places() {
                                 href={mapsUrl()}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group mt-8 inline-flex items-center gap-1.5 self-start font-medium text-forest"
+                                className="group mt-6 inline-flex min-h-11 items-center gap-1.5 self-start font-medium text-forest"
                             >
                                 <span className="link-underline">{places.studio.mapCta}</span>
                                 <span className="sr-only"> (si apre in una nuova finestra)</span>
@@ -50,7 +50,11 @@ export function Places() {
                     </Reveal>
 
                     {/* ONLINE */}
-                    <Reveal as="article" delay={100} className="relative flex flex-col overflow-hidden rounded-[1.5rem] bg-forest p-7 text-cream sm:p-10">
+                    <Reveal
+                        as="article"
+                        delay={100}
+                        className="on-dark relative flex flex-col overflow-hidden rounded-[1.5rem] bg-forest p-7 text-cream sm:p-10"
+                    >
                         <svg aria-hidden viewBox="0 0 300 300" className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 text-cream/10">
                             <g fill="none" stroke="currentColor">
                                 <circle cx="150" cy="150" r="140" />

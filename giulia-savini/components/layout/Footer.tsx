@@ -5,7 +5,7 @@ import { CurrentYear } from './CurrentYear';
 
 export function Footer() {
     return (
-        <footer className="bg-forest-deep text-cream">
+        <footer className="on-dark bg-forest-deep text-cream">
             <div className="container py-16 lg:py-20">
                 <div className="grid gap-12 lg:grid-cols-12">
                     <div className="lg:col-span-5">
@@ -16,10 +16,10 @@ export function Footer() {
 
                     <nav aria-label="Navigazione nel footer" className="lg:col-span-3">
                         <p className="text-eyebrow font-semibold uppercase text-sage-light">Navigazione</p>
-                        <ul className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-[0.95rem] lg:grid-cols-1">
+                        <ul className="mt-3 grid grid-cols-2 gap-x-6 text-[0.95rem] lg:grid-cols-1">
                             {navigation.map((item) => (
                                 <li key={item.href}>
-                                    <Link href={item.href} className="link-underline text-cream/85 hover:text-cream">
+                                    <Link href={item.href} className="link-underline tap-target text-cream/85 hover:text-cream">
                                         {item.label}
                                     </Link>
                                 </li>
@@ -38,14 +38,14 @@ export function Footer() {
                             <ul className="mt-4 space-y-1 text-cream/85">
                                 {profile.phone && (
                                     <li>
-                                        <a href={telHref(profile.phone)} className="link-underline">
+                                        <a href={telHref(profile.phone)} className="link-underline tap-target">
                                             {profile.phone}
                                         </a>
                                     </li>
                                 )}
                                 {profile.email && (
                                     <li>
-                                        <a href={`mailto:${profile.email}`} className="link-underline">
+                                        <a href={`mailto:${profile.email}`} className="link-underline tap-target">
                                             {profile.email}
                                         </a>
                                     </li>
@@ -56,7 +56,7 @@ export function Footer() {
                             <ul className="mt-4 flex gap-5">
                                 {profile.socialLinks.map((s) => (
                                     <li key={s.url}>
-                                        <a href={s.url} target="_blank" rel="noopener noreferrer" className="link-underline text-cream/85">
+                                        <a href={s.url} target="_blank" rel="noopener noreferrer" className="link-underline tap-target text-cream/85">
                                             {s.label}
                                         </a>
                                     </li>
@@ -75,10 +75,10 @@ export function Footer() {
                         P. IVA {profile.vatNumber}
                     </p>
                     <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                        <Link href="/privacy" className="link-underline hover:text-cream">
+                        <Link href="/privacy" className="link-underline tap-target hover:text-cream">
                             Privacy Policy
                         </Link>
-                        <Link href="/cookie-policy" className="link-underline hover:text-cream">
+                        <Link href="/cookie-policy" className="link-underline tap-target hover:text-cream">
                             Cookie Policy
                         </Link>
                         <p>

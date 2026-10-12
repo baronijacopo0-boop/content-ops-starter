@@ -15,7 +15,8 @@ const config: Config = {
                 ink: { DEFAULT: '#292A27', soft: '#55574F' },
                 sage: { DEFAULT: '#788879', light: '#C5CEC3', pale: '#DDE3DA' },
                 forest: { DEFAULT: '#44564B', deep: '#37463D' },
-                clay: { DEFAULT: '#B89D83', dark: '#7D6049', light: '#E3D5C6' }
+                clay: { DEFAULT: '#B89D83', dark: '#7D6049', light: '#E3D5C6' },
+                danger: { DEFAULT: '#A3412B', deep: '#7A2E1E', soft: '#F6E7E1' }
             },
             fontFamily: {
                 serif: ['var(--font-serif)', 'Georgia', 'serif'],

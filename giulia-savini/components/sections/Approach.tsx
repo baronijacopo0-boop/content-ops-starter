@@ -4,7 +4,7 @@ import { Reveal } from '@/components/ui/Reveal';
 export function Approach() {
     const { approach } = content;
     return (
-        <section id="approccio" aria-labelledby="approach-title" className="section relative overflow-hidden bg-forest text-cream">
+        <section id="approccio" aria-labelledby="approach-title" className="on-dark section relative overflow-hidden bg-forest text-cream">
             <div className="container grid items-center gap-16 lg:grid-cols-12 lg:gap-10">
                 <div className="lg:col-span-6">
                     <Reveal>

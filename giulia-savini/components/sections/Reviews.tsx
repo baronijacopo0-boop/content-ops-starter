@@ -52,7 +52,7 @@ export function Reviews() {
                                 href={externalProfile.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group mt-6 inline-flex items-center gap-1.5 font-medium text-forest"
+                                className="group mt-4 inline-flex min-h-11 items-center gap-1.5 font-medium text-forest"
                             >
                                 <span className="link-underline">Leggi le opinioni su {externalProfile.label}</span>
                                 <span className="sr-only"> (si apre in una nuova finestra)</span>

@@ -96,7 +96,11 @@ export function ContactForm({ reassurance, fallbackEmail }: { reassurance: strin
                 </span>
                 <h3 className="mt-8 text-4xl">Grazie, ho ricevuto la tua richiesta.</h3>
                 <p className="mt-4 max-w-md leading-relaxed text-ink-soft">{reassurance}</p>
-                <button type="button" onClick={() => setStatus('idle')} className="link-underline link-underline-static mt-8 font-medium text-forest">
+                <button
+                    type="button"
+                    onClick={() => setStatus('idle')}
+                    className="link-underline link-underline-static tap-target mt-6 font-medium text-forest"
+                >
                     Invia un’altra richiesta
                 </button>
             </div>
@@ -278,7 +282,7 @@ export function ContactForm({ reassurance, fallbackEmail }: { reassurance: strin
 
             <div ref={statusRef} tabIndex={-1} aria-live="polite" className="outline-none">
                 {status === 'error' && (
-                    <p role="alert" className="mt-6 flex gap-3 rounded-xl bg-[#F6E7E1] p-4 text-[0.95rem] leading-relaxed text-[#7A2E1E]">
+                    <p role="alert" className="mt-6 flex gap-3 rounded-xl bg-danger-soft p-4 text-[0.95rem] leading-relaxed text-danger-deep">
                         <CircleAlert aria-hidden className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} />
                         <span>
                             {serverMessage} Riprova tra qualche istante{fallbackEmail ? ` oppure scrivi a ${fallbackEmail}` : ''}.
@@ -294,7 +298,7 @@ function inputClass(invalid: boolean) {
     return cn(
         'mt-2 block w-full rounded-xl border bg-cream/60 px-4 text-[1rem] text-ink transition-colors placeholder:text-ink/40 focus:bg-white focus:outline-none focus-visible:border-forest focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-forest/40',
         'min-h-[3.25rem]',
-        invalid ? 'border-[#A3412B]' : 'border-ink/15 hover:border-ink/35'
+        invalid ? 'border-danger' : 'border-ink/15 hover:border-ink/35'
     );
 }
 
@@ -339,7 +343,7 @@ function Field({
 
 function ErrorText({ id, children }: { id: string; children: React.ReactNode }) {
     return (
-        <p id={id} className="mt-2 flex items-center gap-1.5 text-sm text-[#A3412B]">
+        <p id={id} className="mt-2 flex items-center gap-1.5 text-sm text-danger">
             <CircleAlert aria-hidden className="h-4 w-4 shrink-0" strokeWidth={1.6} />
             {children}
         </p>

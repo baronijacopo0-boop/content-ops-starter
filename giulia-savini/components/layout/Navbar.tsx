@@ -96,7 +96,7 @@ export function Navbar() {
                 )}
             >
                 <nav aria-label="Navigazione principale" className="container flex h-[var(--nav-height)] items-center justify-between gap-6">
-                    <Link href="/" className="group relative z-10 flex flex-col leading-none" onClick={() => open && close(false)}>
+                    <Link href="/" className="group relative z-10 flex flex-col py-1.5 leading-none" onClick={() => open && close(false)}>
                         <span className="font-serif text-[1.55rem] tracking-[-0.01em] text-ink">{profile.name}</span>
                         <span className="mt-1 text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-forest">{profile.shortTitle}</span>
                     </Link>
@@ -110,7 +110,7 @@ export function Navbar() {
                                         href={item.href}
                                         aria-current={isActive ? 'location' : undefined}
                                         className={cn(
-                                            'link-underline py-1 text-[0.9rem] transition-colors hover:text-ink',
+                                            'link-underline tap-target text-[0.9rem] transition-colors hover:text-ink',
                                             isActive ? 'text-forest [background-size:100%_1px]' : 'text-ink/80'
                                         )}
                                     >
