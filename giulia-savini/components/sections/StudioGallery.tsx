@@ -26,7 +26,7 @@ export function StudioGallery() {
                 <SectionHeading id="studio-gallery-title" eyebrow={studioGallery.eyebrow} title={studioGallery.title}>
                     <p>{studioGallery.text}</p>
                 </SectionHeading>
-                <ul className="mt-12 grid gap-5 sm:grid-cols-12 lg:mt-16 lg:gap-6">
+                <ul className="mt-10 grid gap-5 sm:grid-cols-12 lg:mt-12 lg:gap-6">
                     {items.map((photo, i) => {
                         const l = layout[i % layout.length];
                         return (

@@ -18,7 +18,7 @@ export function FinalCta() {
                         <circle cx="400" cy="400" r="210" className="breathe" style={{ animationDelay: '-5.2s' }} />
                     </g>
                 </svg>
-                <Reveal className="container relative py-24 text-center sm:py-32 lg:py-40">
+                <Reveal className="container relative py-20 text-center sm:py-24 lg:py-32">
                     <h2 id="final-cta-title" className="mx-auto max-w-4xl font-serif text-[2.8rem] leading-[1.02] sm:text-7xl lg:text-[5.6rem]">
                         {finalCta.title}
                     </h2>

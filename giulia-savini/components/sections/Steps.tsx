@@ -10,7 +10,7 @@ export function Steps() {
             <div className="container">
                 <SectionHeading id="steps-title" eyebrow={steps.eyebrow} title={steps.title} />
 
-                <ol className="mt-14 grid gap-px overflow-hidden rounded-[1.5rem] bg-ink/10 lg:mt-16 lg:grid-cols-3">
+                <ol className="mt-10 grid gap-px overflow-hidden rounded-[1.5rem] bg-ink/10 lg:mt-12 lg:grid-cols-3">
                     {steps.items.map((step, i) => (
                         <Reveal as="li" key={step.title} delay={i * 100} className="flex flex-col bg-sand p-8 sm:p-10 lg:min-h-[19rem]">
                             <span aria-hidden className="font-serif text-6xl italic leading-none text-clay sm:text-7xl">

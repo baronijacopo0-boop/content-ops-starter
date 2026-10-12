@@ -12,7 +12,7 @@ export function Places() {
             <div className="container">
                 <SectionHeading id="places-title" eyebrow={places.eyebrow} title={places.title} />
 
-                <div className="mt-14 grid gap-5 lg:mt-16 lg:grid-cols-2">
+                <div className="mt-10 grid gap-5 lg:mt-12 lg:grid-cols-2">
                     {/* STUDIO */}
                     <Reveal as="article" className="flex flex-col overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white/50">
                         <MapIllustration />

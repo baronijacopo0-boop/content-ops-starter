@@ -188,30 +188,6 @@ export const content = {
         text: 'Ogni percorso nasce da un primo incontro e prende forma insieme, nel rispetto dei tuoi tempi.'
     },
 
-    areas: {
-        eyebrow: 'Aree di intervento',
-        title: 'Possiamo lavorare insieme su…',
-        items: [
-            'Ansia',
-            'Attacchi di panico',
-            'Stress',
-            'Autostima',
-            'Dipendenza affettiva',
-            'Difficoltà relazionali',
-            'Difficoltà di coppia',
-            'Problemi sessuali',
-            'Trauma psicologico',
-            'Disturbi dell’umore',
-            'Somatizzazione',
-            'Momenti di cambiamento',
-            'Genitorialità',
-            'Crescita personale'
-        ],
-        notFoundTitle: 'Non trovi qui ciò che stai vivendo?',
-        notFoundText: 'Questo elenco non può raccontare tutto. Se senti il bisogno di parlarne, scrivimi: valuteremo insieme come posso esserti utile.',
-        cta: 'Parliamone'
-    },
-
     approach: {
         eyebrow: 'Approccio sistemico-relazionale',
         title: 'Non siamo isole.',

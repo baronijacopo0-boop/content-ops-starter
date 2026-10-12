@@ -17,7 +17,7 @@ export function Services() {
                     </Reveal>
                 </div>
 
-                <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-6">
+                <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-6">
                     {services.map((service, i) => (
                         <Reveal as="li" key={service.slug} delay={(i % 3) * 80} className={cn('flex', i < 3 ? 'lg:col-span-2' : 'lg:col-span-3')}>
                             <article className="group relative flex w-full flex-col rounded-[1.5rem] border border-ink/10 bg-white/50 p-7 transition-[background-color,border-color,transform,box-shadow] duration-300 ease-gentle hover:-translate-y-1 hover:border-sage/50 hover:bg-white hover:shadow-[0_24px_50px_-30px_rgba(68,86,75,0.45)] sm:p-8">

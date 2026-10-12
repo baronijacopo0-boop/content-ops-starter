@@ -4,7 +4,7 @@ import { Reveal } from '@/components/ui/Reveal';
 
 export function Quote() {
     return (
-        <section aria-label="Citazione" className="py-28 sm:py-36 lg:py-48">
+        <section aria-label="Citazione" className="py-20 sm:py-28 lg:py-36">
             <Reveal className="container">
                 <figure className="mx-auto max-w-5xl text-center">
                     <span aria-hidden className="mx-auto block h-16 w-px bg-clay" />

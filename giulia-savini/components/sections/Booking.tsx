@@ -25,7 +25,7 @@ export function Booking() {
                         </p>
                     </Reveal>
                 </div>
-                <Reveal delay={100} className="mt-12 lg:mt-14">
+                <Reveal delay={100} className="mt-10 lg:mt-12">
                     <div className="rounded-[1.75rem] bg-sand p-1.5 sm:p-3">
                         <BookingCalendar alternative={booking.alternative} alternativeCta={booking.alternativeCta} note={booking.note} />
                     </div>

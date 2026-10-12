@@ -1,7 +1,6 @@
 import { About } from '@/components/sections/About';
 import { Booking } from '@/components/sections/Booking';
 import { Approach } from '@/components/sections/Approach';
-import { Areas } from '@/components/sections/Areas';
 import { Contact } from '@/components/sections/Contact';
 import { Faq } from '@/components/sections/Faq';
 import { FinalCta } from '@/components/sections/FinalCta';
@@ -21,7 +20,6 @@ export default function HomePage() {
             <Intro />
             <About />
             <Services />
-            <Areas />
             <Approach />
             <Quote />
             <Steps />
