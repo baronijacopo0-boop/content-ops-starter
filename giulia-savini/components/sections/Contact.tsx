@@ -1,4 +1,4 @@
-import { LifeBuoy, Mail, MapPin, Phone, Video } from 'lucide-react';
+import { Mail, MapPin, Phone, Video } from 'lucide-react';
 import { content, profile } from '@/data/profile';
 import { formatStreet, telHref } from '@/lib/site';
 import { Reveal } from '@/components/ui/Reveal';
@@ -49,16 +49,6 @@ export function Contact() {
                         )}
                     </ul>
                     <p className="mt-8 max-w-md text-sm leading-relaxed text-ink-soft">{contact.privacyNote}</p>
-                    <aside aria-labelledby="emergency-title" className="mt-8 max-w-md rounded-2xl border border-clay/60 bg-clay-light/30 p-5">
-                        <p id="emergency-title" className="flex items-center gap-2.5 font-medium text-ink">
-                            <LifeBuoy aria-hidden className="h-5 w-5 text-clay-dark" strokeWidth={1.4} />
-                            {contact.emergency.title}
-                        </p>
-                        <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">{contact.emergency.text}</p>
-                        <a href={`tel:${contact.emergency.phone}`} className="link-underline link-underline-static tap-target font-medium text-forest">
-                            Chiama il {contact.emergency.phone}
-                        </a>
-                    </aside>
                 </Reveal>
 
                 <Reveal delay={100} className="lg:col-span-7">
