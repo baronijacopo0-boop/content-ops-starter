@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Valori di riserva (tema salvia) per l'indice */
+        --paper: 247 244 239;
+        --sand: 238 232 223;
+        --ink: 41 42 39;
+        --ink-soft: 85 87 79;
+        --accent: 68 86 75;
+        --accent-deep: 55 70 61;
+        --accent-pale: 221 227 218;
+        --warm: 184 157 131;
+        color-scheme: light;
+    }
+
+    html {
+        -webkit-text-size-adjust: 100%;
+        scroll-padding-top: 5.5rem;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        html {
+            scroll-behavior: smooth;
+        }
+    }
+
+    body {
+        @apply bg-paper font-sans text-ink antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3 {
+        @apply font-serif font-normal text-ink;
+        text-wrap: balance;
+        letter-spacing: -0.01em;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    ::selection {
+        @apply bg-accent-pale text-ink;
+    }
+
+    :focus-visible {
+        outline: 2px solid rgb(var(--accent));
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    .on-dark:focus-visible,
+    .on-dark :focus-visible {
+        outline-color: rgb(var(--paper));
+    }
+}
+
+@layer components {
+    .eyebrow {
+        @apply inline-flex items-center gap-3 font-sans text-eyebrow font-semibold uppercase text-accent;
+    }
+
+    .eyebrow::before {
+        content: '';
+        @apply block h-px w-8 bg-warm;
+    }
+
+    .section {
+        @apply py-16 sm:py-20 lg:py-24;
+    }
+
+    .h-display {
+        @apply font-serif text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-[4.4rem];
+    }
+
+    .h-section {
+        @apply font-serif text-[2.1rem] leading-[1.1] sm:text-5xl lg:text-[3.3rem];
+    }
+
+    .lead {
+        @apply text-[1.0625rem] leading-relaxed text-ink-soft sm:text-lg;
+    }
+
+    .faq-item summary {
+        list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .faq-item .faq-icon {
+        transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .faq-item[open] .faq-icon {
+        transform: rotate(45deg);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .breathe {
+        transform-origin: center;
+        transform-box: fill-box;
+        animation: breathe 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+
+    @keyframes breathe {
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.9;
+        }
+        50% {
+            transform: scale(1.035);
+            opacity: 0.55;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-up {
+        animation: none;
+    }
+}
