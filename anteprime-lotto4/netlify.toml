@@ -1,4 +1,0 @@
-# Da usare impostando "anteprime-lotto4" come Base directory del sito Netlify.
-[build]
-  command = "npm run build"
-  publish = "out"

@@ -26,6 +26,10 @@ Le pagine hanno `noindex` e un banner "Anteprima riservata".
 
 Al posto delle foto c'è un monogramma grafico, mai foto stock.
 
-## Pubblicazione su Netlify
+## Pubblicazione su Hostinger
 
-Creare un sito Netlify con **Base directory** `anteprime-lotto4`: `netlify.toml` imposta build e cartella `out`.
+1. `npm run build`: genera il sito statico nella cartella `out/` (include `.htaccess` per Apache).
+2. In hPanel apri **File Manager** del dominio (o sottodominio) scelto ed entra in `public_html`.
+3. Carica lo zip con il contenuto di `out/` ed estrailo lì: i file vanno direttamente in `public_html`, non in una sottocartella.
+
+Ogni anteprima sarà su `https://<dominio>/<slug>/`, l'indice su `https://<dominio>/`.

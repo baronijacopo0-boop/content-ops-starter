@@ -1,0 +1,9 @@
+# Hostinger (Apache): pagine statiche generate da "npm run build"
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+# Anteprime riservate: niente indicizzazione
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
