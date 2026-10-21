@@ -247,7 +247,7 @@ export function Licenses() {
     return (
         <section id="licenze" className="section">
             <SectionTitle kicker="Licenze" title="Scegli come usarlo">
-                Prezzi per singolo beat. Tutte le licenze non esclusive includono file senza tag e un contratto in PDF.
+                Prezzi per singolo beat. Nessun limite di stream: scegli solo la qualità dei file. Su ogni licenza resta il tag del producer e il credit “prod. JSF” è obbligatorio.
             </SectionTitle>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {licenses.map((l) => (
