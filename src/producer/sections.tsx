@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { beats, contactLinks, formatPrice, formatTime, licenses, producer, services, type Beat } from './data';
+import { HeroVisualizer, useSpotlight } from './motion';
 import { usePlayer } from './player';
 import {
     CartIcon,
@@ -74,38 +75,38 @@ export function Hero() {
     const { toggle, current, playing } = usePlayer();
     const featured = beats.find((b) => b.featured) ?? beats[0];
     const isOn = current?.slug === featured.slug && playing;
+    const ref = useSpotlight<HTMLElement>();
     return (
-        <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden pt-16">
+        <section ref={ref} id="top" className="hero relative flex min-h-[100svh] items-center overflow-hidden pt-16">
             <div className="hero-grid" aria-hidden="true" />
             <div className="hero-glow" aria-hidden="true" />
-            <div className="hero-bars" aria-hidden="true">
-                {Array.from({ length: 48 }, (_, i) => (
-                    <i key={i} style={{ animationDelay: `${(i * 137) % 1000}ms`, height: `${20 + ((i * 53) % 70)}%` }} />
-                ))}
-            </div>
+            <div className="hero-spot" aria-hidden="true" />
+            <HeroVisualizer />
             <div className="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 md:grid-cols-[1.1fr_1fr]">
                 <div className="order-2 md:order-1">
-                    <p className="eyebrow mb-6">
+                    <p className="intro eyebrow mb-6" style={{ animationDelay: '0.1s' }}>
                         <ExitArrow className="h-4 w-4 text-neon" /> Producer · {producer.city}
                     </p>
-                    <h1 className="font-display text-5xl font-bold uppercase leading-[0.95] text-cream sm:text-6xl lg:text-7xl">
+                    <h1 className="intro font-display text-5xl font-bold uppercase leading-[0.95] text-cream sm:text-6xl lg:text-7xl" style={{ animationDelay: '0.2s' }}>
                         Premi play.
                         <br />
-                        <span className="text-neon text-glow">Sei fuori.</span>
+                        <span className="glitch text-neon text-glow" data-text="Sei fuori.">
+                            Sei fuori.
+                        </span>
                     </h1>
-                    <p className="mt-6 max-w-md text-lg text-cream/70">
-                        Beat trap & drill pronti da registrare, licenze chiare e beat su misura per il tuo prossimo pezzo.
+                    <p className="intro mt-6 max-w-md text-lg text-cream/70" style={{ animationDelay: '0.35s' }}>
+                        Beat trap, drill e boom bap pronti da registrare, licenze chiare e beat su misura per il tuo prossimo pezzo.
                     </p>
-                    <div className="mt-10 flex flex-wrap gap-4">
+                    <div className="intro mt-10 flex flex-wrap gap-4" style={{ animationDelay: '0.5s' }}>
                         <button onClick={() => toggle(featured)} className="btn-neon">
                             {isOn ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
-                            {isOn ? 'In pausa' : `Ascolta “${featured.title}”`}
+                            {isOn ? 'Pausa' : `Ascolta “${featured.title}”`}
                         </button>
                         <a href="#beat" className="btn-ghost">
                             Tutti i beat
                         </a>
                     </div>
-                    <dl className="mt-14 grid max-w-md grid-cols-3 gap-6 border-t border-cream/10 pt-6">
+                    <dl className="intro mt-14 grid max-w-md grid-cols-3 gap-6 border-t border-cream/10 pt-6" style={{ animationDelay: '0.65s' }}>
                         <div>
                             <dt className="stat-label">Beat</dt>
                             <dd className="stat-value">{beats.length}</dd>
@@ -122,8 +123,10 @@ export function Hero() {
                         </div>
                     </dl>
                 </div>
-                <div className="order-1 flex justify-center md:order-2">
-                    <img src="/images/jsf/logo.png" alt={`Logo ${producer.name}`} className="logo-float w-56 sm:w-72 md:w-full md:max-w-sm" />
+                <div className="intro-logo order-1 flex justify-center md:order-2">
+                    <div className="logo-float w-56 sm:w-72 md:w-full md:max-w-sm">
+                        <img src="/images/jsf/logo.png" alt={`Logo ${producer.name}`} className="logo-beat w-full" />
+                    </div>
                 </div>
             </div>
             <a href="#beat" className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-xs uppercase tracking-[0.3em] text-cream/40 hover:text-neon md:block">
@@ -135,7 +138,7 @@ export function Hero() {
 
 function SectionTitle({ kicker, title, children }: { kicker: string; title: string; children?: React.ReactNode }) {
     return (
-        <div className="mb-12 max-w-2xl">
+        <div className="reveal mb-12 max-w-2xl">
             <p className="eyebrow mb-4">
                 <span className="h-px w-8 bg-neon" /> {kicker}
             </p>
@@ -202,7 +205,7 @@ export function BeatStore({ onBuy }: { onBuy: (b: Beat) => void }) {
                     const isOn = isCurrent && playing;
                     const progress = isCurrent ? time / (duration || b.duration) : 0;
                     return (
-                        <li key={b.slug} className={`beat-row ${isCurrent ? 'beat-row--on' : ''}`}>
+                        <li key={b.slug} className={`reveal beat-row ${isCurrent ? 'beat-row--on' : ''}`} style={{ transitionDelay: `${i * 70}ms` }}>
                             <span className="hidden w-6 text-right font-display text-sm text-cream/30 sm:block">{String(i + 1).padStart(2, '0')}</span>
                             <button
                                 onClick={() => toggle(b)}
@@ -250,8 +253,8 @@ export function Licenses() {
                 Prezzi per singolo beat. Nessun limite di stream: scegli solo la qualità dei file. Su ogni licenza resta il tag del producer e il credit “prod. JSF” è obbligatorio.
             </SectionTitle>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {licenses.map((l) => (
-                    <div key={l.id} className={`license ${l.highlight ? 'license--hot' : ''}`}>
+                {licenses.map((l, i) => (
+                    <div key={l.id} className={`reveal license ${l.highlight ? 'license--hot' : ''}`} style={{ transitionDelay: `${i * 90}ms` }}>
                         {l.highlight && <span className="absolute -top-3 left-6 bg-neon px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-ink">Più scelta</span>}
                         <h3 className="font-display text-xl font-bold uppercase text-cream">{l.name}</h3>
                         <p className="mt-1 text-sm text-cream/50">{l.files}</p>
@@ -279,7 +282,7 @@ export function Services() {
             <SectionTitle kicker="Servizi" title="Oltre i beat" />
             <div className="grid gap-px overflow-hidden border border-cream/10 bg-cream/10 md:grid-cols-3">
                 {services.map((s, i) => (
-                    <div key={s.title} className="group bg-ink p-8 transition-colors hover:bg-[#0d1408]">
+                    <div key={s.title} style={{ transitionDelay: `${i * 90}ms` }} className="reveal group bg-ink p-8 transition-colors hover:bg-[#0d1408]">
                         <span className="font-display text-sm text-neon">0{i + 1}</span>
                         <h3 className="mt-4 font-display text-2xl font-bold uppercase text-cream">{s.title}</h3>
                         <p className="mt-3 text-cream/60">{s.text}</p>
@@ -297,7 +300,7 @@ export function About() {
     return (
         <section id="chi-sono" className="section">
             <div className="grid items-center gap-12 md:grid-cols-2">
-                <div className="relative mx-auto aspect-square w-full max-w-md">
+                <div className="reveal about-frame relative mx-auto aspect-square w-full max-w-md">
                     <div className="absolute inset-0 border border-neon/40" />
                     <div className="absolute inset-3 flex items-center justify-center bg-[radial-gradient(circle_at_50%_40%,rgba(142,249,38,0.18),transparent_65%)]">
                         <img src="/images/jsf/monogram.png" alt="" className="w-2/3" />
@@ -309,7 +312,7 @@ export function About() {
                     {/* TODO: sostituisci con la tua bio reale (città, anni di produzione, artisti, placement) */}
                     <div className="-mt-6 flex flex-col gap-4 text-lg text-cream/70">
                         <p>
-                            Sono Jacopo, in arte <strong className="text-cream">{producer.name}</strong>. Produco beat trap e drill con un obiettivo semplice: farti
+                            Sono Jacopo, in arte <strong className="text-cream">{producer.name}</strong>. Produco beat trap, drill e boom bap con un obiettivo semplice: farti
                             uscire di testa al primo ascolto.
                         </p>
                         <p>
@@ -377,7 +380,7 @@ export function Contact() {
                         </a>
                     </div>
                 </div>
-                <form onSubmit={submit} className="flex flex-col gap-4 border border-cream/10 bg-[#070707] p-6 sm:p-8">
+                <form onSubmit={submit} className="reveal flex flex-col gap-4 border border-cream/10 bg-[#070707] p-6 sm:p-8">
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="field">
                             <span>Nome</span>

@@ -13,6 +13,8 @@ type PlayerState = {
     next: () => void;
     prev: () => void;
     setVolume: (v: number) => void;
+    // Spettro audio in tempo reale (0-255 per banda), null finché non parte la musica
+    getSpectrum: () => Uint8Array | null;
 };
 
 const PlayerContext = createContext<PlayerState | null>(null);
@@ -26,10 +28,41 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const [volume, setVolumeState] = useState(0.9);
     const currentRef = useRef<Beat | null>(null);
     currentRef.current = current;
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const spectrumRef = useRef<Uint8Array | null>(null);
+
+    // Il grafo Web Audio va creato dopo un gesto dell'utente (policy autoplay dei browser)
+    const ensureAnalyser = useCallback(() => {
+        const audio = audioRef.current;
+        if (!audio || analyserRef.current) return;
+        try {
+            const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+            const ctx: AudioContext = new Ctx();
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 128;
+            analyser.smoothingTimeConstant = 0.8;
+            ctx.createMediaElementSource(audio).connect(analyser);
+            analyser.connect(ctx.destination);
+            analyserRef.current = analyser;
+            spectrumRef.current = new Uint8Array(analyser.frequencyBinCount);
+            audio.addEventListener('play', () => ctx.state === 'suspended' && ctx.resume());
+        } catch {
+            /* Web Audio non disponibile: le animazioni restano quelle di default */
+        }
+    }, []);
+
+    const getSpectrum = useCallback(() => {
+        const analyser = analyserRef.current;
+        const data = spectrumRef.current;
+        if (!analyser || !data || audioRef.current?.paused) return null;
+        analyser.getByteFrequencyData(data as Uint8Array<ArrayBuffer>);
+        return data;
+    }, []);
 
     const play = useCallback((beat: Beat) => {
         const audio = audioRef.current;
         if (!audio) return;
+        ensureAnalyser();
         if (currentRef.current?.slug !== beat.slug) {
             audio.src = beat.src;
             setCurrent(beat);
@@ -37,7 +70,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             setDuration(beat.duration);
         }
         audio.play().catch(() => setPlaying(false));
-    }, []);
+    }, [ensureAnalyser]);
 
     const step = useCallback(
         (dir: 1 | -1) => {
@@ -110,7 +143,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     return (
         <PlayerContext.Provider
-            value={{ current, playing, time, duration, volume, play, toggle, seek, next: () => step(1), prev: () => step(-1), setVolume }}
+            value={{ current, playing, time, duration, volume, play, toggle, seek, next: () => step(1), prev: () => step(-1), setVolume, getSpectrum }}
         >
             {children}
         </PlayerContext.Provider>
