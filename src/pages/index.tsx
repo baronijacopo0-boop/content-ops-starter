@@ -5,7 +5,7 @@ import { Marquee, useReveal } from '../producer/motion';
 import { PlayerProvider } from '../producer/player';
 import { About, BeatStore, Contact, Footer, Hero, LicenseModal, Licenses, Nav, PlayerBar, Services } from '../producer/sections';
 
-const description = `${producer.name} (${producer.short}) – producer trap, drill e boom bap. Ascolta i beat, scegli la licenza o richiedi un beat su misura.`;
+const description = `${producer.name} (${producer.short}) – producer philly drill, trap, rap/hip hop e rage. Ascolta i beat, scegli la licenza o richiedi un beat su misura.`;
 
 export default function Home() {
     const [buying, setBuying] = useState<Beat | null>(null);
@@ -14,11 +14,11 @@ export default function Home() {
     return (
         <PlayerProvider>
             <Head>
-                <title>{`${producer.name} | Beat Trap, Drill & Boom Bap`}</title>
+                <title>{`${producer.name} | Beat Philly Drill, Trap, Rap & Rage`}</title>
                 <meta name="description" content={description} />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="theme-color" content="#000000" />
-                <meta property="og:title" content={`${producer.name} | Beat Trap, Drill & Boom Bap`} />
+                <meta property="og:title" content={`${producer.name} | Beat Philly Drill, Trap, Rap & Rage`} />
                 <meta property="og:description" content={description} />
                 <meta property="og:image" content="/images/jsf/icon-512.png" />
                 <meta property="og:type" content="website" />
@@ -29,7 +29,7 @@ export default function Home() {
                 <Nav />
                 <main>
                     <Hero />
-                    <Marquee items={['Trap', 'Drill', 'Boom Bap', 'Hip Hop', 'prod. JSF', 'Beat su misura', 'Mix & Master']} />
+                    <Marquee items={['Philly Drill', 'Trap', 'Rap/Hip Hop', 'Rage', 'prod. JSF', 'Beat su misura', 'Mix & Master']} />
                     <BeatStore onBuy={setBuying} />
                     <Licenses />
                     <Services />

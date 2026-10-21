@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { beats, contactLinks, formatPrice, formatTime, licenses, producer, services, type Beat } from './data';
+import { beats, contactLinks, genres, formatPrice, formatTime, licenses, producer, services, type Beat } from './data';
 import { HeroVisualizer, useSpotlight } from './motion';
 import { usePlayer } from './player';
 import {
@@ -95,7 +95,7 @@ export function Hero() {
                         </span>
                     </h1>
                     <p className="intro mt-6 max-w-md text-lg text-cream/70" style={{ animationDelay: '0.35s' }}>
-                        Beat trap, drill e boom bap pronti da registrare, licenze chiare e beat su misura per il tuo prossimo pezzo.
+                        Beat philly drill, trap, rap e rage pronti da registrare, licenze chiare e beat su misura per il tuo prossimo pezzo.
                     </p>
                     <div className="intro mt-10 flex flex-wrap gap-4" style={{ animationDelay: '0.5s' }}>
                         <button onClick={() => toggle(featured)} className="btn-neon">
@@ -148,7 +148,7 @@ function SectionTitle({ kicker, title, children }: { kicker: string; title: stri
     );
 }
 
-const allTags = ['Tutti', ...Array.from(new Set(beats.flatMap((b) => b.tags)))];
+const allTags = ['Tutti', ...genres];
 
 export function BeatStore({ onBuy }: { onBuy: (b: Beat) => void }) {
     const { current, playing, toggle, time, duration, seek } = usePlayer();
@@ -312,7 +312,7 @@ export function About() {
                     {/* TODO: sostituisci con la tua bio reale (città, anni di produzione, artisti, placement) */}
                     <div className="-mt-6 flex flex-col gap-4 text-lg text-cream/70">
                         <p>
-                            Sono Jacopo, in arte <strong className="text-cream">{producer.name}</strong>. Produco beat trap, drill e boom bap con un obiettivo semplice: farti
+                            Sono Jacopo, in arte <strong className="text-cream">{producer.name}</strong>. Produco beat philly drill, trap, rap e rage con un obiettivo semplice: farti
                             uscire di testa al primo ascolto.
                         </p>
                         <p>

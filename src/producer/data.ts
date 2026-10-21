@@ -9,7 +9,7 @@ export const producer = {
     name: 'Jacopo Sei Fuori',
     short: 'JSF',
     tag: 'prod. JSF',
-    tagline: 'Beat trap & drill. Premi play e sei fuori.',
+    tagline: 'Beat philly drill, trap, rap e rage. Premi play e sei fuori.',
     city: 'Italia', // TODO: la tua città
     contacts: {
         email: 'TODO-email@esempio.com', // TODO
@@ -41,13 +41,16 @@ const beat = (b: Omit<Beat, 'src' | 'peaks'>): Beat => ({
     peaks: (waveforms as Record<string, number[]>)[b.slug]
 });
 
+// Categorie del beat store (i filtri seguono quest'ordine)
+export const genres = ['Philly Drill', 'Trap', 'Rap/Hip Hop', 'Rage'];
+
 // BPM e tonalità stimati via analisi audio: verificali con i dati del progetto.
 export const beats: Beat[] = [
-    beat({ slug: 'sei-fuori', title: 'Sei Fuori', bpm: 152, key: 'G# maj', duration: 154, tags: ['Trap', 'Bounce'], mood: 'Energico', priceFrom: 19.99, featured: true }),
-    beat({ slug: 'veleno', title: 'Veleno', bpm: 161, key: 'D# min', duration: 169, tags: ['Drill', 'Aggressive'], mood: 'Aggressivo', priceFrom: 19.99 }),
-    beat({ slug: 'sirene', title: 'Sirene', bpm: 161, key: 'C# min', duration: 170, tags: ['Drill', 'Dark'], mood: 'Cupo', priceFrom: 19.99 }),
-    beat({ slug: 'notte-fonda', title: 'Notte Fonda', bpm: 76, key: 'D# min', duration: 126, tags: ['Boom Bap', 'Hip Hop'], mood: 'Notturno', priceFrom: 19.99 }),
-    beat({ slug: 'luce', title: 'Luce', bpm: 72, key: 'C maj', duration: 132, tags: ['Boom Bap', 'Hip Hop'], mood: 'Melodico', priceFrom: 19.99 })
+    beat({ slug: 'sei-fuori', title: 'Sei Fuori', bpm: 152, key: 'G# maj', duration: 154, tags: ['Trap'], mood: 'Energico', priceFrom: 19.99, featured: true }),
+    beat({ slug: 'veleno', title: 'Veleno', bpm: 161, key: 'D# min', duration: 169, tags: ['Philly Drill'], mood: 'Aggressivo', priceFrom: 19.99 }),
+    beat({ slug: 'sirene', title: 'Sirene', bpm: 161, key: 'C# min', duration: 170, tags: ['Rage'], mood: 'Cupo', priceFrom: 19.99 }),
+    beat({ slug: 'notte-fonda', title: 'Notte Fonda', bpm: 76, key: 'D# min', duration: 126, tags: ['Rap/Hip Hop'], mood: 'Notturno', priceFrom: 19.99 }),
+    beat({ slug: 'luce', title: 'Luce', bpm: 72, key: 'C maj', duration: 132, tags: ['Rap/Hip Hop'], mood: 'Melodico', priceFrom: 19.99 })
 ];
 
 export type License = {
