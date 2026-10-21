@@ -20,11 +20,16 @@ module.exports = {
                 dark: themeStyle.dark,
                 neutral: themeStyle.neutral,
                 neutralAlt: themeStyle.neutralAlt,
-                primary: themeStyle.primary
+                primary: themeStyle.primary,
+                ink: '#000000',
+                cream: '#fbf5e0',
+                neon: '#8ef926'
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],
-                serif: ['Roboto Slab', 'serif']
+                serif: ['Roboto Slab', 'serif'],
+                display: ['"Chakra Petch"', 'sans-serif'],
+                body: ['"Space Grotesk"', 'Inter', 'sans-serif']
             },
             gridTemplateColumns: {
                 16: 'repeat(16, minmax(0, 1fr))'

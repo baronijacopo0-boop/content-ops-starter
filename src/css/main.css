@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Slab:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Slab:wght@400;500;700&family=Chakra+Petch:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -323,5 +323,194 @@
         to {
             transform: translate3d(0,0,0)
         }
+    }
+}
+
+/* ---------------------------------------------------------------------------
+   Jacopo Sei Fuori – palette: nero #000, crema #fbf5e0, verde neon #8ef926
+   --------------------------------------------------------------------------- */
+@layer components {
+    html:has(.jsf) {
+        scroll-behavior: smooth;
+        scroll-padding-top: 5rem;
+        background: #000;
+        color-scheme: dark;
+    }
+    .jsf ::selection {
+        background: #8ef926;
+        color: #000;
+    }
+    .jsf .section {
+        @apply mx-auto max-w-6xl px-4 py-24 sm:px-6 md:py-32;
+    }
+    .jsf .eyebrow {
+        @apply flex items-center gap-3 font-display text-xs font-bold uppercase tracking-[0.3em] text-neon;
+    }
+    .jsf .text-glow {
+        text-shadow: 0 0 24px rgba(142, 249, 38, 0.45), 0 0 64px rgba(142, 249, 38, 0.2);
+    }
+    .jsf .nav-link {
+        @apply relative font-display text-xs font-bold uppercase tracking-[0.2em] text-cream/70 transition-colors hover:text-cream;
+    }
+    .jsf .nav-link::after {
+        content: '';
+        @apply absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-300;
+    }
+    .jsf .nav-link:hover::after {
+        @apply w-full;
+    }
+
+    /* Bottoni con angoli smussati come il logo */
+    .jsf .btn-neon,
+    .jsf .btn-ghost {
+        @apply inline-flex items-center gap-2 px-6 py-3.5 font-display text-sm font-bold uppercase tracking-wider transition-all duration-200;
+        clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    }
+    .jsf .btn-neon {
+        @apply bg-neon text-ink hover:bg-cream;
+        box-shadow: 0 0 30px rgba(142, 249, 38, 0.35);
+    }
+    .jsf .btn-ghost {
+        @apply bg-cream/10 text-cream hover:bg-cream hover:text-ink;
+    }
+    .jsf .btn-buy {
+        @apply inline-flex shrink-0 items-center gap-2 border border-neon/60 px-3 py-2 font-display text-sm font-bold text-neon transition-colors hover:bg-neon hover:text-ink;
+    }
+    .jsf .play-btn {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cream text-ink transition-all duration-200 hover:scale-105 hover:bg-neon;
+    }
+    .jsf .beat-row--on .play-btn,
+    .jsf .player-bar .play-btn {
+        @apply bg-neon;
+        box-shadow: 0 0 24px rgba(142, 249, 38, 0.5);
+    }
+
+    .jsf .chip {
+        @apply border border-cream/15 px-4 py-1.5 font-display text-xs font-bold uppercase tracking-wider text-cream/70 transition-colors hover:border-cream/40 hover:text-cream;
+    }
+    .jsf .chip--on {
+        @apply border-neon bg-neon text-ink hover:text-ink;
+    }
+    .jsf .tag {
+        @apply bg-cream/5 px-2 py-1 text-[11px] text-cream/50;
+    }
+    .jsf .input {
+        @apply border border-cream/15 bg-ink px-4 py-2.5 text-sm text-cream placeholder-cream/30 outline-none transition-colors focus:border-neon;
+    }
+    .jsf .field {
+        @apply flex flex-col gap-2;
+    }
+    .jsf .field > span {
+        @apply font-display text-xs font-bold uppercase tracking-wider text-cream/60;
+    }
+
+    .jsf .beat-row {
+        @apply flex items-center gap-4 border border-cream/10 bg-[#060606] p-3 pr-4 transition-colors hover:border-cream/25 sm:gap-5;
+    }
+    .jsf .beat-row--on {
+        @apply border-neon/50 bg-[#0a1006];
+    }
+
+    .jsf .license {
+        @apply relative flex flex-col border border-cream/10 bg-[#060606] p-6 transition-transform duration-300 hover:-translate-y-1;
+    }
+    .jsf .license--hot {
+        @apply border-neon/70;
+        box-shadow: 0 0 40px rgba(142, 249, 38, 0.12);
+    }
+    .jsf .license-opt {
+        @apply border border-cream/15 p-4 text-left transition-colors hover:border-cream/40;
+    }
+    .jsf .license-opt--on {
+        @apply border-neon bg-neon/10;
+    }
+
+    .jsf .stat-label {
+        @apply text-[11px] uppercase tracking-[0.2em] text-cream/40;
+    }
+    .jsf .stat-value {
+        @apply mt-1 font-display text-xl font-bold text-cream sm:text-2xl;
+    }
+    .jsf .social {
+        @apply flex h-12 w-12 items-center justify-center border border-cream/15 text-cream/70 transition-colors hover:border-neon hover:text-neon;
+    }
+    .jsf .contact-line {
+        @apply flex items-center gap-3 border-b border-cream/10 py-4 text-lg text-cream/80 transition-colors hover:text-neon;
+    }
+
+    .jsf .player-bar {
+        @apply fixed inset-x-0 bottom-0 z-40 border-t border-neon/30 bg-ink/95 py-3 backdrop-blur;
+        animation: slide-up 0.35s ease-out;
+    }
+    .jsf .range {
+        accent-color: #8ef926;
+    }
+
+    /* Hero */
+    .jsf .hero-grid {
+        @apply absolute inset-0;
+        background-image: linear-gradient(rgba(251, 245, 224, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(251, 245, 224, 0.04) 1px, transparent 1px);
+        background-size: 64px 64px;
+        mask-image: radial-gradient(ellipse at 60% 40%, #000 20%, transparent 75%);
+    }
+    .jsf .hero-glow {
+        @apply absolute right-[-10%] top-1/4 h-[60vmax] w-[60vmax] rounded-full;
+        background: radial-gradient(circle, rgba(142, 249, 38, 0.16), transparent 60%);
+        filter: blur(20px);
+    }
+    .jsf .hero-bars {
+        @apply absolute inset-x-0 bottom-0 flex h-40 items-end gap-[3px] px-2 opacity-30;
+        mask-image: linear-gradient(to top, #000, transparent);
+    }
+    .jsf .hero-bars i {
+        @apply flex-1 bg-neon;
+        transform-origin: bottom;
+        animation: eq 1.4s ease-in-out infinite alternate;
+    }
+    .jsf .logo-float {
+        filter: drop-shadow(0 0 40px rgba(142, 249, 38, 0.25));
+        animation: float 6s ease-in-out infinite;
+    }
+    .jsf .modal-in {
+        animation: modal-in 0.25s ease-out;
+    }
+
+    .jsf .eq {
+        @apply inline-flex h-3 items-end gap-[2px];
+    }
+    .jsf .eq i {
+        @apply block h-full w-[3px] bg-neon;
+        transform: scaleY(0.3);
+        transform-origin: bottom;
+    }
+    .jsf .eq--on i {
+        animation: eq 0.8s ease-in-out infinite alternate;
+    }
+    .jsf .eq--on i:nth-child(2) { animation-delay: -0.3s; }
+    .jsf .eq--on i:nth-child(3) { animation-delay: -0.6s; }
+    .jsf .eq--on i:nth-child(4) { animation-delay: -0.15s; }
+}
+
+@keyframes eq {
+    from { transform: scaleY(0.2); }
+    to { transform: scaleY(1); }
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+@keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+@keyframes modal-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .jsf *, .jsf *::before, .jsf *::after {
+        animation: none !important;
+        scroll-behavior: auto !important;
     }
 }
