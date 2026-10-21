@@ -2,6 +2,9 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+    // Export statico (HTML/CSS/JS) per hosting tradizionale come Hostinger
+    output: 'export',
+    images: { unoptimized: true },
     env: {
         stackbitPreview: process.env.STACKBIT_PREVIEW
     },
