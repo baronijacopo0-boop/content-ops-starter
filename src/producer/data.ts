@@ -44,13 +44,25 @@ const beat = (b: Omit<Beat, 'src' | 'peaks'>): Beat => ({
 // Categorie del beat store (i filtri seguono quest'ordine)
 export const genres = ['Philly Drill', 'Trap', 'Rap/Hip Hop', 'Rage'];
 
-// BPM e tonalità stimati via analisi audio: verificali con i dati del progetto.
+// BPM e tonalità: i primi 5 stimati via analisi audio, gli altri dai nomi dei file (Strade stimato).
 export const beats: Beat[] = [
     beat({ slug: 'sei-fuori', title: 'Sei Fuori', bpm: 152, key: 'G# maj', duration: 154, tags: ['Trap'], mood: 'Energico', priceFrom: 19.99, featured: true }),
     beat({ slug: 'veleno', title: 'Veleno', bpm: 161, key: 'D# min', duration: 169, tags: ['Philly Drill'], mood: 'Aggressivo', priceFrom: 19.99 }),
     beat({ slug: 'sirene', title: 'Sirene', bpm: 161, key: 'C# min', duration: 170, tags: ['Rage'], mood: 'Cupo', priceFrom: 19.99 }),
     beat({ slug: 'notte-fonda', title: 'Notte Fonda', bpm: 76, key: 'D# min', duration: 126, tags: ['Rap/Hip Hop'], mood: 'Notturno', priceFrom: 19.99 }),
-    beat({ slug: 'luce', title: 'Luce', bpm: 72, key: 'C maj', duration: 132, tags: ['Rap/Hip Hop'], mood: 'Melodico', priceFrom: 19.99 })
+    beat({ slug: 'luce', title: 'Luce', bpm: 72, key: 'C maj', duration: 132, tags: ['Rap/Hip Hop'], mood: 'Melodico', priceFrom: 19.99 }),
+    beat({ slug: 'freddo', title: 'Freddo', bpm: 128, key: 'E min', duration: 227, tags: ['Philly Drill'], mood: 'Gelido', priceFrom: 19.99 }),
+    beat({ slug: 'adrenalina', title: 'Adrenalina', bpm: 163, key: 'A min', duration: 165, tags: ['Rage'], mood: 'Esplosivo', priceFrom: 19.99 }),
+    beat({ slug: 'fuoco', title: 'Fuoco', bpm: 153, key: 'D min', duration: 201, tags: ['Trap'], mood: 'Energico', priceFrom: 19.99 }),
+    beat({ slug: 'corsa', title: 'Corsa', bpm: 130, key: 'G# min', duration: 134, tags: ['Philly Drill'], mood: 'Veloce', priceFrom: 19.99 }),
+    beat({ slug: 'polvere', title: 'Polvere', bpm: 119, key: 'E min', duration: 157, tags: ['Rap/Hip Hop'], mood: 'Riflessivo', priceFrom: 19.99 }),
+    beat({ slug: 'blocco', title: 'Blocco', bpm: 120, key: 'C min', duration: 208, tags: ['Philly Drill'], mood: 'Crudo', priceFrom: 19.99 }),
+    beat({ slug: 'strade', title: 'Strade', bpm: 129, key: 'C# min', duration: 180, tags: ['Philly Drill'], mood: 'Notturno', priceFrom: 19.99 }),
+    beat({ slug: 'ricordi', title: 'Ricordi', bpm: 119, key: 'F min', duration: 178, tags: ['Rap/Hip Hop'], mood: 'Malinconico', priceFrom: 19.99 }),
+    beat({ slug: 'frenesia', title: 'Frenesia', bpm: 170, key: 'C min', duration: 181, tags: ['Rage'], mood: 'Aggressivo', priceFrom: 19.99 }),
+    beat({ slug: 'abisso', title: 'Abisso', bpm: 150, key: 'B min', duration: 171, tags: ['Trap'], mood: 'Cupo', priceFrom: 19.99 }),
+    beat({ slug: 'lampi', title: 'Lampi', bpm: 138, key: 'F min', duration: 140, tags: ['Trap'], mood: 'Teso', priceFrom: 19.99 }),
+    beat({ slug: 'fumo', title: 'Fumo', bpm: 121, key: 'C# min', duration: 159, tags: ['Rap/Hip Hop'], mood: 'Rilassato', priceFrom: 19.99 })
 ];
 
 export type License = {
