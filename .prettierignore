@@ -1,0 +1,7 @@
+node_modules
+.next
+out
+package-lock.json
+supabase/seed.sql
+playwright-report
+test-results

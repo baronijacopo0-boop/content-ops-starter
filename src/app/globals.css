@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* FLIP AI – dark streetwear palette (HSL channels) */
+    --background: 240 6% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 5% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 5% 9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 151 85% 52%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 4% 13%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 240 4% 13%;
+    --muted-foreground: 240 4% 58%;
+    --accent: 240 4% 15%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 355 90% 62%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 15%;
+    --input: 240 4% 17%;
+    --ring: 151 85% 52%;
+    --radius: 0.9rem;
+
+    --profit: 151 85% 52%;
+    --loss: 355 90% 62%;
+    --warning: 32 100% 56%;
+    --info: 214 90% 64%;
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Grid/flex children may shrink below their content width (prevents horizontal overflow on mobile
+     from wide tables and scrollable tab lists inside cards). */
+  .grid > *,
+  .flex-col > * {
+    min-width: 0;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+  }
+
+  /* number inputs: hide spinners */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .card-surface {
+    @apply rounded-2xl border bg-card;
+  }
+  .glow-profit {
+    box-shadow:
+      0 0 0 1px hsl(var(--profit) / 0.25),
+      0 10px 40px -12px hsl(var(--profit) / 0.35);
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(120deg, hsl(var(--primary)) 0%, hsl(170 90% 60%) 100%);
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
