@@ -77,12 +77,13 @@ export function ProductImage({
   return (
     <div className={cn('relative overflow-hidden bg-muted', rounded, className)}>
       {src && !failed ? (
-        // eslint-disable-next-line @next/next/no-img-element -- user photos from Supabase Storage / data URLs, already resized on upload
+        // eslint-disable-next-line @next/next/no-img-element -- user photos (Supabase Storage / data URLs) and marketplace CDN images
         <img
           src={src}
           alt={alt}
           loading="lazy"
           decoding="async"
+          referrerPolicy="no-referrer"
           onError={() => setFailed(true)}
           className="h-full w-full object-cover"
         />

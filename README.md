@@ -30,7 +30,7 @@
 | **Autenticazione** | Registrazione, login, logout, recupero e reset password, conferma email, route protette (server + client). |
 | **Onboarding** | Budget, categoria principale, brand preferiti, obiettivo mensile, ROI minimo, dati demo opzionali. |
 | **Dashboard** | Saluto, obiettivo del mese, 4 KPI principali + capitale investito, fatturato, margine, sell-through, tempo medio vendita; grafico profitto (7g/30g/3m/6m/1a), vendite mensili, top brand, ultimi articoli, Inventory Health, consiglio del giorno, widget **“Sto per comprare…”** (BUY / MAYBE / SKIP). |
-| **Deal Finder** | Feed di 20 occasioni con Deal Score, badge HOT/GOOD/MAYBE/SKIP, profitto, ROI, tempo vendita; filtri (brand, categoria, taglia, condizione, prezzo max, profitto min, ROI min, score min, giorni max, solo brand preferiti) e 6 ordinamenti; dettaglio con analisi completa e “L’ho comprato” → inventario. |
+| **Deal Finder** | **Annunci reali da eBay ed Etsy** (API ufficiali, foto, prezzo + spedizione, link all’annuncio) insieme a 20 occasioni demo, con barra “Fonti” e filtro per fonte; Deal Score, badge HOT/GOOD/MAYBE/SKIP, profitto, ROI, tempo vendita; filtri (brand, categoria, taglia, condizione, prezzo max, profitto min, ROI min, score min, giorni max, solo brand preferiti) e 6 ordinamenti; dettaglio con analisi completa e “L’ho comprato” → inventario. |
 | **Analizza prodotto** | Valore di mercato, prezzo consigliato, profitto, ROI, Deal Score con scomposizione, tempo vendita, verdetto, **best buy price**, spiegazione AI, Price Advisor, storico analisi. |
 | **Crea annuncio AI** | Upload 1-8 foto (validazione MIME/magic bytes/dimensione, resize, rimozione EXIF), analisi foto, campi “da confermare”, titoli SEO, descrizione pronta da copiare, Price Advisor a 3 strategie, salvataggio Bozza/Pubblicato/Venduto, collegamento all’inventario, modifica annunci esistenti. |
 | **I miei annunci** | Filtri Tutti/Attivi/Venduti/Bozze, azioni Modifica/Duplica/Segna venduto/Elimina (UI ottimistica). |
@@ -182,7 +182,15 @@ Con `AI_API_KEY` impostata, `server.ts` usa l’SDK ufficiale Anthropic (modello
 ## Marketplace provider
 
 `src/lib/marketplace/types.ts` definisce `MarketplaceProvider` con `searchItems`, `getItem`, `getUserItems`, `getSoldItems`, `getProfile`, `getMarketData`, `getComparableItems`, `getEstimatedMarketValue`.
-`MockVintedProvider` genera localmente e in modo deterministico 20 occasioni e ~1.600 comparabili: **nessuna richiesta a Vinted**, niente scraping, auto-buy, auto-like o messaggi automatici.
+Provider disponibili:
+
+| Provider | Dati | Come |
+| --- | --- | --- |
+| `MockVintedProvider` | 20 occasioni demo + ~1.600 comparabili | generati localmente: **nessuna richiesta a Vinted** |
+| `EbayProvider` | annunci reali (foto, prezzo, spedizione, venditore, link) | eBay **Browse API** ufficiale, token applicativo OAuth (`EBAY_CLIENT_ID/SECRET`) |
+| `EtsyProvider` | annunci reali in EUR con foto | Etsy **Open API v3** ufficiale (`ETSY_API_KEY`) |
+
+Gli annunci reali passano da `/api/market/search` (chiavi solo server-side, cache 10 minuti, rate limit) e vengono normalizzati da `normalize.ts` (brand, categoria, taglia, condizione dal titolo; annunci non classificabili o non in EUR vengono scartati). Il costo usato nell’analisi è **prezzo + spedizione**. Il valore di mercato resta stimato dai comparabili, perché i dati di vendita reali (sold) di eBay sono un’API ad accesso riservato. Niente scraping, auto-buy, auto-like o messaggi automatici; Depop, Grailed, Vestiaire e Wallapop restano disattivati finché non esiste un’API autorizzata.
 
 Per aggiungere Depop, eBay, Grailed, Vestiaire, Wallapop, un’API ufficiale o un import CSV: implementa l’interfaccia in `src/lib/marketplace/providers/` e registrala in `src/lib/marketplace/index.ts`. Le metriche (`computeMarketMetrics`) e il resto dell’app restano invariati. La tabella `market_items` + `market_metrics()` / `refresh_market_prices()` è pronta per ospitare dati reali.
 
@@ -211,7 +219,8 @@ Flussi E2E coperti: registrazione → onboarding → dashboard · route protette
 **Funzionante e reale**: auth Supabase, database con RLS, storage foto, inventario, annunci, vendite, watchlist, analytics, insight, calcoli di profitto/ROI/stock age, Deal Score, prezzi dai comparabili, generazione annunci (motore locale), modalità demo, export CSV.
 
 **Mock / demo**:
-- Dati marketplace (`MockVintedProvider`): occasioni e comparabili generati localmente.
+- Annunci Vinted (`MockVintedProvider`): generati localmente (Vinted non ha API pubbliche).
+- Valore di mercato degli annunci reali: stimato dai comparabili demo finché non si collega una fonte di venduti autorizzata.
 - Visualizzazioni e preferiti degli annunci (non sincronizzati con Vinted).
 - Riconoscimento visivo senza `AI_API_KEY` (solo colori + nome file + suggerimenti).
 - Notifiche watchlist: generate on-demand con “Controlla ora”, solo in-app.

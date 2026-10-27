@@ -180,7 +180,8 @@ export const LISTING_STATUSES: { value: ListingStatus; label: string; tone: Tone
 export const MARKETPLACES: { value: MarketplaceId; label: string; available: boolean }[] = [
   { value: 'vinted', label: 'Vinted', available: true },
   { value: 'depop', label: 'Depop', available: false },
-  { value: 'ebay', label: 'eBay', available: false },
+  { value: 'ebay', label: 'eBay', available: true },
+  { value: 'etsy', label: 'Etsy', available: true },
   { value: 'grailed', label: 'Grailed', available: false },
   { value: 'vestiaire', label: 'Vestiaire Collective', available: false },
   { value: 'wallapop', label: 'Wallapop', available: false },

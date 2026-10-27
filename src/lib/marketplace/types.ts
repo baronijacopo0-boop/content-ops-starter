@@ -14,6 +14,9 @@ export interface MarketItem {
   condition: Condition;
   color: string;
   price: number;
+  /** Shipping the buyer (you) pays, when known. Added to the cost in deal analysis. */
+  shippingCost: number | null;
+  currency: 'EUR';
   imageUrl: string | null;
   listedAt: string; // ISO
   favorites: number;
@@ -21,6 +24,8 @@ export interface MarketItem {
   sellerName: string;
   sellerRating: number | null;
   url: string | null;
+  /** True for locally generated demo data (MockVintedProvider). */
+  isDemo: boolean;
 }
 
 /** A historical/sold comparable used for market intelligence. */
@@ -107,6 +112,8 @@ export interface SearchQuery {
   maxPrice?: number;
   limit?: number;
   offset?: number;
+  /** Brand the query was about – used to classify titles that omit it. */
+  brandHint?: string;
 }
 
 export interface SearchResult {
@@ -131,6 +138,20 @@ export interface ProviderCapabilities {
   profiles: boolean;
   /** True when data is demo/mock and must be labelled as such in the UI. */
   isMock: boolean;
+}
+
+/** Status of a live marketplace source, shown in the Deal Finder. */
+export interface MarketSourceStatus {
+  id: MarketplaceId;
+  name: string;
+  status: 'ok' | 'error' | 'disabled';
+  count: number;
+  message: string | null;
+}
+
+export interface LiveSearchResult {
+  items: MarketItem[];
+  sources: MarketSourceStatus[];
 }
 
 /**

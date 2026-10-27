@@ -23,7 +23,8 @@ export type Niche = 'streetwear' | 'vintage' | 'sport' | 'designer' | 'y2k' | 's
 export type InventoryStatus = 'to_photograph' | 'to_list' | 'listed' | 'reserved' | 'sold';
 export type ListingStatus = 'draft' | 'published' | 'reserved' | 'sold';
 
-export type MarketplaceId = 'vinted' | 'depop' | 'ebay' | 'grailed' | 'vestiaire' | 'wallapop' | 'manual';
+export type MarketplaceId =
+  'vinted' | 'depop' | 'ebay' | 'etsy' | 'grailed' | 'vestiaire' | 'wallapop' | 'manual';
 
 export interface Profile {
   id: string;

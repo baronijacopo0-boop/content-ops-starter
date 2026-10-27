@@ -24,6 +24,7 @@ function clientIp(req: NextRequest) {
 export async function guardAiRequest<S extends z.ZodType>(
   req: NextRequest,
   schema: S,
+  opts: { bucket?: string; limit?: number } = {},
 ): Promise<GuardOk<z.infer<S>> | GuardFail> {
   const fail = (status: number, error: string, headers?: Record<string, string>): GuardFail => ({
     ok: false,
@@ -41,9 +42,9 @@ export async function guardAiRequest<S extends z.ZodType>(
     if (!userId) return fail(401, 'Devi effettuare il login');
   }
 
-  const limit = rateLimit(`ai:${userId ?? clientIp(req)}`);
+  const limit = rateLimit(`${opts.bucket ?? 'ai'}:${userId ?? clientIp(req)}`, opts.limit);
   if (!limit.ok)
-    return fail(429, 'Troppe richieste AI, riprova tra poco', {
+    return fail(429, 'Troppe richieste, riprova tra poco', {
       'Retry-After': String(limit.retryAfterSeconds),
     });
 

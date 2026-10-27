@@ -294,13 +294,11 @@ export class SupabaseRepository implements DataRepository {
     if (!profile) {
       // Trigger missed (e.g. user created before migrations): create rows lazily.
       const { data: auth } = await this.sb.auth.getUser();
-      await this.sb
-        .from('profiles')
-        .upsert({
-          user_id: this.userId,
-          email: auth.user?.email,
-          full_name: auth.user?.user_metadata?.full_name ?? null,
-        });
+      await this.sb.from('profiles').upsert({
+        user_id: this.userId,
+        email: auth.user?.email,
+        full_name: auth.user?.user_metadata?.full_name ?? null,
+      });
       await this.sb.from('user_goals').upsert({ user_id: this.userId });
       await this.sb.from('user_settings').upsert({ user_id: this.userId });
       return this.getProfileBundle();
@@ -595,21 +593,19 @@ export class SupabaseRepository implements DataRepository {
         ),
     );
     check(
-      await this.sb
-        .from('notifications')
-        .insert(
-          bundle.notifications.map((n) =>
-            own({
-              id: n.id,
-              type: n.type,
-              title: n.title,
-              body: n.body,
-              data: n.data,
-              read_at: n.readAt,
-              created_at: n.createdAt,
-            }),
-          ),
+      await this.sb.from('notifications').insert(
+        bundle.notifications.map((n) =>
+          own({
+            id: n.id,
+            type: n.type,
+            title: n.title,
+            body: n.body,
+            data: n.data,
+            read_at: n.readAt,
+            created_at: n.createdAt,
+          }),
         ),
+      ),
     );
   }
 

@@ -6,14 +6,16 @@ test('Deal Finder: feed, filtri e ordinamento', async ({ page }) => {
   await registerAndOnboard(page);
   await page.goto('/deals');
   const cards = page.getByTestId('deal-card');
-  await expect(cards).toHaveCount(20);
+  // 20 demo listings + 3 real listings from the (fake) eBay and Etsy APIs
+  await expect(page.getByTestId('sources-bar')).toContainText('eBay · 2 annunci');
+  await expect(cards).toHaveCount(23);
 
   await page.getByRole('button', { name: /Solo Hot Deal/ }).click();
   const hotCount = await cards.count();
   expect(hotCount).toBeGreaterThan(0);
-  expect(hotCount).toBeLessThan(20);
+  expect(hotCount).toBeLessThan(23);
   await page.getByRole('button', { name: 'Azzera filtri' }).click();
-  await expect(cards).toHaveCount(20);
+  await expect(cards).toHaveCount(23);
 
   await pickOption(page, 'Brand', 'Nike');
   await expect(cards).toHaveCount(2);
@@ -28,6 +30,45 @@ test('Deal Finder: feed, filtri e ordinamento', async ({ page }) => {
   await page.getByRole('button', { name: 'Azzera filtri' }).click();
   await cards.first().getByRole('button', { name: 'Dettagli' }).click();
   await expect(page.getByTestId('deal-result')).toBeVisible();
+});
+
+test('Deal Finder: annunci reali eBay ed Etsy', async ({ page }) => {
+  await registerAndOnboard(page, { demo: false });
+  await page.goto('/deals');
+  const sources = page.getByTestId('sources-bar');
+  await expect(sources).toContainText('eBay · 2 annunci');
+  await expect(sources).toContainText('Etsy · 1 annuncio');
+  await page.getByRole('button', { name: /Solo annunci reali \(3\)/ }).click();
+  await expect(page.getByTestId('deal-card')).toHaveCount(3);
+  await page.getByRole('button', { name: 'Azzera filtri' }).click();
+  await expect(sources).toContainText('Depop · non attivo');
+
+  const cards = page.getByTestId('deal-card');
+  await pickOption(page, 'Fonte', 'eBay');
+  await expect(cards).toHaveCount(2);
+  const carhartt = cards.filter({ hasText: 'Felpa Carhartt WIP' });
+  await expect(carhartt.getByTestId('deal-source')).toHaveText('eBay');
+  await expect(carhartt).toContainText('+ 5,50 € sped.');
+  await expect(carhartt.getByRole('link', { name: 'Apri su eBay' })).toHaveAttribute(
+    'href',
+    'https://www.ebay.it/itm/1111',
+  );
+
+  await pickOption(page, 'Fonte', 'Etsy');
+  await expect(cards).toHaveCount(1);
+  await expect(cards.first()).toContainText("Levi's 501");
+
+  await pickOption(page, 'Fonte', 'Vinted (demo)');
+  await expect(cards).toHaveCount(20);
+
+  // Buying a real listing records price + shipping and the marketplace as source
+  await pickOption(page, 'Fonte', 'eBay');
+  await carhartt.getByRole('button', { name: /L’ho comprato/ }).click();
+  await expect(page.getByText('Aggiunto all’inventario')).toBeVisible();
+  await page.goto('/inventory');
+  const row = page.getByTestId('inventory-table').locator('tr', { hasText: 'Felpa Carhartt WIP' });
+  await expect(row).toContainText('23,50 €');
+  await expect(row).toContainText('eBay');
 });
 
 test('analisi deal: verdetto, best buy price e spiegazione', async ({ page }) => {

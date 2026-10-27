@@ -1,19 +1,7 @@
 import type { Condition, ItemCategory } from '@/lib/domain/types';
-import { BRANDS, findBrand } from '@/lib/domain/constants';
+import { findBrand } from '@/lib/domain/constants';
+import { detectBrand, detectCategory } from '@/lib/marketplace/normalize';
 import type { DetectedField, ImageAnalysis, ImageAnalysisInput } from './types';
-
-const CATEGORY_KEYWORDS: [ItemCategory, string[]][] = [
-  ['hoodie', ['hoodie', 'felpa', 'sweatshirt', 'crewneck']],
-  ['sweater', ['sweater', 'maglione', 'knit', 'cardigan', 'pile', 'fleece']],
-  ['tshirt', ['tshirt', 't-shirt', 'tee', 'maglietta', 'polo']],
-  ['shirt', ['shirt', 'camicia', 'oxford']],
-  ['jacket', ['jacket', 'giacca', 'giubbotto', 'piumino', 'puffer', 'windbreaker', 'bomber']],
-  ['jeans', ['jeans', 'denim', '501']],
-  ['pants', ['pants', 'pantaloni', 'cargo', 'trousers']],
-  ['tracksuit', ['track', 'tuta', 'tracksuit']],
-  ['sneakers', ['sneaker', 'scarpe', 'shoes', 'airmax', 'air-max', 'samba', 'dunk', 'jordan']],
-  ['accessories', ['cappello', 'hat', 'cap', 'borsa', 'bag', 'sciarpa', 'belt', 'cintura']],
-];
 
 function field<T>(
   value: T | null,
@@ -41,18 +29,16 @@ export function analyzeItemImagesMock(input: ImageAnalysisInput): ImageAnalysis 
   let brand: DetectedField = field<string>(null, 'low');
   if (hints.brand) brand = field(findBrand(hints.brand)?.name ?? hints.brand, 'medium', true);
   else {
-    const hit = BRANDS.find(
-      (b) => names.includes(b.name.toLowerCase().replace(/'/g, '')) || names.includes(b.name.toLowerCase()),
-    );
-    if (hit) brand = field(hit.name, 'medium', true);
+    const hit = detectBrand(names);
+    if (hit) brand = field(hit, 'medium', true);
   }
 
   // Garment type
   let garmentType: DetectedField<ItemCategory> = field<ItemCategory>(null, 'low');
   if (hints.category) garmentType = field(hints.category, 'high', false);
   else {
-    const hit = CATEGORY_KEYWORDS.find(([, kws]) => kws.some((k) => names.includes(k)));
-    if (hit) garmentType = field(hit[0], 'medium', true);
+    const hit = detectCategory(names);
+    if (hit) garmentType = field(hit, 'medium', true);
   }
 
   // Colours: measured client-side from the image pixels, most frequent first

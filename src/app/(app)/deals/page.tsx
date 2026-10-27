@@ -3,7 +3,16 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Flame, RotateCcw, Search, SlidersHorizontal, Star } from 'lucide-react';
+import {
+  ExternalLink,
+  Flame,
+  Globe,
+  Loader2,
+  RotateCcw,
+  Search,
+  SlidersHorizontal,
+  Star,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader, CardGridSkeleton, EmptyState, ErrorState } from '@/components/shared/states';
 import { DealCard } from '@/components/deals/deal-card';
@@ -17,7 +26,7 @@ import { SimpleSelect } from '@/components/ui/select';
 import { useApp } from '@/components/providers/app-provider';
 import { useProfile, useRevalidate } from '@/hooks/use-data';
 import { useDealFeed } from '@/hooks/use-deal-feed';
-import { CATEGORIES, CONDITIONS, SIZES } from '@/lib/domain/constants';
+import { CATEGORIES, CONDITIONS, marketplaceLabel, SIZES } from '@/lib/domain/constants';
 import type { Condition, ItemCategory } from '@/lib/domain/types';
 import {
   activeFilterCount,
@@ -29,7 +38,8 @@ import {
   type DealSort,
   type EvaluatedDeal,
 } from '@/lib/deals/filter';
-import { getMarketplaceProvider } from '@/lib/marketplace';
+import type { MarketSourceStatus } from '@/lib/marketplace/types';
+import { cn } from '@/lib/utils';
 import { toISODate } from '@/lib/utils';
 
 const ALL = '__all';
@@ -61,6 +71,20 @@ function FiltersForm({
   );
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+      <Field label="Fonte" htmlFor="f-source">
+        <SimpleSelect
+          id="f-source"
+          value={sel(filters.source)}
+          onValueChange={(v) => set({ ...filters, source: val(v) })}
+          options={[
+            { value: ALL, label: 'Tutte le fonti' },
+            { value: 'live', label: 'Solo annunci reali' },
+            { value: 'ebay', label: 'eBay' },
+            { value: 'etsy', label: 'Etsy' },
+            { value: 'demo', label: 'Vinted (demo)' },
+          ]}
+        />
+      </Field>
       <Field label="Brand" htmlFor="f-brand">
         <SimpleSelect
           id="f-brand"
@@ -108,9 +132,74 @@ function FiltersForm({
   );
 }
 
+const STATUS_STYLE: Record<MarketSourceStatus['status'], string> = {
+  ok: 'border-profit/30 bg-profit/10 text-profit',
+  error: 'border-loss/30 bg-loss/10 text-loss',
+  disabled: 'border-border bg-muted/40 text-muted-foreground',
+};
+
+/** Live sources status: how many real listings each marketplace returned, or why it is off. */
+function SourcesBar({
+  sources,
+  loading,
+  error,
+}: {
+  sources: MarketSourceStatus[] | null;
+  loading: boolean;
+  error?: Error;
+}) {
+  return (
+    <div
+      className="card-surface mb-4 flex flex-col gap-2 p-3 sm:flex-row sm:items-center"
+      data-testid="sources-bar"
+    >
+      <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold">
+        <Globe className="h-3.5 w-3.5 text-primary" /> Fonti
+      </span>
+      <div className="flex flex-wrap gap-1.5">
+        <span className="rounded-full border border-warning/30 bg-warning/10 px-2.5 py-0.5 text-[11px] font-medium text-warning">
+          Vinted · demo
+        </span>
+        {loading && (
+          <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" /> Carico annunci reali…
+          </span>
+        )}
+        {error && (
+          <span className="rounded-full border border-loss/30 bg-loss/10 px-2.5 py-0.5 text-[11px] text-loss">
+            {error.message}
+          </span>
+        )}
+        {sources?.map((s) => (
+          <span
+            key={s.id}
+            title={s.message ?? undefined}
+            className={cn(
+              'rounded-full border px-2.5 py-0.5 text-[11px] font-medium',
+              STATUS_STYLE[s.status],
+            )}
+          >
+            {s.name} ·{' '}
+            {s.status === 'ok'
+              ? `${s.count} ${s.count === 1 ? 'annuncio' : 'annunci'}`
+              : s.status === 'error'
+                ? 'errore'
+                : 'non attivo'}
+          </span>
+        ))}
+      </div>
+      {sources?.some((s) => s.status !== 'ok' && s.message && ['ebay', 'etsy'].includes(s.id)) && (
+        <p className="text-[11px] text-muted-foreground sm:ml-auto sm:max-w-xs sm:text-right">
+          {sources.find((s) => s.status !== 'ok' && ['ebay', 'etsy'].includes(s.id))?.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function DealsPage() {
   const router = useRouter();
-  const { data: deals, error, isLoading, mutate } = useDealFeed();
+  const { data: deals, error, isLoading, mutate, sources, liveLoading, liveError } = useDealFeed();
   const { data: bundle } = useProfile();
   const { repo } = useApp();
   const revalidate = useRevalidate();
@@ -127,7 +216,7 @@ export default function DealsPage() {
   );
   const count = activeFilterCount(filters);
   const hot = deals?.filter((d) => d.evaluation.badge === 'hot').length ?? 0;
-  const isMock = getMarketplaceProvider().capabilities.isMock;
+  const liveCount = deals?.filter((d) => !d.item.isDemo).length ?? 0;
 
   async function addToInventory(d: EvaluatedDeal) {
     if (!repo) return;
@@ -138,9 +227,9 @@ export default function DealsPage() {
         category: d.item.category,
         size: d.item.size,
         condition: d.item.condition,
-        purchasePrice: d.item.price,
+        purchasePrice: Math.round((d.item.price + (d.item.shippingCost ?? 0)) * 100) / 100,
         purchaseDate: toISODate(new Date()),
-        source: 'Vinted',
+        source: marketplaceLabel(d.item.marketplace),
         listedPrice: d.evaluation.recommendedPrice,
         extraCosts: 0,
         status: 'to_photograph',
@@ -162,11 +251,13 @@ export default function DealsPage() {
         title="Trova il prossimo affare"
         description="Occasioni valutate con il Deal Score: prezzo vs mercato, domanda del brand, ROI, velocità di vendita, condizione e taglia."
         actions={
-          <Badge tone={isMock ? 'warning' : 'profit'} className="py-1">
-            {isMock ? 'Dati demo · MockVintedProvider' : 'Dati marketplace'}
+          <Badge tone={liveCount ? 'profit' : 'warning'} className="py-1">
+            {liveCount ? `${liveCount} annunci reali` : 'Solo dati demo'}
           </Badge>
         }
       />
+
+      <SourcesBar sources={sources} loading={liveLoading} error={liveError} />
 
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex gap-2">
@@ -215,6 +306,15 @@ export default function DealsPage() {
           >
             <Flame /> Solo Hot Deal ({hot})
           </Button>
+          {liveCount > 0 && (
+            <Button
+              variant={filters.source === 'live' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilters({ ...filters, source: filters.source === 'live' ? null : 'live' })}
+            >
+              <Globe /> Solo annunci reali ({liveCount})
+            </Button>
+          )}
           {count > 0 && (
             <Button variant="ghost" size="sm" onClick={() => setFilters(EMPTY_FILTERS)}>
               <RotateCcw /> Azzera filtri
@@ -295,6 +395,19 @@ export default function DealsPage() {
                 </DialogDescription>
               </DialogHeader>
               <p className="text-sm text-muted-foreground">{selected.item.description}</p>
+              {selected.item.url && (
+                <Button variant="outline" asChild>
+                  <a href={selected.item.url} target="_blank" rel="noopener noreferrer nofollow">
+                    <ExternalLink /> Apri l’annuncio su {marketplaceLabel(selected.item.marketplace)}
+                  </a>
+                </Button>
+              )}
+              {!selected.item.isDemo && (
+                <p className="text-xs text-muted-foreground">
+                  Prezzo e foto sono reali. Il valore di mercato è una stima dai capi comparabili: verifica i
+                  venduti simili prima di comprare.
+                </p>
+              )}
               <AIAnalysis evaluation={selected.evaluation} />
               <Button
                 onClick={() => {

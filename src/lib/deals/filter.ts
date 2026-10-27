@@ -19,6 +19,8 @@ export interface DealFilters {
   minScore: number | null;
   maxDays: number | null;
   favoritesOnly: boolean;
+  /** null = all · 'live' = only real listings · 'demo' = only demo data · or a marketplace id */
+  source: string | null;
 }
 
 export type DealSort = 'score' | 'recent' | 'price' | 'profit' | 'roi' | 'speed';
@@ -44,6 +46,7 @@ export const EMPTY_FILTERS: DealFilters = {
   minScore: null,
   maxDays: null,
   favoritesOnly: false,
+  source: null,
 };
 
 export function activeFilterCount(f: DealFilters) {
@@ -70,6 +73,15 @@ export function filterDeals(
     if (f.minScore !== null && e.dealScore < f.minScore) return false;
     if (f.maxDays !== null && e.sellTime.max > f.maxDays) return false;
     if (f.favoritesOnly && !favs.includes(item.brand.toLowerCase())) return false;
+    if (f.source === 'live' && item.isDemo) return false;
+    if (f.source === 'demo' && !item.isDemo) return false;
+    if (
+      f.source &&
+      f.source !== 'live' &&
+      f.source !== 'demo' &&
+      (item.isDemo || item.marketplace !== f.source)
+    )
+      return false;
     return true;
   });
 }

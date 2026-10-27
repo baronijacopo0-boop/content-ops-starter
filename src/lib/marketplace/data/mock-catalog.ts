@@ -289,6 +289,8 @@ export function buildDealFeed(now = new Date()): MarketItem[] {
     condition: d.condition,
     color: d.color,
     price: d.price,
+    shippingCost: null,
+    currency: 'EUR' as const,
     imageUrl: null,
     listedAt: new Date(now.getTime() - d.hoursAgo * 3_600_000).toISOString(),
     favorites: Math.floor(rand() * 25),
@@ -296,6 +298,7 @@ export function buildDealFeed(now = new Date()): MarketItem[] {
     sellerName: SELLERS[i % SELLERS.length],
     sellerRating: round(4 + rand(), 1),
     url: null,
+    isDemo: true,
   }));
 }
 

@@ -57,6 +57,11 @@ Ti servono inoltre: un **dominio** (anche acquistato su Hostinger), un account *
 | `AI_MODEL` | no | solo server | default `claude-opus-5-5` |
 | `AI_RATE_LIMIT_PER_MINUTE` | no | solo server | default `15` |
 | `SUPABASE_SERVICE_ROLE_KEY` | no | solo script locali | **mai** nel frontend |
+| `EBAY_CLIENT_ID` / `EBAY_CLIENT_SECRET` | no | solo server | annunci reali eBay nel Deal Finder |
+| `EBAY_MARKETPLACE_ID` | no | solo server | default `EBAY_IT` |
+| `EBAY_CATEGORY_IDS` | no | solo server | default `11450` (abbigliamento) |
+| `EBAY_AFFILIATE_CAMPAIGN_ID` | no | solo server | link affiliati eBay Partner Network |
+| `ETSY_API_KEY` | no | solo server | `keystring:shared_secret` di Etsy |
 
 ⚠️ Le variabili `NEXT_PUBLIC_*` vengono **incorporate durante la build**. Se le modifichi devi **rifare la build/redeploy**. Le altre (AI) vengono lette a runtime ma è comunque consigliato un riavvio.
 
@@ -185,7 +190,25 @@ Dopo aver attivato il dominio definitivo aggiorna **sempre**:
 
 ---
 
-## 7. Creare l’account demo (facoltativo)
+## 7. Annunci reali eBay ed Etsy nel Deal Finder (facoltativo)
+
+Il Deal Finder mostra annunci reali tramite le **API ufficiali** (nessuno scraping). Senza chiavi mostra solo i dati demo e indica “non attivo”.
+
+**eBay**
+1. Crea un account su <https://developer.ebay.com> (gratuito) e un’applicazione.
+2. In *Application Keys* → **Production** copia **App ID (Client ID)** e **Cert ID (Client Secret)**.
+3. Imposta su Hostinger `EBAY_CLIENT_ID` e `EBAY_CLIENT_SECRET` (e, se vuoi, `EBAY_MARKETPLACE_ID`) → riavvia/redeploy.
+4. *(Facoltativo)* Con un account eBay Partner Network imposta `EBAY_AFFILIATE_CAMPAIGN_ID`: i link “Apri su eBay” diventano link affiliati.
+
+**Etsy**
+1. Su <https://www.etsy.com/developers> crea un’app.
+2. Copia *keystring* e *shared secret* e imposta `ETSY_API_KEY=keystring:shared_secret`.
+
+Verifica: `/api/health` → `marketplaces` mostra `configured: true`; nel Deal Finder la barra “Fonti” indica quanti annunci reali sono arrivati (o l’errore, es. credenziali non valide).
+
+Depop, Grailed, Vestiaire Collective e Wallapop non hanno API pubbliche: compaiono come “non attivo” finché non esiste un’integrazione autorizzata. Vinted resta in modalità demo per lo stesso motivo.
+
+## 8. Creare l’account demo (facoltativo)
 
 Dal tuo computer, con `.env.local` contenente `NEXT_PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`:
 
@@ -198,7 +221,7 @@ In alternativa ogni utente può caricare i dati demo durante l’onboarding o da
 
 ---
 
-## 8. Checklist di verifica dopo il deploy
+## 9. Checklist di verifica dopo il deploy
 
 **Frontend**
 - [ ] `https://www.tuodominio.it` mostra la landing, il lucchetto HTTPS è presente, `http://` reindirizza a `https://`.
@@ -226,7 +249,7 @@ In alternativa ogni utente può caricare i dati demo durante l’onboarding o da
 
 ---
 
-## 9. Aggiornare il progetto senza perdere dati
+## 10. Aggiornare il progetto senza perdere dati
 
 - **I dati non vivono su Hostinger**: utenti, inventario, vendite e foto sono su Supabase. Un redeploy o la sostituzione dei file su Hostinger **non cancella nulla**.
 - **Mai** usare la modalità demo locale per dati reali (sono nel browser dell’utente).
@@ -241,7 +264,7 @@ In alternativa ogni utente può caricare i dati demo durante l’onboarding o da
 
 ---
 
-## 10. Problemi frequenti
+## 11. Problemi frequenti
 
 | Sintomo | Causa probabile | Soluzione |
 | --- | --- | --- |
@@ -252,4 +275,6 @@ In alternativa ogni utente può caricare i dati demo durante l’onboarding o da
 | Errore 429 | Troppe richieste AI | Attendi un minuto o aumenta `AI_RATE_LIMIT_PER_MINUTE` |
 | Upload foto fallisce | Migration storage non eseguita / file > 5 MB | Esegui `…03_storage.sql`; usa immagini più leggere |
 | Build fallisce per memoria | Piano con poca RAM | Riprova il deploy; in alternativa usa l’opzione B o C |
+| “Turbopack error … creating new process” in build | L’hosting condiviso limita i processi | Già gestito: `npm run build` usa webpack in un solo processo (`next build --webpack`) |
+| Fonte eBay/Etsy “errore” nel Deal Finder | Chiavi errate o limite API | Controlla le variabili; il messaggio è visibile passando sopra al badge |
 | 502/503 su VPS | Processo fermo | `pm2 logs flip-ai`, `pm2 restart flip-ai` |

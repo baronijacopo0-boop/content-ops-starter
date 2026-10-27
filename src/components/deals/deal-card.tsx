@@ -1,12 +1,16 @@
-import { Clock, Heart, Plus } from 'lucide-react';
+import { Clock, ExternalLink, Heart, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductImage } from '@/components/shared/product-image';
 import type { MarketItem } from '@/lib/marketplace/types';
 import type { DealEvaluation } from '@/services/ai/types';
-import { categoryLabel, CONDITIONS } from '@/lib/domain/constants';
+import { categoryLabel, CONDITIONS, marketplaceLabel } from '@/lib/domain/constants';
 import { formatEUR, formatPct } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { DealBadge, DealScore } from './deal-score';
+
+export function sourceLabel(item: MarketItem) {
+  return item.isDemo ? `${marketplaceLabel(item.marketplace)} · demo` : marketplaceLabel(item.marketplace);
+}
 
 function timeAgo(iso: string) {
   const h = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 3_600_000));
@@ -48,6 +52,15 @@ export function DealCard({
           <DealScore score={e.dealScore} size={46} label={false} />
         </div>
         <div className="absolute bottom-3 left-3 flex items-center gap-2 text-[11px] text-white/80">
+          <span
+            className={cn(
+              'rounded-full px-2 py-0.5 font-semibold backdrop-blur',
+              item.isDemo ? 'bg-black/50' : 'bg-primary/90 text-primary-foreground',
+            )}
+            data-testid="deal-source"
+          >
+            {sourceLabel(item)}
+          </span>
           <span className="rounded-full bg-black/50 px-2 py-0.5 backdrop-blur">{timeAgo(item.listedAt)}</span>
           <span className="flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 backdrop-blur">
             <Heart className="h-3 w-3" /> {item.favorites}
@@ -63,6 +76,9 @@ export function DealCard({
           <div className="rounded-lg bg-muted/50 py-1.5">
             <p className="text-[10px] text-muted-foreground">Prezzo</p>
             <p className="text-sm font-bold">{formatEUR(item.price, { decimals: false })}</p>
+            {item.shippingCost ? (
+              <p className="text-[9px] text-muted-foreground">+ {formatEUR(item.shippingCost)} sped.</p>
+            ) : null}
           </div>
           <div className="rounded-lg bg-muted/50 py-1.5">
             <p className="text-[10px] text-muted-foreground">Rivendita</p>
@@ -84,7 +100,19 @@ export function DealCard({
             <Clock className="h-3 w-3" /> {e.sellTime.min}-{e.sellTime.max}g
           </span>
         </div>
-        <div className="mt-4 flex gap-2 pt-1">
+        <div className="mt-auto flex gap-2 pt-4">
+          {item.url && (
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              aria-label={`Apri su ${marketplaceLabel(item.marketplace)}`}
+            >
+              <a href={item.url} target="_blank" rel="noopener noreferrer nofollow">
+                <ExternalLink />
+              </a>
+            </Button>
+          )}
           {onAnalyze && (
             <Button variant="secondary" size="sm" className="flex-1" onClick={onAnalyze}>
               Dettagli

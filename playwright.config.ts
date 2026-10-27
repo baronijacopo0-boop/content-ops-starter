@@ -27,11 +27,29 @@ export default defineConfig({
     },
     { name: 'mobile', use: { ...devices['Pixel 7'] }, testMatch: /responsive\.spec\.ts/ },
   ],
-  webServer: {
-    command: `npm run build && npx next start -p ${PORT}`,
-    url: `http://localhost:${PORT}/api/health`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 300_000,
-    env: { NEXT_PUBLIC_SUPABASE_URL: '', NEXT_PUBLIC_SUPABASE_ANON_KEY: '', AI_API_KEY: '' },
-  },
+  webServer: [
+    {
+      // Fake eBay / Etsy APIs so the live-marketplace flow is tested without real keys.
+      command: 'node tests/e2e/fake-market-server.mjs',
+      url: 'http://localhost:3199/health',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `npm run build && npx next start -p ${PORT}`,
+      url: `http://localhost:${PORT}/api/health`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 300_000,
+      env: {
+        NEXT_PUBLIC_SUPABASE_URL: '',
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: '',
+        AI_API_KEY: '',
+        EBAY_CLIENT_ID: 'e2e-client',
+        EBAY_CLIENT_SECRET: 'e2e-secret',
+        EBAY_API_BASE: 'http://localhost:3199',
+        ETSY_API_KEY: 'e2e:secret',
+        ETSY_API_BASE: 'http://localhost:3199',
+        MARKET_RATE_LIMIT_PER_MINUTE: '100',
+      },
+    },
+  ],
 });
