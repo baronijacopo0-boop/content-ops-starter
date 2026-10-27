@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
   // Route handlers live in `route.ts` files: excluding the `.ts` page extension drops them from a static export.
   pageExtensions: isStaticExport ? ['tsx'] : ['tsx', 'ts'],
   ...(isStaticExport ? { output: 'export', trailingSlash: true } : {}),
+  // Shared hosting limits the number of processes: build in a single process (no extra workers).
+  experimental: { webpackBuildWorker: false, cpus: 1 },
   images: {
     // Avoids the sharp/native image optimizer on shared hosting; images are already resized client-side on upload.
     unoptimized: true,

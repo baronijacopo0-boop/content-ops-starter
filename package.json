@@ -2,13 +2,13 @@
   "name": "flip-ai",
   "version": "1.0.0",
   "private": true,
-  "description": "FLIP AI \u2013 assistente personale per reseller (Vinted e altri marketplace).",
+  "description": "FLIP AI – assistente personale per reseller (Vinted e altri marketplace).",
   "engines": {
     "node": ">=20.9.0"
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
@@ -16,7 +16,7 @@
     "test:e2e": "playwright test",
     "test:db": "bash supabase/tests/run-local.sh",
     "format": "prettier --write .",
-    "build:static": "NEXT_OUTPUT=export next build && node scripts/static-htaccess.mjs",
+    "build:static": "NEXT_OUTPUT=export next build --webpack && node scripts/static-htaccess.mjs",
     "seed:demo": "tsx --env-file=.env.local scripts/seed-demo-user.ts",
     "db:generate": "tsx scripts/generate-sql.ts"
   },
