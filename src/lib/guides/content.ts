@@ -157,7 +157,7 @@ export const GUIDES: Guide[] = [
       {
         heading: 'Usa il Deal Score',
         paragraphs: [
-          'FLIP AI combina questi fattori nel Deal Score (0-100): 30% prezzo rispetto al mercato, 20% domanda del brand, 20% ROI, 15% velocità di vendita, 10% condizione e 5% taglia.',
+          'RIVENDO combina questi fattori nel Deal Score (0-100): 30% prezzo rispetto al mercato, 20% domanda del brand, 20% ROI, 15% velocità di vendita, 10% condizione e 5% taglia.',
           'Sopra 80 è un HOT DEAL, tra 65 e 79 un buon affare, tra 45 e 64 conviene solo trattando, sotto 45 lascia stare.',
         ],
         tip: 'Guarda sempre il “prezzo massimo consigliato”: se il venditore chiede di più, fai un’offerta a quella cifra.',
@@ -243,7 +243,7 @@ export const GUIDES: Guide[] = [
         paragraphs: [
           'Molti acquirenti fanno un’offerta. Pubblicare il 5-10% sopra il prezzo che vuoi davvero ti permette di accettare senza perdere margine.',
         ],
-        tip: 'Il Price Advisor di FLIP AI calcola le tre strategie con i giorni di vendita stimati: scegli in base a quanto ti serve liquidità.',
+        tip: 'Il Price Advisor di RIVENDO calcola le tre strategie con i giorni di vendita stimati: scegli in base a quanto ti serve liquidità.',
       },
     ],
     takeaways: [
@@ -305,7 +305,7 @@ export const GUIDES: Guide[] = [
           '9. Non tenere traccia di acquisti e vendite.',
           '10. Dichiarare autenticità o materiali senza esserne certi.',
         ],
-        tip: 'FLIP AI ti protegge da quasi tutti: Deal Score per gli acquisti, Inventory Health per lo stock fermo, tracking automatico di profitto e ROI.',
+        tip: 'RIVENDO ti protegge da quasi tutti: Deal Score per gli acquisti, Inventory Health per lo stock fermo, tracking automatico di profitto e ROI.',
       },
     ],
     takeaways: [
@@ -342,7 +342,7 @@ export const GUIDES: Guide[] = [
         paragraphs: [
           'Se vuoi un ROI del 100% e pensi di rivendere a 40€ con 2€ di costi: prezzo massimo = (40 − 2) ÷ 2 = 19€. Oltre quella cifra, tratta o rinuncia.',
         ],
-        tip: 'Il Calcolatore Profitto di FLIP AI fa questi conti per te in tempo reale.',
+        tip: 'Il Calcolatore Profitto di RIVENDO fa questi conti per te in tempo reale.',
       },
     ],
     takeaways: [

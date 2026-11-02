@@ -96,7 +96,7 @@ export default function SalesPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `flip-ai-vendite-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `rivendo-vendite-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }

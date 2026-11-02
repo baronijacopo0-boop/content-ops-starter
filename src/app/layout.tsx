@@ -5,10 +5,10 @@ import { AppProvider } from '@/components/providers/app-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: { default: 'FLIP AI – Il tuo assistente per il reselling', template: '%s · FLIP AI' },
+  title: { default: 'RIVENDO – Il tuo assistente per il reselling', template: '%s · RIVENDO' },
   description:
     'Trova affari, stima profitto e ROI, crea annunci con l’AI e gestisci inventario e vendite del tuo business di reselling.',
-  applicationName: 'FLIP AI',
+  applicationName: 'RIVENDO',
   icons: { icon: '/icon.svg' },
   robots: { index: true, follow: true },
 };

@@ -79,7 +79,7 @@ export default function LandingPage() {
               <span className="text-gradient">Rivendi di più.</span>
             </h1>
             <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-              FLIP AI è l’assistente personale per chi compra vestiti per rivenderli: capisce cosa conviene,
+              RIVENDO è l’assistente personale per chi compra vestiti per rivenderli: capisce cosa conviene,
               quanto pagarlo, a quanto rivenderlo e quanto ci guadagni.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -170,8 +170,8 @@ export default function LandingPage() {
 
       <footer className="relative z-10 border-t">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:justify-between">
-          <span>© {new Date().getFullYear()} FLIP AI</span>
-          <span>FLIP AI è un progetto indipendente, non affiliato a Vinted o ad altri marketplace.</span>
+          <span>© {new Date().getFullYear()} RIVENDO</span>
+          <span>RIVENDO è un progetto indipendente, non affiliato a Vinted o ad altri marketplace.</span>
         </div>
       </footer>
     </div>

@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
 export function uniqueEmail() {
-  return `test.${Date.now()}.${Math.floor(Math.random() * 1e6)}@flipai.test`;
+  return `test.${Date.now()}.${Math.floor(Math.random() * 1e6)}@rivendo.test`;
 }
 
 export const PASSWORD = 'Flipper2026';

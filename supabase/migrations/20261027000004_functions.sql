@@ -1,5 +1,5 @@
 -- =====================================================================================
--- FLIP AI – business functions
+-- RIVENDO – business functions
 -- =====================================================================================
 
 -- Atomically marks an inventory item as sold: creates the sale, updates item + linked listings.

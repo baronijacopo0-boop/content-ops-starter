@@ -1,5 +1,5 @@
 /**
- * FLIP AI service layer (client-safe, deterministic part).
+ * RIVENDO service layer (client-safe, deterministic part).
  * LLM-backed variants live in ./server.ts and are only reachable through /api/ai/* route handlers,
  * so AI keys never reach the browser.
  */

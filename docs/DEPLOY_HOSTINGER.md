@@ -1,6 +1,6 @@
 # DEPLOY SU HOSTINGER
 
-Guida completa per pubblicare FLIP AI su Hostinger con Supabase come backend.
+Guida completa per pubblicare RIVENDO su Hostinger con Supabase come backend.
 
 > Le voci dei menu di hPanel e Supabase possono cambiare leggermente nel tempo: i passaggi restano gli stessi.
 
@@ -8,7 +8,7 @@ Guida completa per pubblicare FLIP AI su Hostinger con Supabase come backend.
 
 ## 0. Panoramica e scelta del piano
 
-FLIP AI è un’app **Next.js** che ha bisogno di **Node.js** per le parti server (protezione route, API AI). Il database, l’autenticazione e lo storage delle foto sono su **Supabase** (piano gratuito sufficiente per partire). Hostinger ospita solo la web app.
+RIVENDO è un’app **Next.js** che ha bisogno di **Node.js** per le parti server (protezione route, API AI). Il database, l’autenticazione e lo storage delle foto sono su **Supabase** (piano gratuito sufficiente per partire). Hostinger ospita solo la web app.
 
 | Opzione | Piano Hostinger | Quando sceglierla |
 | --- | --- | --- |
@@ -119,15 +119,15 @@ sudo apt-get install -y nodejs nginx git
 sudo npm install -g pm2
 
 # 3. codice
-git clone https://github.com/<utente>/<repo>.git flip-ai && cd flip-ai
+git clone https://github.com/<utente>/<repo>.git rivendo && cd rivendo
 cp .env.example .env.production   # compila i valori (nano .env.production)
 npm ci
 npm run build
-PORT=3000 pm2 start npm --name flip-ai -- start
+PORT=3000 pm2 start npm --name rivendo -- start
 pm2 save && pm2 startup           # riavvio automatico al reboot
 ```
 
-Nginx (`/etc/nginx/sites-available/flip-ai`):
+Nginx (`/etc/nginx/sites-available/rivendo`):
 
 ```nginx
 server {
@@ -146,14 +146,14 @@ server {
 ```
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/flip-ai /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/rivendo /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 sudo apt-get install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d tuodominio.it -d www.tuodominio.it   # HTTPS + rinnovo automatico
 sudo ufw allow OpenSSH && sudo ufw allow 'Nginx Full' && sudo ufw enable
 ```
 
-Aggiornare: `git pull && npm ci && npm run build && pm2 restart flip-ai`.
+Aggiornare: `git pull && npm ci && npm run build && pm2 restart rivendo`.
 
 ---
 
@@ -214,7 +214,7 @@ Dal tuo computer, con `.env.local` contenente `NEXT_PUBLIC_SUPABASE_URL` e `SUPA
 
 ```bash
 npm run seed:demo
-# → Demo ready → email: demo@flipai.app  password: <stampata una sola volta>
+# → Demo ready → email: demo@rivendo.app  password: <stampata una sola volta>
 ```
 
 In alternativa ogni utente può caricare i dati demo durante l’onboarding o da *Impostazioni → Carica dati demo*.
@@ -277,4 +277,4 @@ In alternativa ogni utente può caricare i dati demo durante l’onboarding o da
 | Build fallisce per memoria | Piano con poca RAM | Riprova il deploy; in alternativa usa l’opzione B o C |
 | “Turbopack error … creating new process” in build | L’hosting condiviso limita i processi | Già gestito: `npm run build` usa webpack in un solo processo (`next build --webpack`) |
 | Fonte eBay/Etsy “errore” nel Deal Finder | Chiavi errate o limite API | Controlla le variabili; il messaggio è visibile passando sopra al badge |
-| 502/503 su VPS | Processo fermo | `pm2 logs flip-ai`, `pm2 restart flip-ai` |
+| 502/503 su VPS | Processo fermo | `pm2 logs rivendo`, `pm2 restart rivendo` |

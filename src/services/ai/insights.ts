@@ -26,7 +26,7 @@ export function generateBusinessInsights(
         tone: 'info',
         title: 'Inizia a tracciare',
         message:
-          'Aggiungi i tuoi primi articoli in inventario: FLIP AI calcolerà profitti, ROI e tempi di vendita per te.',
+          'Aggiungi i tuoi primi articoli in inventario: RIVENDO calcolerà profitti, ROI e tempi di vendita per te.',
         action: 'Vai su Inventario → Aggiungi articolo',
       },
     ];

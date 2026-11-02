@@ -1,5 +1,5 @@
 /**
- * FLIP AI domain model. These types are marketplace-agnostic: nothing here depends on Vinted.
+ * RIVENDO domain model. These types are marketplace-agnostic: nothing here depends on Vinted.
  * Database rows (snake_case) are mapped to these types in src/lib/data/supabase-repository.ts.
  */
 

@@ -93,7 +93,7 @@ export function InventoryItemDialog({
         <DialogHeader>
           <DialogTitle>{item ? 'Modifica articolo' : 'Aggiungi articolo'}</DialogTitle>
           <DialogDescription>
-            Registra ogni acquisto: FLIP AI calcolerà profitto, ROI e da quanto tempo è in stock.
+            Registra ogni acquisto: RIVENDO calcolerà profitto, ROI e da quanto tempo è in stock.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4" noValidate>

@@ -83,7 +83,7 @@ function emit(user: AuthUser | null, event: string) {
   listeners.forEach((l) => l(user, event));
 }
 
-export const DEMO_ACCOUNT = { email: 'demo@flipai.app', password: 'demo1234', fullName: 'Alex Demo' };
+export const DEMO_ACCOUNT = { email: 'demo@rivendo.app', password: 'demo1234', fullName: 'Alex Demo' };
 
 export class LocalAuthService implements AuthService {
   readonly mode = 'local' as const;

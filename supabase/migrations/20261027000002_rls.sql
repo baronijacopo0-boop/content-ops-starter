@@ -1,5 +1,5 @@
 -- =====================================================================================
--- FLIP AI – Row Level Security
+-- RIVENDO – Row Level Security
 -- Rule: a user can only read and write rows where user_id = auth.uid().
 -- Reference / market tables are readable by authenticated users and writable only by service_role.
 -- `(select auth.uid())` is used instead of `auth.uid()` so Postgres evaluates it once per query.

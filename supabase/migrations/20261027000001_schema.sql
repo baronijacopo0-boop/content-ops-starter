@@ -1,5 +1,5 @@
 -- =====================================================================================
--- FLIP AI – core schema
+-- RIVENDO – core schema
 -- Every user-owned table carries user_id → auth.users(id) and is protected by RLS
 -- (see 20261027000002_rls.sql). Money is numeric(10,2), dates are `date`, timestamps timestamptz.
 -- Enumerations are text + CHECK constraints so new marketplaces/categories can be added with a

@@ -75,7 +75,7 @@ export default function WatchlistPage() {
     <>
       <PageHeader
         title="Watchlist"
-        description="Ricerche salvate che FLIP AI tiene d’occhio per te."
+        description="Ricerche salvate che RIVENDO tiene d’occhio per te."
         actions={
           <>
             <Button variant="outline" onClick={runCheck} loading={checking} disabled={!watchlists?.length}>

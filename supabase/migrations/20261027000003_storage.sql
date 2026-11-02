@@ -1,5 +1,5 @@
 -- =====================================================================================
--- FLIP AI – Storage bucket for item photos
+-- RIVENDO – Storage bucket for item photos
 -- Path convention: <user_id>/<uuid>.<ext>. Users can only write inside their own folder.
 -- The bucket is public-read so listing photos can be shown via URL (paths are unguessable UUIDs);
 -- size and MIME type are enforced server-side by Storage.

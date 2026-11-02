@@ -1,8 +1,8 @@
 {
-  "name": "flip-ai",
+  "name": "rivendo",
   "version": "1.0.0",
   "private": true,
-  "description": "FLIP AI – assistente personale per reseller (Vinted e altri marketplace).",
+  "description": "RIVENDO – assistente personale per reseller (Vinted e altri marketplace).",
   "engines": {
     "node": ">=20.9.0"
   },

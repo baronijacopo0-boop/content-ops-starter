@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 /**
- * FLIP AI – Next.js configuration.
+ * RIVENDO – Next.js configuration.
  *
  * Two deployment targets are supported (see docs/DEPLOY_HOSTINGER.md):
  *  - default: Node.js server (`npm run build && npm start`) → Hostinger "Node.js Web App" or VPS.

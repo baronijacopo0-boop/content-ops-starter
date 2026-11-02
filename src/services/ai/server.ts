@@ -78,7 +78,7 @@ function logError(scope: string, error: unknown) {
 }
 
 const RULES_IT =
-  'Rispondi in italiano. Sei l’assistente di FLIP AI per reseller di abbigliamento usato. ' +
+  'Rispondi in italiano. Sei l’assistente di RIVENDO per reseller di abbigliamento usato. ' +
   'Non inventare mai autenticità, materiali, condizioni, difetti, taglia o provenienza: se un dato non è chiaramente visibile, lascialo null e segnalalo come da confermare.';
 
 // ---------------------------------------------------------------- images

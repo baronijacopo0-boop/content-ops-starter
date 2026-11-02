@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   return NextResponse.json({
     ok: true,
-    app: 'flip-ai',
+    app: 'rivendo',
     version: process.env.npm_package_version ?? '1.0.0',
     supabase: isSupabaseConfigured ? 'configured' : 'local-demo-mode',
     ai: aiStatus(),

@@ -2,7 +2,7 @@ import type { Condition, ItemCategory } from '@/lib/domain/types';
 import { BRANDS } from '@/lib/domain/constants';
 
 /**
- * Helpers that turn free-text marketplace listings (eBay, Etsy, CSV imports…) into FLIP AI's
+ * Helpers that turn free-text marketplace listings (eBay, Etsy, CSV imports…) into RIVENDO's
  * normalized fields. Matching is word-based and conservative: when nothing matches we return null
  * instead of guessing.
  */
@@ -114,7 +114,7 @@ export function detectSize(text: string, category: ItemCategory | null): string 
 }
 
 /**
- * eBay condition IDs → FLIP AI condition.
+ * eBay condition IDs → RIVENDO condition.
  * 1000 New with tags · 1500 New without tags · 1750 New with defects · 2750 Pre-owned like new (some categories)
  * 2990 Pre-owned excellent · 3000 Used / Pre-owned good · 3010 Pre-owned fair · 7000 For parts
  */

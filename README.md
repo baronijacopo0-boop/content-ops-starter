@@ -1,4 +1,4 @@
-# FLIP AI
+# RIVENDO
 
 **AI + reselling + marketplace intelligence.** Web app per chi compra vestiti per rivenderli (Vinted e, in futuro, altri marketplace): trova occasioni, valuta se conviene comprare, stima prezzo di rivendita / profitto / ROI, genera annunci dalle foto, gestisce inventario e vendite e mostra analytics e insight sul business.
 

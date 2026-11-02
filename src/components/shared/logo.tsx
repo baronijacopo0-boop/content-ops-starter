@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-/** FLIP AI wordmark: bold "FLIP" with an accent "AI" chip. */
+/** RIVENDO wordmark: bold "RIVENDO" with an accent "AI" chip. */
 export function Logo({
   className,
   href = '/',
@@ -15,7 +15,7 @@ export function Logo({
     <Link
       href={href}
       className={cn('group inline-flex items-center gap-1.5 select-none', className)}
-      aria-label="FLIP AI"
+      aria-label="RIVENDO"
     >
       <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_0_24px_-6px_hsl(var(--primary))] transition-transform group-hover:-rotate-6">
         <svg
@@ -33,7 +33,7 @@ export function Logo({
       </span>
       {!compact && (
         <span className="flex items-baseline gap-1 leading-none">
-          <span className="text-lg font-black tracking-[-0.04em]">FLIP</span>
+          <span className="text-lg font-black tracking-[-0.03em]">RIVENDO</span>
           <span className="rounded-md border border-primary/40 px-1 py-0.5 text-[10px] font-bold tracking-widest text-primary">
             AI
           </span>

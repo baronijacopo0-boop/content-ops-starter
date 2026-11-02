@@ -4,7 +4,7 @@
  *
  * Uses SUPABASE_SERVICE_ROLE_KEY – run it only from your computer / server, never in the browser.
  *   npm run seed:demo            (reads .env.local)
- * Optional env: DEMO_EMAIL (default demo@flipai.app), DEMO_PASSWORD (default: random, printed once)
+ * Optional env: DEMO_EMAIL (default demo@rivendo.app), DEMO_PASSWORD (default: random, printed once)
  */
 import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'node:crypto';
@@ -17,7 +17,7 @@ if (!url || !serviceKey) {
   process.exit(1);
 }
 
-const email = process.env.DEMO_EMAIL ?? 'demo@flipai.app';
+const email = process.env.DEMO_EMAIL ?? 'demo@rivendo.app';
 const password = process.env.DEMO_PASSWORD ?? `Demo-${randomBytes(6).toString('hex')}1`;
 const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
