@@ -152,3 +152,35 @@ test('analytics e guide', async ({ page }) => {
   await page.getByText('Come calcolare il ROI').click();
   await expect(page.getByRole('heading', { name: 'Come calcolare il ROI', level: 1 })).toBeVisible();
 });
+
+test('pubblica su Vinted: copia campi, apre Vinted e segna come pubblicato', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  // Never hit the real Vinted site from tests.
+  await context.route('https://www.vinted.it/**', (route) => route.fulfill({ status: 200, body: 'vinted' }));
+  await registerAndOnboard(page);
+  await page.goto('/listings');
+  await page.getByRole('tab', { name: /Bozze/ }).click();
+  const card = page.getByTestId('listing-card').first();
+  const title = (await card.locator('h3').textContent())!.trim();
+  await card.getByRole('button', { name: 'Azioni annuncio' }).click();
+  await page.getByRole('menuitem', { name: 'Pubblica su Vinted' }).click();
+
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('button', { name: 'Copia descrizione' }).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
+    'Per misure o altre foto scrivetemi pure.',
+  );
+
+  const [vinted] = await Promise.all([
+    context.waitForEvent('page'),
+    dialog.getByRole('button', { name: 'Apri Vinted' }).click(),
+  ]);
+  expect(vinted.url()).toBe('https://www.vinted.it/items/new');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(title);
+  await vinted.close();
+
+  await dialog.getByRole('button', { name: /segna come pubblicato/ }).click();
+  await expect(page.getByText('Annuncio segnato come pubblicato su Vinted')).toBeVisible();
+  await page.getByRole('tab', { name: /Attivi/ }).click();
+  await expect(page.getByTestId('listing-card').filter({ hasText: title })).toContainText('Pubblicato');
+});

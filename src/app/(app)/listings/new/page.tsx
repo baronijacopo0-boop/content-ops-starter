@@ -2,7 +2,8 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AlertTriangle, Check, Copy, Loader2, Save, Sparkles, Wand2 } from 'lucide-react';
+import { AlertTriangle, Check, Copy, ExternalLink, Loader2, Save, Sparkles, Wand2 } from 'lucide-react';
+import { PublishVintedDialog } from '@/components/listings/publish-vinted-dialog';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared/states';
 import { ImageUploader } from '@/components/shared/image-uploader';
@@ -110,6 +111,7 @@ function CreateListing() {
   const [analyzing, setAnalyzing] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState<ListingStatus | null>(null);
+  const [publishOpen, setPublishOpen] = useState(false);
   const [loadedEdit, setLoadedEdit] = useState(false);
 
   const editing: Listing | undefined = useMemo(
@@ -635,6 +637,13 @@ function CreateListing() {
           <Card className="sticky bottom-20 z-10 lg:bottom-4">
             <CardContent className="grid grid-cols-3 gap-2 p-3">
               <Button
+                className="col-span-3 bg-[#09b1ba] text-white shadow-none hover:bg-[#09b1ba]/90"
+                onClick={() => setPublishOpen(true)}
+                disabled={!!saving}
+              >
+                <ExternalLink /> Pubblica su Vinted
+              </Button>
+              <Button
                 variant="outline"
                 onClick={() => save('draft')}
                 loading={saving === 'draft'}
@@ -657,6 +666,20 @@ function CreateListing() {
           </Card>
         </div>
       </div>
+
+      <PublishVintedDialog
+        open={publishOpen}
+        onOpenChange={setPublishOpen}
+        payload={{
+          title,
+          description,
+          price: price === '' || Number.isNaN(Number(price)) ? null : Number(price),
+          photos: [...existingPhotos, ...photos.map((p) => p.dataUrl)],
+        }}
+        onMarkPublished={async () => {
+          await save('published');
+        }}
+      />
     </>
   );
 }

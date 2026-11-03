@@ -2,7 +2,8 @@
 
 import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { History, ScanSearch } from 'lucide-react';
+import { ExternalLink, History, ScanSearch } from 'lucide-react';
+import { vintedSearchUrl } from '@/lib/marketplace/links';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared/states';
 import { AIAnalysis } from '@/components/deals/ai-analysis';
@@ -216,6 +217,17 @@ function AnalyzeForm() {
                 />
               )}
               <AIAnalysis evaluation={result} />
+              <Button variant="outline" className="mt-4 w-full" asChild>
+                <a
+                  href={vintedSearchUrl(
+                    `${result.input.brand} ${CATEGORIES.find((c) => c.value === result.input.category)?.singular ?? ''}`,
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink /> Cerca capi simili su Vinted
+                </a>
+              </Button>
             </>
           ) : (
             <div className="flex h-full min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed p-8 text-center">

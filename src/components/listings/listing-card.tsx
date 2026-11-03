@@ -1,6 +1,16 @@
 'use client';
 
-import { CalendarDays, Copy, Eye, Heart, MoreVertical, Pencil, Receipt, Trash2 } from 'lucide-react';
+import {
+  CalendarDays,
+  Copy,
+  ExternalLink,
+  Eye,
+  Heart,
+  MoreVertical,
+  Pencil,
+  Receipt,
+  Trash2,
+} from 'lucide-react';
 import { ProductImage } from '@/components/shared/product-image';
 import { ListingStatusBadge } from '@/components/shared/status-badges';
 import {
@@ -19,12 +29,14 @@ export function ListingCard({
   onDuplicate,
   onSold,
   onDelete,
+  onPublish,
 }: {
   listing: Listing;
   onEdit: () => void;
   onDuplicate: () => void;
   onSold: () => void;
   onDelete: () => void;
+  onPublish: () => void;
 }) {
   return (
     <article
@@ -54,6 +66,11 @@ export function ListingCard({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {listing.status !== 'sold' && (
+                <DropdownMenuItem onSelect={onPublish}>
+                  <ExternalLink /> Pubblica su Vinted
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onSelect={onEdit}>
                 <Pencil /> Modifica
               </DropdownMenuItem>

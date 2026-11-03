@@ -7,6 +7,7 @@ import { Sparkles, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { CardGridSkeleton, EmptyState, ErrorState, PageHeader } from '@/components/shared/states';
 import { ListingCard } from '@/components/listings/listing-card';
+import { PublishVintedDialog } from '@/components/listings/publish-vinted-dialog';
 import { MarkSoldDialog } from '@/components/shared/mark-sold-dialog';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ export default function ListingsPage() {
   const [filter, setFilter] = useState<Filter>('all');
   const [selling, setSelling] = useState<Listing | null>(null);
   const [deleting, setDeleting] = useState<Listing | null>(null);
+  const [publishing, setPublishing] = useState<Listing | null>(null);
 
   const visible = useMemo(
     () => (listings ?? []).filter(FILTERS.find((f) => f.value === filter)!.match),
@@ -135,6 +137,7 @@ export default function ListingsPage() {
               onEdit={() => router.push(`/listings/new?id=${l.id}`)}
               onDuplicate={() => duplicate(l)}
               onSold={() => setSelling(l)}
+              onPublish={() => setPublishing(l)}
               onDelete={() => setDeleting(l)}
             />
           ))}
@@ -180,6 +183,46 @@ export default function ListingsPage() {
               throw e;
             }
           }}
+        />
+      )}
+
+      {publishing && (
+        <PublishVintedDialog
+          key={publishing.id}
+          open
+          onOpenChange={(o) => !o && setPublishing(null)}
+          payload={{
+            title: publishing.title,
+            description: publishing.description,
+            price: publishing.price,
+            photos: publishing.photos,
+          }}
+          onMarkPublished={
+            publishing.status === 'published'
+              ? undefined
+              : async () => {
+                  if (!repo) return;
+                  try {
+                    await repo.updateListing(publishing.id, {
+                      status: 'published',
+                      marketplace: 'vinted',
+                      publishedAt: publishing.publishedAt ?? new Date().toISOString(),
+                    });
+                    const linked = publishing.inventoryItemId
+                      ? inventory?.find((i) => i.id === publishing.inventoryItemId && i.status !== 'sold')
+                      : undefined;
+                    if (linked)
+                      await repo.updateInventoryItem(linked.id, {
+                        status: 'listed',
+                        listedPrice: publishing.price,
+                      });
+                    await revalidate('listings', 'inventory');
+                    toast.success('Annuncio segnato come pubblicato su Vinted');
+                  } catch (e) {
+                    toast.error(e instanceof Error ? e.message : 'Errore');
+                  }
+                }
+          }
         />
       )}
 
