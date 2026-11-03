@@ -40,3 +40,26 @@ export function maxBuyPrice(resalePrice: number, targetRoi: number, extraCosts =
 export function breakEvenPrice(purchasePrice: number, extraCosts = 0, targetRoi = 0) {
   return round(purchasePrice * (1 + targetRoi / 100) + extraCosts);
 }
+
+/** Itemised extra costs of a sale. Fees can be fixed (€) and/or a % of the sale price. */
+export interface CostBreakdown {
+  packaging: number;
+  shipping: number;
+  feePct: number;
+  feeFixed: number;
+  other: number;
+}
+
+export const EMPTY_COSTS: CostBreakdown = { packaging: 0, shipping: 0, feePct: 0, feeFixed: 0, other: 0 };
+
+/** Platform fee for a sale price: % part + fixed part. */
+export function platformFee(salePrice: number, c: Pick<CostBreakdown, 'feePct' | 'feeFixed'>) {
+  return round(Math.max(0, salePrice) * (Math.max(0, c.feePct) / 100) + Math.max(0, c.feeFixed));
+}
+
+/** Total extra costs = imballaggio + spedizione a carico + commissioni + altro. */
+export function totalExtraCosts(salePrice: number, c: CostBreakdown) {
+  return round(
+    Math.max(0, c.packaging) + Math.max(0, c.shipping) + Math.max(0, c.other) + platformFee(salePrice, c),
+  );
+}

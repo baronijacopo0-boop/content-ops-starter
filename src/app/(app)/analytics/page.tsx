@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import useSWR from 'swr';
 import {
   AlertTriangle,
@@ -29,7 +29,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { useApp } from '@/components/providers/app-provider';
 import { useInventory, useProfile, useSales } from '@/hooks/use-data';
-import { brandStats, categoryStats, computeKpis, monthlySeries, worstBrands } from '@/lib/domain/analytics';
+import {
+  brandStats,
+  categoryStats,
+  computeKpis,
+  monthlySeries,
+  weeklySeries,
+  worstBrands,
+} from '@/lib/domain/analytics';
+import { PeriodComparisonCard } from '@/components/shared/period-comparison';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatDays, formatEUR, formatNumber, formatPct } from '@/lib/format';
 import { aiClient } from '@/services/ai/client';
 import type { BusinessInsight } from '@/services/ai/types';
@@ -111,6 +120,7 @@ export default function AnalyticsPage() {
   const { data: bundle } = useProfile();
   const items = inv.data;
   const sales = sal.data;
+  const [granularity, setGranularity] = useState<'week' | 'month'>('month');
 
   const view = useMemo(() => {
     if (!items || !sales) return null;
@@ -120,6 +130,7 @@ export default function AnalyticsPage() {
     return {
       kpis: computeKpis(items, sales),
       months,
+      weeks: weeklySeries(items, sales, 12),
       thisMonth: months[months.length - 1],
       brands,
       categories: categoryStats(sales),
@@ -163,6 +174,26 @@ export default function AnalyticsPage() {
       ) : (
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+            <StatCard
+              label="Ricavi totali"
+              value={formatEUR(view.kpis.revenue, { decimals: false })}
+              icon={Banknote}
+              info="Somma dei prezzi di vendita di tutto ciò che hai venduto."
+            />
+            <StatCard
+              label="Spese totali"
+              value={formatEUR(view.kpis.costOfGoods + view.kpis.extraCosts, { decimals: false })}
+              sub={`merce ${formatEUR(view.kpis.costOfGoods, { decimals: false })} · extra ${formatEUR(view.kpis.extraCosts, { decimals: false })}`}
+              icon={Wallet}
+              info="Costo d’acquisto degli articoli venduti + costi extra (imballaggio, spedizione, commissioni)."
+            />
+            <StatCard
+              label="Profitto netto totale"
+              value={formatEUR(view.kpis.totalProfit, { decimals: false })}
+              icon={TrendingUp}
+              tone={view.kpis.totalProfit >= 0 ? 'profit' : 'loss'}
+              info="Ricavi − costo merce venduta − costi extra."
+            />
             <StatCard
               label="Profitto del mese"
               value={formatEUR(view.thisMonth.profit)}
@@ -217,6 +248,8 @@ export default function AnalyticsPage() {
             />
           </div>
 
+          <PeriodComparisonCard items={items!} sales={sales!} />
+
           <Insights
             insights={insights.data?.insights}
             engine={insights.data?.engine}
@@ -224,16 +257,27 @@ export default function AnalyticsPage() {
           />
 
           <div className="grid gap-4 xl:grid-cols-2">
+            <div className="flex items-center justify-between gap-3 xl:col-span-2">
+              <p className="text-sm font-semibold">Andamento nel tempo</p>
+              <Tabs value={granularity} onValueChange={(v) => setGranularity(v as 'week' | 'month')}>
+                <TabsList>
+                  <TabsTrigger value="week">Settimanale</TabsTrigger>
+                  <TabsTrigger value="month">Mensile</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
             <SalesChart
-              data={view.months}
-              title="Profitto per mese"
-              description="Ultimi 12 mesi. Le barre rosse indicano mesi in perdita."
+              key={`p-${granularity}`}
+              data={granularity === 'week' ? view.weeks : view.months}
+              title={granularity === 'week' ? 'Profitto per settimana' : 'Profitto per mese'}
+              description={`${granularity === 'week' ? 'Ultime 12 settimane' : 'Ultimi 12 mesi'}. Le barre rosse indicano periodi in perdita.`}
               metrics={['profit']}
             />
             <SalesChart
-              data={view.months}
-              title="Vendite per mese"
-              description="Numero di articoli venduti o ricavi negli ultimi 12 mesi."
+              key={`s-${granularity}`}
+              data={granularity === 'week' ? view.weeks : view.months}
+              title={granularity === 'week' ? 'Vendite per settimana' : 'Vendite per mese'}
+              description="Numero di articoli venduti o ricavi nel periodo."
               metrics={['sold', 'revenue']}
             />
             <BarListChart

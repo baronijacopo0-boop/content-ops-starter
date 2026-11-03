@@ -26,6 +26,7 @@ import { QuickDealAnalyzer } from '@/components/deals/quick-deal-analyzer';
 import { InventoryHealth } from '@/components/inventory/inventory-health';
 import { RecentItems } from '@/components/inventory/recent-items';
 import { BrandAnalytics } from '@/components/shared/brand-analytics';
+import { WorkflowSteps } from '@/components/dashboard/workflow-steps';
 import { useInventory, useProfile, useSales } from '@/hooks/use-data';
 import { brandStats, computeKpis, monthlySeries } from '@/lib/domain/analytics';
 import { inventoryHealth } from '@/lib/domain/stock';
@@ -102,6 +103,7 @@ export default function DashboardPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
+          <WorkflowSteps items={items!} sales={sales!} />
           {goal ? (
             <Card>
               <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:gap-6">

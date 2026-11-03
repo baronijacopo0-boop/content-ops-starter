@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Logo } from '@/components/shared/logo';
+import { QuickActionsButton, QuickActionsMenu } from '@/components/layout/quick-actions';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useApp } from '@/components/providers/app-provider';
@@ -69,11 +70,11 @@ export const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
   },
 ];
 
-const MOBILE_NAV: NavItem[] = [
+const MOBILE_NAV: (NavItem | 'quick')[] = [
   { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/deals', label: 'Deals', icon: Flame },
-  { href: '/analyze', label: 'Analizza', icon: ScanSearch },
-  { href: '/inventory', label: 'Inventario', icon: Package },
+  'quick',
+  { href: '/inventory', label: 'Gestione', icon: Package },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -279,12 +280,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Desktop top bar */}
       <div className="hidden lg:block lg:pl-64">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-end gap-3 px-8">
-          <Link
-            href="/listings/new"
-            className="inline-flex h-9 items-center gap-2 rounded-xl border bg-card px-3 text-sm font-medium transition hover:bg-accent"
-          >
-            <Sparkles className="h-4 w-4 text-primary" /> Nuovo annuncio
-          </Link>
+          <QuickActionsMenu />
           <NotificationsBell />
         </div>
       </div>
@@ -302,7 +298,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <nav className="safe-bottom fixed inset-x-0 bottom-0 z-30 border-t bg-background/90 backdrop-blur-lg lg:hidden">
         <ul className="mx-auto grid max-w-md grid-cols-5">
           {MOBILE_NAV.map((item) => {
-            const active = isActive(pathname, item.href);
+            if (item === 'quick')
+              return (
+                <li key="quick">
+                  <QuickActionsButton />
+                </li>
+              );
+            const active =
+              isActive(pathname, item.href) ||
+              (item.href === '/inventory' && ['/listings', '/sales'].includes(pathname));
             return (
               <li key={item.href}>
                 <Link

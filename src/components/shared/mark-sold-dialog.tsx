@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Field } from '@/components/ui/label';
 import { SimpleSelect } from '@/components/ui/select';
 import { MARKETPLACES } from '@/lib/domain/constants';
+import { CostBreakdownFields, useCostBreakdown } from '@/components/shared/cost-breakdown';
 import { profitBreakdown } from '@/lib/domain/finance';
 import type { MarketplaceId } from '@/lib/domain/types';
 import { formatEUR, formatPct } from '@/lib/format';
@@ -59,20 +60,21 @@ export function MarkSoldDialog({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const costs = useCostBreakdown();
   const pp = askPurchasePrice ? Number(form.purchasePrice || 0) : (purchasePrice ?? 0);
-  const preview = form.salePrice
-    ? profitBreakdown(pp, Number(form.salePrice), Number(form.extraCosts || 0))
-    : null;
+  const extra = costs.detailed ? costs.total(Number(form.salePrice || 0)) : Number(form.extraCosts || 0);
+  const preview = form.salePrice ? profitBreakdown(pp, Number(form.salePrice), extra) : null;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = markSoldSchema.safeParse(form);
+    const parsed = markSoldSchema.safeParse({ ...form, extraCosts: String(extra) });
     if (!parsed.success) return setErrors(fieldErrors(parsed.error));
     if (minDate && parsed.data.soldAt < minDate)
       return setErrors({ soldAt: 'La data di vendita è precedente all’acquisto' });
     setErrors({});
     setLoading(true);
     try {
+      costs.remember();
       await onConfirm({ ...parsed.data, purchasePrice: askPurchasePrice ? pp : undefined });
       onOpenChange(false);
     } finally {
@@ -105,7 +107,7 @@ export function MarkSoldDialog({
               label="Costi extra (€)"
               htmlFor="s-extra"
               error={errors.extraCosts}
-              hint="Imballaggio, spedizione…"
+              hint={costs.detailed ? 'Calcolati dal dettaglio sotto' : 'Imballaggio, spedizione…'}
             >
               <Input
                 id="s-extra"
@@ -113,7 +115,8 @@ export function MarkSoldDialog({
                 inputMode="decimal"
                 min={0}
                 step="0.5"
-                value={form.extraCosts}
+                readOnly={costs.detailed}
+                value={costs.detailed ? String(extra) : form.extraCosts}
                 onChange={(e) => setForm({ ...form, extraCosts: e.target.value })}
               />
             </Field>
@@ -148,6 +151,7 @@ export function MarkSoldDialog({
               />
             </Field>
           </div>
+          <CostBreakdownFields state={costs} salePrice={Number(form.salePrice || 0)} idPrefix="s" />
           {preview && (
             <div className="grid grid-cols-3 gap-2 rounded-xl bg-muted/40 p-3 text-center">
               <div>

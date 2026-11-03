@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import {
   Banknote,
   Clock,
   Download,
   Package,
   Percent,
+  Plus,
   PiggyBank,
   Receipt,
   Search,
@@ -18,6 +18,9 @@ import { toast } from 'sonner';
 import { EmptyState, ErrorState, PageHeader, StatsSkeleton } from '@/components/shared/states';
 import { StatCard } from '@/components/shared/stat-card';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
+import { PeriodComparisonCard } from '@/components/shared/period-comparison';
+import { QuickSaleDialog } from '@/components/shared/quick-sale-dialog';
+import { WorkflowNav } from '@/components/layout/workflow-nav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SimpleSelect } from '@/components/ui/select';
@@ -79,6 +82,7 @@ export default function SalesPage() {
   const [period, setPeriod] = useState<Period>('all');
   const [text, setText] = useState('');
   const [deleting, setDeleting] = useState<SaleMetrics | null>(null);
+  const [selling, setSelling] = useState(false);
 
   const filtered = useMemo(() => {
     const q = text.trim().toLowerCase();
@@ -107,11 +111,17 @@ export default function SalesPage() {
         title="Vendite"
         description="Lo storico completo delle tue vendite con profitto, ROI e giorni impiegati a vendere."
         actions={
-          <Button variant="outline" onClick={exportCsv} disabled={!rows.length}>
-            <Download /> Esporta CSV
-          </Button>
+          <>
+            <Button variant="outline" onClick={exportCsv} disabled={!rows.length}>
+              <Download /> Esporta CSV
+            </Button>
+            <Button onClick={() => setSelling(true)}>
+              <Plus /> Registra vendita
+            </Button>
+          </>
         }
       />
+      <WorkflowNav />
 
       {error ? (
         <ErrorState message={error.message} onRetry={() => mutate()} />
@@ -127,10 +137,11 @@ export default function SalesPage() {
               info="Somma dei prezzi di vendita nel periodo."
             />
             <StatCard
-              label="Costo merce"
-              value={formatEUR(kpis.costOfGoods, { decimals: false })}
+              label="Spese"
+              value={formatEUR(kpis.costOfGoods + kpis.extraCosts, { decimals: false })}
+              sub={`merce ${formatEUR(kpis.costOfGoods, { decimals: false })} · extra ${formatEUR(kpis.extraCosts, { decimals: false })}`}
               icon={Package}
-              info="Quanto avevi pagato gli articoli venduti."
+              info="Costo d’acquisto degli articoli venduti + costi extra (imballaggio, spedizione, commissioni)."
             />
             <StatCard
               label="Profitto netto"
@@ -159,6 +170,8 @@ export default function SalesPage() {
             />
           </div>
 
+          {sales.length > 0 && <PeriodComparisonCard items={items ?? []} sales={sales} />}
+
           <div className="flex flex-col gap-2 sm:flex-row">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -183,10 +196,10 @@ export default function SalesPage() {
             <EmptyState
               icon={Receipt}
               title="Nessuna vendita nel periodo"
-              description="Quando vendi un articolo, segnalo come venduto dall’inventario: comparirà qui con profitto e ROI."
+              description="Quando vendi un articolo registralo qui (o dall’inventario): comparirà con profitto e ROI."
               action={
-                <Button asChild>
-                  <Link href="/inventory">Vai all’inventario</Link>
+                <Button onClick={() => setSelling(true)}>
+                  <Plus /> Registra vendita
                 </Button>
               }
             />
@@ -252,6 +265,8 @@ export default function SalesPage() {
           )}
         </div>
       )}
+
+      <QuickSaleDialog open={selling} onOpenChange={setSelling} />
 
       <ConfirmDialog
         open={!!deleting}

@@ -29,6 +29,7 @@ Ti servono inoltre: un **dominio** (anche acquistato su Hostinger), un account *
    3. `supabase/migrations/20261027000003_storage.sql`
    4. `supabase/migrations/20261027000004_functions.sql`
    5. `supabase/migrations/20261027000005_reference_data.sql`
+   6. `supabase/migrations/20261103000006_listing_links_community.sql`
    6. *(facoltativo)* `supabase/seed.sql` – comparabili demo per le metriche di mercato.
 
    In alternativa, con la [Supabase CLI](https://supabase.com/docs/guides/cli): `supabase link --project-ref <ref>` e poi `supabase db push`.

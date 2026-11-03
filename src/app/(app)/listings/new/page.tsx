@@ -29,7 +29,7 @@ import { SimpleSelect } from '@/components/ui/select';
 import { useApp } from '@/components/providers/app-provider';
 import { useInventory, useListings, useProfile, useRevalidate } from '@/hooks/use-data';
 import { CATEGORIES, CONDITIONS, SIZES } from '@/lib/domain/constants';
-import type { Condition, ItemCategory, Listing, ListingStatus } from '@/lib/domain/types';
+import type { Condition, InventoryItem, ItemCategory, Listing, ListingStatus } from '@/lib/domain/types';
 import type { ProcessedImage } from '@/lib/image';
 import { toISODate, cn } from '@/lib/utils';
 import { listingSchema, firstError } from '@/lib/validation';
@@ -38,6 +38,8 @@ import { estimatePrice } from '@/services/ai/pricing';
 import type { DetectedField, GeneratedListing, ImageAnalysis, PriceEstimate } from '@/services/ai/types';
 
 const NONE = '__none';
+/** Create the inventory item together with the listing (no double data entry). */
+const NEW_ITEM = '__new';
 const STYLES = ['vintage', 'streetwear', 'y2k', 'sport', 'designer', 'workwear', 'outdoor', 'casual'];
 
 interface Attrs {
@@ -129,7 +131,7 @@ function CreateListing() {
   const [estimate, setEstimate] = useState<PriceEstimate | null>(null);
   const [price, setPrice] = useState('');
   const [purchasePrice, setPurchasePrice] = useState('');
-  const [inventoryItemId, setInventoryItemId] = useState<string>(presetItem ?? NONE);
+  const [inventoryItemId, setInventoryItemId] = useState<string>(presetItem ?? (editId ? NONE : NEW_ITEM));
   const [analyzing, setAnalyzing] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState<ListingStatus | null>(null);
@@ -327,7 +329,8 @@ function CreateListing() {
 
   async function save(status: ListingStatus, link?: { externalUrl: string | null; share: boolean }) {
     if (!repo) return;
-    const linkedId = inventoryItemId === NONE ? null : inventoryItemId;
+    const createItem = inventoryItemId === NEW_ITEM;
+    let linkedId = inventoryItemId === NONE || createItem ? null : inventoryItemId;
     const parsed = listingSchema.safeParse({
       inventoryItemId: linkedId,
       title,
@@ -355,16 +358,45 @@ function CreateListing() {
     });
     if (!parsed.success) return toast.error(firstError(parsed.error));
     setSaving(status);
+    let created: InventoryItem | undefined;
+    let listingSaved = false;
     try {
       const uploaded = await Promise.all(photos.map((p) => repo.uploadImage(p.blob, p.name)));
       const data = { ...parsed.data, photos: [...existingPhotos, ...uploaded].slice(0, 8) };
       const saleStatus = status === 'sold';
+      if (createItem) {
+        created = await repo.createInventoryItem({
+          name: data.title.slice(0, 120),
+          brand: data.brand,
+          category: data.category,
+          size: data.size,
+          condition: data.condition,
+          purchasePrice: purchasePrice === '' ? 0 : Math.max(0, Number(purchasePrice)),
+          purchaseDate: toISODate(new Date()),
+          source: '',
+          listedPrice: data.price,
+          extraCosts: 0,
+          status:
+            status === 'draft'
+              ? data.photos.length
+                ? 'to_list'
+                : 'to_photograph'
+              : status === 'reserved'
+                ? 'reserved'
+                : 'listed',
+          photos: data.photos,
+          notes: 'Creato automaticamente dall’annuncio',
+        });
+        linkedId = created.id;
+        data.inventoryItemId = created.id;
+      }
       const listing = editing
         ? await repo.updateListing(editing.id, { ...data, status: saleStatus ? editing.status : status })
         : await repo.createListing({ ...data, status: saleStatus ? 'published' : status });
+      listingSaved = true;
 
-      const linked = linkedId ? inventory?.find((i) => i.id === linkedId) : undefined;
-      if (linked && linked.status !== 'sold') {
+      const linked = created ?? (linkedId ? inventory?.find((i) => i.id === linkedId) : undefined);
+      if (linked && !created && linked.status !== 'sold') {
         await repo.updateInventoryItem(linked.id, {
           listedPrice: data.price,
           status:
@@ -411,9 +443,12 @@ function CreateListing() {
           : status === 'sold'
             ? 'Annuncio segnato come venduto'
             : 'Annuncio salvato come pubblicato',
+        created ? { description: 'Articolo aggiunto anche all’inventario' } : undefined,
       );
       router.push('/listings');
     } catch (e) {
+      // Don't leave an orphan inventory row if the listing itself could not be saved.
+      if (created && !listingSaved) await repo.deleteInventoryItem(created.id).catch(() => undefined);
       toast.error(e instanceof Error ? e.message : 'Salvataggio non riuscito');
     } finally {
       setSaving(null);
@@ -761,13 +796,18 @@ function CreateListing() {
                   label="Collega all’inventario"
                   htmlFor="l-inv"
                   className="col-span-2"
-                  hint="Aggiorna stato e prezzo dell’articolo quando salvi."
+                  hint={
+                    inventoryItemId === NEW_ITEM
+                      ? 'Salvando, l’articolo viene aggiunto all’inventario con il prezzo pagato: niente doppio inserimento.'
+                      : 'Aggiorna stato e prezzo dell’articolo quando salvi.'
+                  }
                 >
                   <SimpleSelect
                     id="l-inv"
                     value={inventoryItemId}
                     onValueChange={setInventoryItemId}
                     options={[
+                      { value: NEW_ITEM, label: '➕ Crea nuovo articolo in inventario' },
                       { value: NONE, label: 'Nessun articolo' },
                       ...linkable.map((i) => ({ value: i.id, label: `${i.name} (${i.brand})` })),
                     ]}

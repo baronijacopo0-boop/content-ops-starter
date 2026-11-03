@@ -229,3 +229,154 @@ export function worstBrands(sales: Sale[], limit = 5) {
     .sort((a, b) => a.roi - b.roi || a.profit - b.profit)
     .slice(0, limit);
 }
+
+/** Monday 00:00 of the week containing `d` (Italian weeks start on Monday). */
+export function startOfWeek(d: Date): Date {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+
+/** Last `weeks` calendar weeks (Mon–Sun), same shape as {@link monthlySeries} so charts can reuse it. */
+export function weeklySeries(
+  items: InventoryItem[],
+  sales: Sale[],
+  weeks = 12,
+  now = new Date(),
+): MonthPoint[] {
+  const first = startOfWeek(now);
+  first.setDate(first.getDate() - (weeks - 1) * 7);
+  const points: MonthPoint[] = [];
+  for (let i = 0; i < weeks; i++) {
+    const d = new Date(first);
+    d.setDate(d.getDate() + i * 7);
+    points.push({
+      key: toISODate(d),
+      label: d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' }).replace('.', ''),
+      sold: 0,
+      bought: 0,
+      revenue: 0,
+      profit: 0,
+      roi: 0,
+    });
+  }
+  const firstDay = toISODate(first);
+  const indexOf = (iso: string) => {
+    const day = iso.slice(0, 10);
+    if (day < firstDay) return -1;
+    const [y, m, d] = day.split('-').map(Number);
+    const idx = Math.floor(daysBetween(first, new Date(y, m - 1, d)) / 7);
+    return idx >= weeks ? -1 : idx;
+  };
+  const cost: number[] = new Array(weeks).fill(0);
+  for (const s of sales.map(enrichSale)) {
+    const i = indexOf(s.soldAt);
+    if (i < 0) continue;
+    points[i].sold++;
+    points[i].revenue = round(points[i].revenue + s.salePrice);
+    points[i].profit = round(points[i].profit + s.profit);
+    cost[i] += s.purchasePrice;
+  }
+  for (const date of [
+    ...items.filter((i) => i.status !== 'sold').map((i) => i.purchaseDate),
+    ...sales.map((s) => s.purchasedAt),
+  ]) {
+    const i = indexOf(date);
+    if (i >= 0) points[i].bought++;
+  }
+  points.forEach((p, i) => (p.roi = cost[i] ? round((p.profit / cost[i]) * 100, 1) : 0));
+  return points;
+}
+
+export interface PeriodTotals {
+  revenue: number;
+  /** Purchase cost of what was bought in the period + extra costs of what was sold. */
+  spent: number;
+  costOfGoodsSold: number;
+  extraCosts: number;
+  profit: number;
+  sold: number;
+  bought: number;
+}
+
+export interface PeriodComparison {
+  period: 'week' | 'month';
+  currentLabel: string;
+  previousLabel: string;
+  current: PeriodTotals;
+  previous: PeriodTotals;
+  /** % change current vs previous; null when the previous period is 0. */
+  delta: Record<keyof PeriodTotals, number | null>;
+}
+
+function totalsBetween(items: InventoryItem[], sales: Sale[], from: Date, to: Date): PeriodTotals {
+  const lo = toISODate(from);
+  const hi = toISODate(to);
+  const inRange = (iso: string) => {
+    const day = iso.slice(0, 10);
+    return day >= lo && day < hi;
+  };
+  const sold = sales.map(enrichSale).filter((s) => inRange(s.soldAt));
+  const boughtCosts = [
+    ...items.filter((i) => i.status !== 'sold' && inRange(i.purchaseDate)).map((i) => i.purchasePrice),
+    ...sales.filter((s) => inRange(s.purchasedAt)).map((s) => s.purchasePrice),
+  ];
+  const extraCosts = round(sum(sold.map((s) => s.extraCosts)));
+  return {
+    revenue: round(sum(sold.map((s) => s.salePrice))),
+    spent: round(sum(boughtCosts) + extraCosts),
+    costOfGoodsSold: round(sum(sold.map((s) => s.purchasePrice))),
+    extraCosts,
+    profit: round(sum(sold.map((s) => s.profit))),
+    sold: sold.length,
+    bought: boughtCosts.length,
+  };
+}
+
+const pctChange = (cur: number, prev: number) =>
+  prev === 0 ? null : round(((cur - prev) / Math.abs(prev)) * 100, 1);
+
+/**
+ * This week vs last week (or this month vs last month). The current period runs up to `now`
+ * and the previous one covers the same number of days, so a Wednesday is compared to last
+ * Monday–Wednesday rather than to a full week.
+ */
+export function periodComparison(
+  items: InventoryItem[],
+  sales: Sale[],
+  period: 'week' | 'month',
+  now = new Date(),
+): PeriodComparison {
+  const start =
+    period === 'week' ? startOfWeek(now) : new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+  const end = new Date(now);
+  end.setHours(24, 0, 0, 0);
+  let prevStart: Date;
+  let prevEnd: Date;
+  if (period === 'week') {
+    prevStart = new Date(start);
+    prevStart.setDate(prevStart.getDate() - 7);
+    prevEnd = new Date(end);
+    prevEnd.setDate(prevEnd.getDate() - 7);
+  } else {
+    prevStart = new Date(start.getFullYear(), start.getMonth() - 1, 1);
+    const elapsed = daysBetween(start, end);
+    const prevMonthDays = new Date(start.getFullYear(), start.getMonth(), 0).getDate();
+    prevEnd = new Date(prevStart);
+    prevEnd.setDate(prevEnd.getDate() + Math.min(elapsed, prevMonthDays));
+  }
+  const current = totalsBetween(items, sales, start, end);
+  const previous = totalsBetween(items, sales, prevStart, prevEnd);
+  const delta = Object.fromEntries(
+    (Object.keys(current) as (keyof PeriodTotals)[]).map((k) => [k, pctChange(current[k], previous[k])]),
+  ) as PeriodComparison['delta'];
+  return {
+    period,
+    currentLabel: period === 'week' ? 'Questa settimana' : 'Questo mese',
+    previousLabel: period === 'week' ? 'Settimana scorsa' : 'Mese scorso',
+    current,
+    previous,
+    delta,
+  };
+}

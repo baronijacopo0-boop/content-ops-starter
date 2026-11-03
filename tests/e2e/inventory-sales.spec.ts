@@ -58,8 +58,35 @@ test('calcolatore profitto e ROI', async ({ page }) => {
   await page.goto('/calculator');
   await page.getByLabel('Prezzo di acquisto (€)').fill('10');
   await page.getByLabel('Prezzo di vendita (€)').fill('30');
-  await page.getByLabel('Costi extra (€)').fill('2');
+  // Default extra costs: imballaggio 1 + altro 1 = 2 €
   await expect(page.getByTestId('profit-value')).toHaveText('+18,00 €');
   await expect(page.getByTestId('roi-value')).toHaveText('180%');
   await expect(page.getByTestId('margin-value')).toHaveText('60%');
+  // 10% platform fee on 30 € = 3 € more costs
+  await page.getByLabel('Commissione (%)').fill('10');
+  await expect(page.getByTestId('profit-value')).toHaveText('+15,00 €');
+});
+
+test('flusso: dashboard, registra vendita rapida, confronto periodi', async ({ page }) => {
+  await registerAndOnboard(page);
+  await page.goto('/dashboard');
+  await expect(page.getByTestId('workflow-steps')).toContainText('Prossimo passo');
+
+  await page.goto('/sales');
+  await expect(page.getByTestId('period-comparison')).toBeVisible();
+  const before = await page.getByTestId('sales-table').locator('tbody tr').count();
+  await page.getByRole('button', { name: 'Registra vendita' }).first().click();
+  const list = page.getByTestId('quick-sale-list');
+  const first = list.getByRole('button').first();
+  const name = (await first.locator('span span').first().textContent())!.trim();
+  await first.click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Prezzo di vendita (€)').fill('40');
+  await dialog.getByRole('button', { name: 'Dettaglia costi extra' }).click();
+  await dialog.getByLabel('Imballaggio (€)').fill('1');
+  await expect(dialog.getByLabel('Costi extra (€)')).toHaveValue('1');
+  await dialog.getByRole('button', { name: 'Conferma vendita' }).click();
+  await expect(page.getByText('Vendita registrata')).toBeVisible();
+  await expect(page.getByTestId('sales-table').locator('tbody tr')).toHaveCount(before + 1);
+  await expect(page.getByTestId('sales-table')).toContainText(name);
 });

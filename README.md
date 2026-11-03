@@ -25,24 +25,24 @@
 
 ## Funzionalità
 
-| Area | Cosa fa |
-| --- | --- |
-| **Autenticazione** | Registrazione, login, logout, recupero e reset password, conferma email, route protette (server + client). |
-| **Onboarding** | Budget, categoria principale, brand preferiti, obiettivo mensile, ROI minimo, dati demo opzionali. |
-| **Dashboard** | Saluto, obiettivo del mese, 4 KPI principali + capitale investito, fatturato, margine, sell-through, tempo medio vendita; grafico profitto (7g/30g/3m/6m/1a), vendite mensili, top brand, ultimi articoli, Inventory Health, consiglio del giorno, widget **“Sto per comprare…”** (BUY / MAYBE / SKIP). |
-| **Deal Finder** | **Annunci reali da eBay ed Etsy** (API ufficiali, foto, prezzo + spedizione, link all’annuncio) insieme a 20 occasioni demo, con barra “Fonti” e filtro per fonte; Deal Score, badge HOT/GOOD/MAYBE/SKIP, profitto, ROI, tempo vendita; filtri (brand, categoria, taglia, condizione, prezzo max, profitto min, ROI min, score min, giorni max, solo brand preferiti) e 6 ordinamenti; dettaglio con analisi completa e “L’ho comprato” → inventario. |
-| **Analizza prodotto** | Valore di mercato, prezzo consigliato, profitto, ROI, Deal Score con scomposizione, tempo vendita, verdetto, **best buy price**, spiegazione AI, Price Advisor, storico analisi. |
-| **Crea annuncio AI** | Upload 1-8 foto (validazione MIME/magic bytes/dimensione, resize, rimozione EXIF), analisi foto, campi “da confermare”, titoli SEO, descrizione pronta da copiare, Price Advisor a 3 strategie, salvataggio Bozza/Pubblicato/Venduto, collegamento all’inventario, modifica annunci esistenti. |
-| **I miei annunci** | Filtri Tutti/Attivi/Venduti/Bozze, azioni Modifica/Duplica/Segna venduto/Elimina (UI ottimistica). |
-| **Inventario** | Tutti i campi richiesti, stati (Da fotografare → Venduto), stock age NEW/NORMAL/SLOW/OLD STOCK, Inventory Health, profitto e ROI automatici, vendita con anteprima profitto. |
-| **Vendite** | Storico con profitto, ROI, giorni per vendere; KPI; filtri periodo; export CSV. |
-| **Watchlist** | Ricerche salvate con tutti i filtri, match in tempo reale con il Deal Finder, attiva/disattiva, notifiche in-app (“Controlla ora”), pipeline predisposta per email/push. |
-| **Analytics** | 10 KPI, AI Insights, profitto e vendite per mese, ROI per brand, profitto per categoria, tempo vendita per brand, prezzo medio acquisto vs vendita, top 5 e 5 peggiori brand. |
-| **Guida Reselling** | 16 categorie, 8 guide complete. |
-| **Calcolatore** | Profitto, ROI, margine in tempo reale + prezzo massimo da pagare / prezzo minimo di vendita per un ROI target. |
-| **Profilo / Impostazioni** | Foto profilo, username, obiettivi, brand/categorie preferite, statistiche; pesi del Deal Score modificabili, costi extra predefiniti, notifiche, cambio password, carica/elimina dati demo, stato DB/AI. |
+| Area                       | Cosa fa                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Autenticazione**         | Registrazione, login, logout, recupero e reset password, conferma email, route protette (server + client).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Onboarding**             | Budget, categoria principale, brand preferiti, obiettivo mensile, ROI minimo, dati demo opzionali.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Dashboard**              | **Il tuo flusso** (Ricerca → Acquisto → Analisi AI → Annuncio → Inventario → Vendita → Profitto, con conteggi e “prossimo passo”), saluto, obiettivo del mese, 4 KPI principali + capitale investito, fatturato, margine, sell-through, tempo medio vendita; grafico profitto (7g/30g/3m/6m/1a), vendite mensili, top brand, ultimi articoli, Inventory Health, consiglio del giorno, widget **“Sto per comprare…”** (BUY / MAYBE / SKIP).                                                                                                                                                                                                                                                                                                                                         |
+| **Deal Finder**            | **Annunci reali da eBay ed Etsy** (API ufficiali, foto, prezzo + spedizione, link all’annuncio) insieme a 20 occasioni demo, con barra “Fonti” e filtro per fonte; **Community RIVENDO**: annunci che altri utenti scelgono di condividere, valutati come occasioni e con link al loro annuncio Vinted (solo con Supabase); Deal Score, badge HOT/GOOD/MAYBE/SKIP, profitto, ROI, tempo vendita; filtri (brand, categoria, taglia, condizione, prezzo max, profitto min, ROI min, score min, giorni max, solo brand preferiti) e 6 ordinamenti; dettaglio con analisi completa e “L’ho comprato” → inventario.                                                                                                                                                                     |
+| **Analizza prodotto**      | Valore di mercato, prezzo consigliato, profitto, ROI, Deal Score con scomposizione, tempo vendita, verdetto, **best buy price**, spiegazione AI, Price Advisor, storico analisi.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Crea annuncio AI**       | Foto dell’**etichetta** letta con OCR nel browser (brand, taglia, materiale), riconoscimento di 76 brand con alias e modelli iconici (es. Nuptse, Detroit, Samba), titoli SEO Vinted (max 70 caratteri), descrizione strutturata con misure e difetti, prezzi realistici (vendita veloce / consigliato / massimo, mai sopra il range di mercato), flusso **Pubblica su Vinted** (copia campi, apri Vinted, salva il link). Upload 1-8 foto (validazione MIME/magic bytes/dimensione, resize, rimozione EXIF), analisi foto, campi “da confermare”, titoli SEO, descrizione pronta da copiare, Price Advisor a 3 strategie, salvataggio Bozza/Pubblicato/Venduto, collegamento all’inventario (o **creazione automatica dell’articolo in inventario**), modifica annunci esistenti. |
+| **I miei annunci**         | Card con brand/categoria/taglia, filtri per stato, categoria, brand, prezzo massimo e ricerca, 4 ordinamenti, **modifica rapida** (titolo, prezzo, stato, brand, categoria, link), link “Apri su Vinted” e all’articolo in inventario, Duplica/Segna venduto/Elimina (UI ottimistica), condivisione opzionale nella community.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Inventario**             | Filtri per stato, età, categoria, brand e ricerca, ordinamenti; prezzo di vendita modificabile anche dopo la vendita (la vendita collegata si aggiorna). Tutti i campi richiesti, stati (Da fotografare → Venduto), stock age NEW/NORMAL/SLOW/OLD STOCK, Inventory Health, profitto e ROI automatici, vendita con anteprima profitto.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Vendite**                | **Registra vendita** in due tocchi, storico con profitto, ROI, giorni per vendere; KPI con spese (merce + extra); confronto settimana/mese; filtri periodo; export CSV.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Watchlist**              | Ricerche salvate con tutti i filtri, match in tempo reale con il Deal Finder, attiva/disattiva, notifiche in-app (“Controlla ora”), pipeline predisposta per email/push.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Analytics**              | Ricavi, spese e profitto netto totali, **confronto questa settimana vs scorsa / questo mese vs scorso** (a parità di giorni), grafici settimanali o mensili, 10 KPI, AI Insights, profitto e vendite per mese, ROI per brand, profitto per categoria, tempo vendita per brand, prezzo medio acquisto vs vendita, top 5 e 5 peggiori brand.                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Guida Reselling**        | 16 categorie, 8 guide complete.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **Calcolatore**            | Costi extra dettagliati (imballaggio, spedizione, commissione % e fissa, altro), profitto netto, ROI, margine in tempo reale, totali reali dalle vendite registrate + prezzo massimo da pagare / prezzo minimo di vendita per un ROI target.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Profilo / Impostazioni** | Foto profilo, username, obiettivi, brand/categorie preferite, statistiche; pesi del Deal Score modificabili, costi extra predefiniti, notifiche, cambio password, carica/elimina dati demo, stato DB/AI.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-UI: dark mode, mobile-first (bottom navigation + menu a scomparsa su smartphone, sidebar su desktop), skeleton loader, stati vuoti/errore, toast, tooltip che spiegano **cosa significa ogni dato e perché è importante**.
+UI: dark mode, mobile-first (bottom navigation con pulsante **+** per le azioni rapide — Nuovo articolo, Crea annuncio, Registra vendita, Analizza — e menu a scomparsa su smartphone; pulsante “Nuovo” su desktop; tab Inventario/Annunci/Vendite; sidebar su desktop), skeleton loader, stati vuoti/errore, toast, tooltip che spiegano **cosa significa ogni dato e perché è importante**.
 
 ## Architettura
 
@@ -112,7 +112,7 @@ Scelte principali:
 │                                    calculateDealScore, analyzeDeal, generateBusinessInsights,
 │                                    generateResellingAdvice, server (Claude), client, rate-limit
 ├── supabase/
-│   ├── migrations/                  001 schema · 002 RLS · 003 storage · 004 funzioni · 005 reference data
+│   ├── migrations/                  001 schema · 002 RLS · 003 storage · 004 funzioni · 005 reference data · 006 link e community
 │   ├── seed.sql                     comparabili demo per market intelligence (facoltativo)
 │   └── tests/                       test RLS su PostgreSQL locale
 └── tests/                           unit (Vitest) ed E2E (Playwright)
@@ -134,29 +134,30 @@ npm run dev                    # http://localhost:3000
 
 Script utili:
 
-| Comando | Descrizione |
-| --- | --- |
-| `npm run dev` | sviluppo |
-| `npm run build` / `npm start` | build e avvio produzione (Node.js) |
-| `npm run build:static` | export statico in `out/` (+ `.htaccess`) |
-| `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
-| `npm test` | unit test (Vitest) |
-| `npm run test:e2e` | test E2E (Playwright, build di produzione in modalità demo) |
-| `npm run test:db` | applica migrations + seed su un PostgreSQL locale e verifica le policy RLS |
-| `npm run seed:demo` | crea/aggiorna l’account demo su Supabase (usa la service role key da `.env.local`) |
-| `npm run db:generate` | rigenera `reference_data.sql` e `seed.sql` dalle costanti TypeScript |
+| Comando                              | Descrizione                                                                        |
+| ------------------------------------ | ---------------------------------------------------------------------------------- |
+| `npm run dev`                        | sviluppo                                                                           |
+| `npm run build` / `npm start`        | build e avvio produzione (Node.js)                                                 |
+| `npm run build:static`               | export statico in `out/` (+ `.htaccess`)                                           |
+| `npm run lint` / `npm run typecheck` | ESLint / TypeScript                                                                |
+| `npm test`                           | unit test (Vitest)                                                                 |
+| `npm run test:e2e`                   | test E2E (Playwright, build di produzione in modalità demo)                        |
+| `npm run test:db`                    | applica migrations + seed su un PostgreSQL locale e verifica le policy RLS         |
+| `npm run seed:demo`                  | crea/aggiorna l’account demo su Supabase (usa la service role key da `.env.local`) |
+| `npm run db:generate`                | rigenera `reference_data.sql` e `seed.sql` dalle costanti TypeScript               |
 
 ## Supabase: schema, migrations, RLS
 
 Migrations in `supabase/migrations/` (da eseguire **in ordine**):
 
-| File | Contenuto |
-| --- | --- |
-| `…01_schema.sql` | tabelle, vincoli, indici, colonne calcolate (`profit`, `roi`, `days_to_sell`), trigger `updated_at`, trigger `handle_new_user` (crea profilo, obiettivi e impostazioni alla registrazione) |
-| `…02_rls.sql` | RLS su tutte le tabelle, grant minimi, policy “solo i propri dati”; i riferimenti a inventario/annunci di altri utenti sono bloccati |
-| `…03_storage.sql` | bucket `item-photos` (5 MB, JPG/PNG/WEBP) e policy: ogni utente scrive solo nella cartella `<user_id>/` |
-| `…04_functions.sql` | `mark_item_sold()` (vendita atomica), `market_metrics()` (media, mediana, range, tempo vendita, domanda, vendite, annunci, sell-through), `refresh_market_prices()` (solo service_role) |
-| `…05_reference_data.sql` | categorie e brand (generati da `scripts/generate-sql.ts`) |
+| File                              | Contenuto                                                                                                                                                                                                                                                                                                     |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `…01_schema.sql`                  | tabelle, vincoli, indici, colonne calcolate (`profit`, `roi`, `days_to_sell`), trigger `updated_at`, trigger `handle_new_user` (crea profilo, obiettivi e impostazioni alla registrazione)                                                                                                                    |
+| `…02_rls.sql`                     | RLS su tutte le tabelle, grant minimi, policy “solo i propri dati”; i riferimenti a inventario/annunci di altri utenti sono bloccati                                                                                                                                                                          |
+| `…03_storage.sql`                 | bucket `item-photos` (5 MB, JPG/PNG/WEBP) e policy: ogni utente scrive solo nella cartella `<user_id>/`                                                                                                                                                                                                       |
+| `…04_functions.sql`               | `mark_item_sold()` (vendita atomica), `market_metrics()` (media, mediana, range, tempo vendita, domanda, vendite, annunci, sell-through), `refresh_market_prices()` (solo service_role)                                                                                                                       |
+| `…05_reference_data.sql`          | categorie e brand (generati da `scripts/generate-sql.ts`)                                                                                                                                                                                                                                                     |
+| `…06_listing_links_community.sql` | link all’annuncio pubblicato (`external_url`, solo https), condivisione opzionale (`shared_in_community`, richiede il link) e funzione `community_listings()` che espone agli altri utenti **solo** titolo, brand, categoria, taglia, condizioni, prezzo, prima foto, link e username degli annunci condivisi |
 
 Tabelle: `profiles`, `user_goals`, `user_settings`, `inventory_items`, `listings`, `sales`, `watchlists`, `watchlist_filters`, `ai_generations`, `deal_analyses`, `notifications`, `market_items`, `market_prices`, `brands`, `categories`.
 Tutte le tabelle utente hanno `user_id → auth.users(id)` con `on delete cascade`.
@@ -167,15 +168,15 @@ Le policy sono testate (`npm run test:db`): un utente non può leggere, modifica
 
 `src/services/ai/` contiene le funzioni richieste:
 
-| Funzione | Dove | Note |
-| --- | --- | --- |
-| `calculateDealScore()` | `deal-score.ts` | 30% prezzo vs mercato · 20% domanda brand · 20% ROI · 15% velocità · 10% condizione · 5% taglia. Pesi modificabili dall’utente (Impostazioni) e normalizzati. |
-| `estimatePrice()` | `pricing.ts` | valore di mercato dai comparabili (normalizzati per condizione) + 3 strategie (veloce / consigliato / massimo profitto) con giorni stimati. |
-| `analyzeDeal()` | `deal.ts` | verdetto, profitto, ROI, margine, tempo vendita, prezzo massimo da pagare per il ROI target, spiegazione basata sui dati. |
-| `analyzeItemImages()` | `images.ts` / `server.ts` | mock: colori misurati dai pixel, brand/tipo da nome file e suggerimenti; con AI: visione Claude con output strutturato. Taglia e condizione sono **sempre** da confermare. |
-| `generateListing()` | `listing.ts` / `server.ts` | titoli SEO naturali (con accordo dei colori in italiano), descrizione pronta, hashtag, avvisi per i dati mancanti. Non inventa autenticità, materiali, condizioni, difetti, taglia o provenienza. |
-| `generateBusinessInsights()` | `insights.ts` | insight calcolati dai dati reali dell’utente (confronto brand, brand lenti, quota categoria, capitale bloccato, leva sul prezzo d’acquisto, brand in perdita, obiettivo mensile, articoli non pubblicati). |
-| `generateResellingAdvice()` | `advice.ts` | consiglio del giorno + guida collegata. |
+| Funzione                     | Dove                       | Note                                                                                                                                                                                                       |
+| ---------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `calculateDealScore()`       | `deal-score.ts`            | 30% prezzo vs mercato · 20% domanda brand · 20% ROI · 15% velocità · 10% condizione · 5% taglia. Pesi modificabili dall’utente (Impostazioni) e normalizzati.                                              |
+| `estimatePrice()`            | `pricing.ts`               | valore di mercato dai comparabili (normalizzati per condizione) + 3 strategie (veloce / consigliato / massimo profitto) con giorni stimati.                                                                |
+| `analyzeDeal()`              | `deal.ts`                  | verdetto, profitto, ROI, margine, tempo vendita, prezzo massimo da pagare per il ROI target, spiegazione basata sui dati.                                                                                  |
+| `analyzeItemImages()`        | `images.ts` / `server.ts`  | mock: colori misurati dai pixel, brand/tipo da nome file e suggerimenti; con AI: visione Claude con output strutturato. Taglia e condizione sono **sempre** da confermare.                                 |
+| `generateListing()`          | `listing.ts` / `server.ts` | titoli SEO naturali (con accordo dei colori in italiano), descrizione pronta, hashtag, avvisi per i dati mancanti. Non inventa autenticità, materiali, condizioni, difetti, taglia o provenienza.          |
+| `generateBusinessInsights()` | `insights.ts`              | insight calcolati dai dati reali dell’utente (confronto brand, brand lenti, quota categoria, capitale bloccato, leva sul prezzo d’acquisto, brand in perdita, obiettivo mensile, articoli non pubblicati). |
+| `generateResellingAdvice()`  | `advice.ts`                | consiglio del giorno + guida collegata.                                                                                                                                                                    |
 
 Con `AI_API_KEY` impostata, `server.ts` usa l’SDK ufficiale Anthropic (modello `AI_MODEL`, default `claude-opus-5-5`, effort basso, output strutturato con schema zod, fallback lato server in caso di rifiuto). Qualsiasi errore → risultato del motore locale. La logica numerica (score, prezzi, ROI) resta sempre deterministica: l’LLM migliora solo testi e riconoscimento visivo.
 
@@ -184,11 +185,11 @@ Con `AI_API_KEY` impostata, `server.ts` usa l’SDK ufficiale Anthropic (modello
 `src/lib/marketplace/types.ts` definisce `MarketplaceProvider` con `searchItems`, `getItem`, `getUserItems`, `getSoldItems`, `getProfile`, `getMarketData`, `getComparableItems`, `getEstimatedMarketValue`.
 Provider disponibili:
 
-| Provider | Dati | Come |
-| --- | --- | --- |
-| `MockVintedProvider` | 20 occasioni demo + ~1.600 comparabili | generati localmente: **nessuna richiesta a Vinted** |
-| `EbayProvider` | annunci reali (foto, prezzo, spedizione, venditore, link) | eBay **Browse API** ufficiale, token applicativo OAuth (`EBAY_CLIENT_ID/SECRET`) |
-| `EtsyProvider` | annunci reali in EUR con foto | Etsy **Open API v3** ufficiale (`ETSY_API_KEY`) |
+| Provider             | Dati                                                      | Come                                                                             |
+| -------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `MockVintedProvider` | 20 occasioni demo + ~1.600 comparabili                    | generati localmente: **nessuna richiesta a Vinted**                              |
+| `EbayProvider`       | annunci reali (foto, prezzo, spedizione, venditore, link) | eBay **Browse API** ufficiale, token applicativo OAuth (`EBAY_CLIENT_ID/SECRET`) |
+| `EtsyProvider`       | annunci reali in EUR con foto                             | Etsy **Open API v3** ufficiale (`ETSY_API_KEY`)                                  |
 
 Gli annunci reali passano da `/api/market/search` (chiavi solo server-side, cache 10 minuti, rate limit) e vengono normalizzati da `normalize.ts` (brand, categoria, taglia, condizione dal titolo; annunci non classificabili o non in EUR vengono scartati). Il costo usato nell’analisi è **prezzo + spedizione**. Il valore di mercato resta stimato dai comparabili, perché i dati di vendita reali (sold) di eBay sono un’API ad accesso riservato. Niente scraping, auto-buy, auto-like o messaggi automatici; Depop, Grailed, Vestiaire e Wallapop restano disattivati finché non esiste un’API autorizzata.
 
@@ -219,6 +220,7 @@ Flussi E2E coperti: registrazione → onboarding → dashboard · route protette
 **Funzionante e reale**: auth Supabase, database con RLS, storage foto, inventario, annunci, vendite, watchlist, analytics, insight, calcoli di profitto/ROI/stock age, Deal Score, prezzi dai comparabili, generazione annunci (motore locale), modalità demo, export CSV.
 
 **Mock / demo**:
+
 - Annunci Vinted (`MockVintedProvider`): generati localmente (Vinted non ha API pubbliche).
 - Valore di mercato degli annunci reali: stimato dai comparabili demo finché non si collega una fonte di venduti autorizzata.
 - Visualizzazioni e preferiti degli annunci (non sincronizzati con Vinted).
@@ -226,6 +228,7 @@ Flussi E2E coperti: registrazione → onboarding → dashboard · route protette
 - Notifiche watchlist: generate on-demand con “Controlla ora”, solo in-app.
 
 **Da collegare in futuro**:
+
 - Provider marketplace reali (API ufficiali / integrazioni autorizzate / import CSV dei propri dati).
 - Job programmato per watchlist e `refresh_market_prices()` (Supabase Cron + Edge Function o cron Hostinger) + email/push.
 - Import automatico delle vendite dal marketplace (solo tramite API autorizzate).

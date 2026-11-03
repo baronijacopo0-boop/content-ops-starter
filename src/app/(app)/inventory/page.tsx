@@ -59,6 +59,13 @@ function InventoryView() {
   const [brand, setBrand] = useState(ALL);
   const [sort, setSort] = useState<Sort>('recent');
   const [editing, setEditing] = useState<InventoryItem | null | undefined>(undefined);
+  // `?new=1` (quick actions) opens the "add item" dialog, also when already on this page.
+  const newParam = params.get('new');
+  const [seenNew, setSeenNew] = useState<string | null>(null);
+  if (newParam !== seenNew) {
+    setSeenNew(newParam);
+    if (newParam) setEditing(null);
+  }
   const [selling, setSelling] = useState<InventoryItem | null>(null);
   const [deleting, setDeleting] = useState<InventoryItem | null>(null);
 
@@ -235,7 +242,11 @@ function InventoryView() {
         <InventoryItemDialog
           key={editing?.id ?? 'new'}
           open
-          onOpenChange={(o) => !o && setEditing(undefined)}
+          onOpenChange={(o) => {
+            if (o) return;
+            setEditing(undefined);
+            if (newParam) router.replace('/inventory');
+          }}
           item={editing}
           onSaved={() => revalidate('inventory', 'listings')}
         />
