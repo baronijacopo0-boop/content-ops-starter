@@ -1,6 +1,12 @@
 import type { Condition, ItemCategory } from '@/lib/domain/types';
-import { findBrand } from '@/lib/domain/constants';
-import { detectBrand, detectCategory } from '@/lib/marketplace/normalize';
+import { findBrand, modelPremium } from '@/lib/domain/constants';
+import {
+  detectBrand,
+  detectCategory,
+  detectFeatures,
+  detectStyle,
+  parseLabelText,
+} from '@/lib/marketplace/normalize';
 import type { DetectedField, ImageAnalysis, ImageAnalysisInput } from './types';
 
 function field<T>(
@@ -25,9 +31,12 @@ export function analyzeItemImagesMock(input: ImageAnalysisInput): ImageAnalysis 
   const names = input.images.map((i) => normalize(i.name)).join(' ');
   const hints = input.hints ?? {};
 
-  // Brand: user hint > keyword in file name
+  const label = hints.labelText ? parseLabelText(hints.labelText) : null;
+
+  // Brand: user hint > label text (OCR) > keyword in file name
   let brand: DetectedField = field<string>(null, 'low');
   if (hints.brand) brand = field(findBrand(hints.brand)?.name ?? hints.brand, 'medium', true);
+  else if (label?.brand) brand = field(label.brand, 'high', true);
   else {
     const hit = detectBrand(names);
     if (hit) brand = field(hit, 'medium', true);
@@ -52,13 +61,18 @@ export function analyzeItemImagesMock(input: ImageAnalysisInput): ImageAnalysis 
     .slice(0, 2);
   const colorField = field(colors.length ? colors : null, colors.length ? 'medium' : 'low', true);
 
-  const brandInfo = brand.value ? findBrand(brand.value) : undefined;
-  const style = brandInfo
-    ? field(brandInfo.niches[0] === 'other' ? 'casual' : brandInfo.niches[0], 'low', true)
-    : field<string>(null, 'low');
+  const allText = `${names} ${hints.labelText ?? ''}`;
+  const style =
+    brand.value || /vintage|y2k|90s|80s|workwear/i.test(allText)
+      ? field<string>(detectStyle(allText, brand.value), 'low', true)
+      : field<string>(null, 'low');
+  const premium = modelPremium(allText);
 
   const notes = [
-    'Analisi in modalità demo: colori misurati dalle foto, brand e tipo di capo dedotti da nome file e suggerimenti.',
+    label
+      ? 'Etichetta letta: brand, taglia e materiale ricavati dal testo dell’etichetta (verifica che siano corretti).'
+      : 'Suggerimento: carica una foto dell’etichetta e premi “Leggi etichetta” per brand, taglia e materiale.',
+    'Analisi in modalità demo: colori misurati dalle foto, brand e tipo di capo dedotti da nome file, etichetta e suggerimenti.',
     'Configura AI_API_KEY sul server per il riconoscimento visivo completo.',
     'Controlla sempre taglia, materiale e difetti direttamente sul capo.',
   ];
@@ -68,10 +82,16 @@ export function analyzeItemImagesMock(input: ImageAnalysisInput): ImageAnalysis 
     brand,
     colors: colorField,
     style,
-    material: field<string>(null, 'low'),
+    material: label?.material ? field<string>(label.material, 'high', true) : field<string>(null, 'low'),
     condition: field<Condition>(null, 'low'),
     graphic: field<string>(null, 'low'),
-    size: hints.size ? field<string>(hints.size, 'medium', true) : field<string>(null, 'low'),
+    size: hints.size
+      ? field<string>(hints.size, 'medium', true)
+      : label?.size
+        ? field<string>(label.size, 'high', true)
+        : field<string>(null, 'low'),
+    model: premium.label ? field<string>(premium.label, 'low', true) : field<string>(null, 'low'),
+    features: detectFeatures(allText),
     defects: [],
     notes,
     engine: 'mock',

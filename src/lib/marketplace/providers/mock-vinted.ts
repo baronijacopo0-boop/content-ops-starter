@@ -1,4 +1,4 @@
-import { brandOrDefault, CATEGORIES } from '@/lib/domain/constants';
+import { brandOrDefault, CATEGORIES, modelPremium } from '@/lib/domain/constants';
 import { round } from '@/lib/utils';
 import { buildComparables, buildDealFeed } from '../data/mock-catalog';
 import { computeMarketMetrics, conditionFactor, normalizeToCondition } from '../metrics';
@@ -107,13 +107,20 @@ export class MockVintedProvider implements MarketplaceProvider {
 
   async getEstimatedMarketValue(query: MarketValueQuery): Promise<EstimatedMarketValue> {
     const brand = brandOrDefault(query.brand);
-    const comps = normalizeToCondition(this.filterComparables(query), query.condition);
+    const premium = modelPremium(query.title);
+    const comps = normalizeToCondition(
+      this.filterComparables({ brand: query.brand, category: query.category }),
+      query.condition,
+    );
     const m = computeMarketMetrics(comps, brand.demand);
+    // Iconic models sell above the brand average; everything else stays conservative.
+    const k = premium.multiplier;
     if (m.salesCount >= 3) {
-      const mid = m.medianPrice;
+      const mid = m.medianPrice * k;
       return {
-        low: round(Math.min(m.p25, mid * 0.9), 0),
-        high: round(Math.max(m.p75, mid * 1.1), 0),
+        // The realistic range is the middle half of what similar items actually sold for.
+        low: round(Math.min(m.p25 * k, mid * 0.9), 0),
+        high: round(Math.max(Math.min(m.p75 * k, mid * 1.25), mid * 1.08), 0),
         mid: round(mid, 0),
         confidence: Math.min(1, m.salesCount / 12),
         comparablesCount: m.salesCount,
@@ -121,11 +128,12 @@ export class MockVintedProvider implements MarketplaceProvider {
         demandScore: m.demandScore,
         sellThroughRate: m.sellThroughRate,
         source: 'comparables',
+        modelLabel: premium.label,
       };
     }
-    // Not enough data → price model from brand & category priors.
+    // Not enough data → conservative price model from brand & category priors.
     const cat = CATEGORIES.find((c) => c.value === query.category)!;
-    const mid = cat.basePrice * brand.priceMultiplier * conditionFactor(query.condition);
+    const mid = cat.basePrice * brand.priceMultiplier * conditionFactor(query.condition) * k;
     const days = cat.speedDays * Math.pow(100 / brand.demand, 1.1);
     return {
       low: round(mid * 0.85, 0),
@@ -137,6 +145,7 @@ export class MockVintedProvider implements MarketplaceProvider {
       demandScore: brand.demand,
       sellThroughRate: m.sellThroughRate || 50,
       source: 'model',
+      modelLabel: premium.label,
     };
   }
 

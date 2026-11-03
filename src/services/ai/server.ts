@@ -98,6 +98,8 @@ const imageSchema = z.object({
   condition: fieldSchema(z.enum(CONDITIONS.map((c) => c.value) as [string, ...string[]])),
   graphic: fieldSchema(z.string()),
   size: fieldSchema(z.string()),
+  model: fieldSchema(z.string()),
+  features: z.array(z.string()),
   defects: z.array(z.string()),
   notes: z.array(z.string()),
 });
@@ -119,9 +121,16 @@ export async function analyzeItemImagesServer(input: ImageAnalysisInput): Promis
         `Analizza le foto di questo capo da rivendere. Categorie ammesse: ${CATEGORIES.map((c) => `${c.value} (${c.singular})`).join(', ')}. ` +
         `Condizioni ammesse: ${CONDITIONS.map((c) => `${c.value} (${c.label})`).join(', ')}. ` +
         'Colori in italiano (es. grigio, nero, blu navy). Stile tra: vintage, streetwear, y2k, sport, designer, workwear, outdoor, casual. ' +
-        'Brand e taglia solo se leggibili su logo/etichetta. Elenca solo difetti chiaramente visibili. ' +
+        'Brand e taglia solo se leggibili su logo o etichetta: se c’è una foto dell’etichetta, leggi brand, taglia, composizione (es. "80% cotone, 20% poliestere") e paese di produzione. ' +
+        'Riconosci il modello solo se evidente (es. Nuptse, Detroit Jacket, Samba, 501, Box Logo). ' +
+        'Distingui lo stile: vintage (etichette vecchie, single stitch, made in USA, loghi anni 80-90), streetwear, sport, designer, workwear, outdoor o casual per i capi basic. ' +
+        'In "features" elenca dettagli visibili e utili all’annuncio (cappuccio, zip intera, logo ricamato, stampa grafica, tasche). ' +
+        'Elenca solo difetti chiaramente visibili. Non dichiarare mai autenticità. ' +
         (input.hints?.brand ? `L’utente indica il brand: ${input.hints.brand}. ` : '') +
-        (input.hints?.size ? `L’utente indica la taglia: ${input.hints.size}. ` : ''),
+        (input.hints?.size ? `L’utente indica la taglia: ${input.hints.size}. ` : '') +
+        (input.hints?.labelText
+          ? `Testo letto dall’etichetta con OCR (può contenere errori): ${input.hints.labelText.slice(0, 1000)}. `
+          : ''),
     });
     const out = await structured(imageSchema, RULES_IT, content);
     if (!out) return mock;
@@ -156,8 +165,8 @@ export async function generateListingServer(attrs: ListingAttributes): Promise<G
         text:
           'Scrivi un annuncio per un marketplace di second hand (es. Vinted) usando SOLO questi dati confermati: ' +
           JSON.stringify(attrs) +
-          '. Genera 3 titoli SEO-friendly ma naturali (max 80 caratteri, includi brand, tipo di capo, colore e taglia se presenti), ' +
-          'una descrizione breve pronta da copiare (frasi corte, una per riga, tono amichevole, chiudi con "Per misure o altre foto scrivetemi pure.") e 3-6 hashtag. ' +
+          '. Genera 3 titoli ottimizzati per la ricerca su Vinted (max 70 caratteri): parole che i compratori cercano davvero – tipo di capo, brand, modello, stile (vintage/Y2K…), colore, dettaglio distintivo e taglia – senza maiuscole urlate, emoji o parole vuote come "bellissimo". ' +
+          'Una descrizione completa e pronta da copiare: una frase introduttiva, poi un elenco con ✔️ per brand, taglia, colore, materiale (solo se fornito), condizioni, dettagli; eventuali difetti con ⚠️; le misure se fornite; una riga sugli outfit; chiudi con "Per misure o altre foto scrivetemi pure." e 3-6 hashtag. ' +
           'Bozza di riferimento: ' +
           JSON.stringify({ title: base.title, description: base.description }),
       },

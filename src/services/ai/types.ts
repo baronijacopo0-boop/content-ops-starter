@@ -81,6 +81,10 @@ export interface ImageAnalysis {
   condition: DetectedField<Condition>;
   graphic: DetectedField;
   size: DetectedField;
+  /** Iconic model when recognisable (e.g. "Nuptse", "Samba"). */
+  model?: DetectedField;
+  /** Notable details: "cappuccio", "zip intera", "logo ricamato"… */
+  features?: string[];
   defects: string[];
   notes: string[];
   engine: AiEngine;
@@ -88,7 +92,12 @@ export interface ImageAnalysis {
 
 export interface ImageAnalysisInput {
   images: { name: string; dataUrl?: string; dominantColors: string[] }[];
-  hints?: { brand?: string; category?: ItemCategory; size?: string };
+  hints?: {
+    brand?: string;
+    category?: ItemCategory;
+    size?: string;
+    /** OCR text of the label photo */ labelText?: string;
+  };
 }
 
 export interface ListingAttributes {
@@ -102,6 +111,17 @@ export interface ListingAttributes {
   graphic: string | null;
   model?: string | null;
   defects: string[];
+  /** Notable details: "logo ricamato", "cappuccio", "zip intera"… */
+  features?: string[];
+  /** Measurements in cm, only when measured by the user. */
+  measurements?: Measurements | null;
+}
+
+export interface Measurements {
+  pitToPit?: number | null;
+  length?: number | null;
+  waist?: number | null;
+  inseam?: number | null;
 }
 
 export interface GeneratedListing {

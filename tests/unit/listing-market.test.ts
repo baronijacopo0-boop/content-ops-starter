@@ -25,8 +25,11 @@ describe('listing generator', () => {
     });
     expect(l.title).toBe('Felpa Nike Vintage Grigia Logo Ricamato Taglia M');
     expect(l.titleOptions.length).toBeGreaterThan(1);
-    expect(l.description).toContain('Taglia M.');
+    expect(l.titleOptions).toContain('Nike Felpa Vintage Grigia Tg M');
+    expect(l.description).toContain('✔️ Taglia: M');
+    expect(l.description).toContain('✔️ Condizioni: ottime');
     expect(l.description).toContain('Per misure o altre foto scrivetemi pure.');
+    for (const t of l.titleOptions) expect(t.length).toBeLessThanOrEqual(70);
   });
   it('never invents missing size or material and warns instead', () => {
     const l = generateListing({

@@ -21,6 +21,7 @@ async function evaluate(
         category: item.category,
         condition: item.condition,
         size: item.size,
+        title: item.title,
       });
       const evaluation = evaluateWithMarket(
         {

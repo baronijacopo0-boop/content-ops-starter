@@ -154,6 +154,16 @@ export const listingAttributesSchema = z.object({
   graphic: text(80).nullable(),
   model: text(60).nullable().optional(),
   defects: z.array(text(120)).max(10),
+  features: z.array(text(60)).max(10).optional(),
+  measurements: z
+    .object({
+      pitToPit: z.number().positive().max(200).nullable().optional(),
+      length: z.number().positive().max(200).nullable().optional(),
+      waist: z.number().positive().max(200).nullable().optional(),
+      inseam: z.number().positive().max(200).nullable().optional(),
+    })
+    .nullable()
+    .optional(),
 });
 
 export const imageAnalysisInputSchema = z.object({
@@ -173,7 +183,12 @@ export const imageAnalysisInputSchema = z.object({
     .min(1, 'Carica almeno una foto')
     .max(8, 'Massimo 8 foto'),
   hints: z
-    .object({ brand: text(60).optional(), category: categorySchema.optional(), size: text(20).optional() })
+    .object({
+      brand: text(60).optional(),
+      category: categorySchema.optional(),
+      size: text(20).optional(),
+      labelText: text(2000).optional(),
+    })
     .optional(),
 });
 

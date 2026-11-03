@@ -88,6 +88,8 @@ export interface MarketValueQuery {
   category: ItemCategory;
   condition: Condition;
   size?: string;
+  /** Title/name of the item: used to recognise iconic models that are worth more (Nuptse, Samba…). */
+  title?: string;
 }
 
 export interface EstimatedMarketValue {
@@ -101,6 +103,8 @@ export interface EstimatedMarketValue {
   demandScore: number;
   sellThroughRate: number;
   source: 'comparables' | 'model';
+  /** Iconic model recognised in the title, already included in the values above. */
+  modelLabel?: string | null;
 }
 
 export interface SearchQuery {

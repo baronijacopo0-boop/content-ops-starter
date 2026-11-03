@@ -16,7 +16,8 @@ export function buildStrategies(
 ): PriceStrategy[] {
   const recommended = roundPrice(market.mid);
   const quick = roundPrice(Math.max(market.low * 0.95, recommended * 0.83));
-  const max = roundPrice(Math.max(market.high, recommended * 1.18));
+  // "Massimo profitto" stays inside the real market range: never above the top of what similar items sell for.
+  const max = roundPrice(Math.max(recommended + 1, Math.min(market.high, recommended * 1.2)));
   const d = market.avgDaysToSell;
   const mk = (
     key: PriceStrategy['key'],
@@ -69,6 +70,8 @@ export async function estimatePrice(
     category: ItemCategory;
     condition: Condition;
     size?: string;
+    /** Title or model, to recognise iconic models (Nuptse, Samba…). */
+    title?: string;
     purchasePrice?: number | null;
     extraCosts?: number;
   },
@@ -79,6 +82,7 @@ export async function estimatePrice(
     category: input.category,
     condition: input.condition,
     size: input.size,
+    title: input.title,
   });
   const strategies = buildStrategies(market, input.purchasePrice ?? null, input.extraCosts ?? 0);
   return { market, strategies, recommended: strategies[1].price };

@@ -2,7 +2,18 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AlertTriangle, Check, Copy, ExternalLink, Loader2, Save, Sparkles, Wand2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  Check,
+  Copy,
+  ExternalLink,
+  Loader2,
+  Save,
+  ScanText,
+  Sparkles,
+  Wand2,
+} from 'lucide-react';
+import { readLabel } from '@/lib/ocr';
 import { PublishVintedDialog } from '@/components/listings/publish-vinted-dialog';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared/states';
@@ -39,6 +50,10 @@ interface Attrs {
   graphic: string;
   size: string;
   defects: string;
+  model: string;
+  features: string;
+  pitToPit: string;
+  length: string;
 }
 
 const EMPTY_ATTRS: Attrs = {
@@ -51,6 +66,10 @@ const EMPTY_ATTRS: Attrs = {
   graphic: '',
   size: '',
   defects: '',
+  model: '',
+  features: '',
+  pitToPit: '',
+  length: '',
 };
 
 function Confirm({ field }: { field?: DetectedField<unknown> }) {
@@ -100,6 +119,9 @@ function CreateListing() {
   const [photos, setPhotos] = useState<ProcessedImage[]>([]);
   const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
   const [analysis, setAnalysis] = useState<ImageAnalysis | null>(null);
+  const [labelPhoto, setLabelPhoto] = useState<ProcessedImage[]>([]);
+  const [labelText, setLabelText] = useState('');
+  const [readingLabel, setReadingLabel] = useState(false);
   const [attrs, setAttrs] = useState<Attrs>(EMPTY_ATTRS);
   const [generated, setGenerated] = useState<GeneratedListing | null>(null);
   const [title, setTitle] = useState('');
@@ -138,6 +160,10 @@ function CreateListing() {
         graphic: '',
         size: editing.size,
         defects: '',
+        model: '',
+        features: '',
+        pitToPit: '',
+        length: '',
       });
       setTitle(editing.title);
       setDescription(editing.description);
@@ -176,6 +202,7 @@ function CreateListing() {
       category: attrs.category,
       condition: attrs.condition ?? 'very_good',
       size: attrs.size,
+      title: attrs.model,
       purchasePrice: pp,
       extraCosts: bundle?.settings.defaultExtraCosts ?? 0,
     }).then((e) => {
@@ -186,7 +213,36 @@ function CreateListing() {
     return () => {
       alive = false;
     };
-  }, [attrs.brand, attrs.category, attrs.condition, attrs.size, purchasePrice, bundle]);
+  }, [attrs.brand, attrs.category, attrs.condition, attrs.size, attrs.model, purchasePrice, bundle]);
+
+  async function readLabelPhoto() {
+    if (!labelPhoto[0]) return;
+    setReadingLabel(true);
+    try {
+      const reading = await readLabel(labelPhoto[0].blob);
+      setLabelText(reading.text.slice(0, 2000));
+      setAttrs((a) => ({
+        ...a,
+        brand: a.brand || reading.brand || '',
+        size: a.size || reading.size || '',
+        material: a.material || reading.material || '',
+      }));
+      const found = [
+        reading.brand && `brand ${reading.brand}`,
+        reading.size && `taglia ${reading.size}`,
+        reading.material && `materiale ${reading.material}`,
+      ].filter(Boolean);
+      if (found.length) toast.success(`Etichetta letta: ${found.join(', ')}. Controlla che sia corretto.`);
+      else
+        toast.warning(
+          'Non ho trovato brand, taglia o materiale: prova una foto più vicina e dritta dell’etichetta.',
+        );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Lettura etichetta non riuscita');
+    } finally {
+      setReadingLabel(false);
+    }
+  }
 
   async function analyzePhotos() {
     if (!photos.length) return toast.error('Carica almeno una foto.');
@@ -196,7 +252,11 @@ function CreateListing() {
         images: photos
           .slice(0, 4)
           .map((p) => ({ name: p.name, dataUrl: p.dataUrl, dominantColors: p.dominantColors })),
-        hints: { brand: attrs.brand || undefined, size: attrs.size || undefined },
+        hints: {
+          brand: attrs.brand || undefined,
+          size: attrs.size || undefined,
+          labelText: labelText || undefined,
+        },
       });
       setAnalysis(res);
       setAttrs((a) => ({
@@ -209,6 +269,10 @@ function CreateListing() {
         graphic: res.graphic.value ?? a.graphic,
         size: res.size.value ?? a.size,
         defects: res.defects.join(', ') || a.defects,
+        model: res.model?.value ?? a.model,
+        features: res.features?.length ? res.features.join(', ') : a.features,
+        pitToPit: a.pitToPit,
+        length: a.length,
       }));
       toast.success('Foto analizzate: controlla i campi evidenziati.');
     } catch (e) {
@@ -235,7 +299,16 @@ function CreateListing() {
         material: attrs.material.trim() || null,
         style: attrs.style.trim() || null,
         graphic: attrs.graphic.trim() || null,
-        model: null,
+        model: attrs.model.trim() || null,
+        features: attrs.features
+          .split(',')
+          .map((f) => f.trim())
+          .filter(Boolean)
+          .slice(0, 10),
+        measurements:
+          attrs.pitToPit || attrs.length
+            ? { pitToPit: Number(attrs.pitToPit) || null, length: Number(attrs.length) || null }
+            : null,
         defects: attrs.defects
           .split(',')
           .map((d) => d.trim())
@@ -381,6 +454,31 @@ function CreateListing() {
                 </div>
               )}
               <ImageUploader images={photos} onChange={setPhotos} max={8 - existingPhotos.length} />
+              <div className="rounded-2xl border border-dashed p-3">
+                <p className="text-sm font-semibold">Foto dell’etichetta (facoltativa)</p>
+                <p className="mb-2 text-xs text-muted-foreground">
+                  Leggo brand, taglia e composizione direttamente dall’etichetta. La foto resta sul tuo
+                  dispositivo.
+                </p>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+                  <div className="flex-1">
+                    <ImageUploader images={labelPhoto} onChange={setLabelPhoto} max={1} compact testId="label-input" />
+                  </div>
+                  <Button
+                    variant="secondary"
+                    onClick={readLabelPhoto}
+                    loading={readingLabel}
+                    disabled={!labelPhoto.length}
+                  >
+                    <ScanText /> Leggi etichetta
+                  </Button>
+                </div>
+                {labelText && (
+                  <p className="mt-2 line-clamp-2 text-[11px] text-muted-foreground">
+                    Testo letto: {labelText}
+                  </p>
+                )}
+              </div>
               <Button onClick={analyzePhotos} loading={analyzing} disabled={!photos.length} size="lg">
                 <Wand2 /> ANALIZZA FOTO
               </Button>
@@ -488,6 +586,43 @@ function CreateListing() {
                   value={attrs.defects}
                   onChange={(e) => set('defects', e.target.value)}
                   placeholder="es. piccola macchia sul polsino"
+                />
+              </Field>
+              <Field label="Modello" htmlFor="l-model" hint="Es. Nuptse, Detroit, Samba, 501">
+                <Input
+                  id="l-model"
+                  value={attrs.model}
+                  maxLength={60}
+                  onChange={(e) => set('model', e.target.value)}
+                />
+                <Confirm field={analysis?.model} />
+              </Field>
+              <Field label="Caratteristiche" htmlFor="l-features" hint="Separate da virgola">
+                <Input
+                  id="l-features"
+                  value={attrs.features}
+                  onChange={(e) => set('features', e.target.value)}
+                  placeholder="cappuccio, zip intera"
+                />
+              </Field>
+              <Field label="Ascella-ascella (cm)" htmlFor="l-pit" hint="Capo disteso">
+                <Input
+                  id="l-pit"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={attrs.pitToPit}
+                  onChange={(e) => set('pitToPit', e.target.value)}
+                />
+              </Field>
+              <Field label="Lunghezza (cm)" htmlFor="l-len">
+                <Input
+                  id="l-len"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={attrs.length}
+                  onChange={(e) => set('length', e.target.value)}
                 />
               </Field>
               <Button className="col-span-2" variant="secondary" onClick={generate} loading={generating}>

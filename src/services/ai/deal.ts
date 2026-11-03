@@ -79,6 +79,7 @@ export async function analyzeDeal(
     category: input.category,
     condition: input.condition,
     size: input.size,
+    title: input.name,
   });
   return evaluateWithMarket({ ...input, extraCosts, targetRoi }, market);
 }

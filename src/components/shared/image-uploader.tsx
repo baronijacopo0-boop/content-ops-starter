@@ -16,11 +16,13 @@ export function ImageUploader({
   onChange,
   max = MAX_IMAGES,
   compact = false,
+  testId = 'image-input',
 }: {
   images: ProcessedImage[];
   onChange: (imgs: ProcessedImage[]) => void;
   max?: number;
   compact?: boolean;
+  testId?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -87,7 +89,7 @@ export function ImageUploader({
         accept="image/jpeg,image/png,image/webp"
         multiple
         className="hidden"
-        data-testid="image-input"
+        data-testid={testId}
         onChange={(e) => {
           if (e.target.files) void handle(e.target.files);
           e.target.value = '';

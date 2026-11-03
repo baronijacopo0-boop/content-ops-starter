@@ -93,23 +93,6 @@ const STYLE_OUTFITS: Record<string, string> = {
   casual: 'casual di tutti i giorni',
 };
 
-function conditionSentence(attrs: ListingAttributes) {
-  switch (attrs.condition) {
-    case 'new_with_tags':
-      return 'Nuovo con cartellino, mai indossato.';
-    case 'new':
-      return 'Nuovo senza cartellino, mai indossato.';
-    case 'very_good':
-      return 'Condizioni molto buone, normali segni di utilizzo.';
-    case 'good':
-      return 'Buone condizioni, segni di utilizzo visibili nelle foto.';
-    case 'fair':
-      return 'Condizioni discrete: guarda bene le foto per i dettagli.';
-    default:
-      return null;
-  }
-}
-
 function clean(parts: (string | null | undefined | false)[]) {
   return parts.filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
 }
@@ -119,64 +102,134 @@ function clean(parts: (string | null | undefined | false)[]) {
  * Only uses the attributes it receives: it never invents authenticity, materials, size, defects or provenance.
  * Missing information is reported in `warnings` so the user can confirm it.
  */
+const CONDITION_SHORT: Record<string, string> = {
+  new_with_tags: 'nuovo con cartellino, mai indossato',
+  new: 'nuovo senza cartellino, mai indossato',
+  very_good: 'ottime, normali segni di utilizzo',
+  good: 'buone, segni di utilizzo visibili nelle foto',
+  fair: 'discrete, guarda bene le foto',
+};
+
+/** Shortens a title by dropping the least important parts until it fits Vinted's search-friendly length. */
+function fitTitle(parts: (string | false | null | undefined)[], droppable: string[], max = 70) {
+  let current = parts.filter(Boolean) as string[];
+  let title = clean(current);
+  for (const d of droppable) {
+    if (title.length <= max) break;
+    current = current.filter((p) => p !== d);
+    title = clean(current);
+  }
+  return title.length <= max ? title : title.slice(0, max).replace(/\s+\S*$/, '');
+}
+
+function measurementLines(m: ListingAttributes['measurements']) {
+  if (!m) return [];
+  const parts = [
+    m.pitToPit ? `ascella-ascella ${m.pitToPit} cm` : null,
+    m.length ? `lunghezza ${m.length} cm` : null,
+    m.waist ? `vita ${m.waist} cm` : null,
+    m.inseam ? `cavallo ${m.inseam} cm` : null,
+  ].filter(Boolean);
+  return parts.length ? [`📏 Misure (a capo disteso): ${parts.join(' · ')}`] : [];
+}
+
+/**
+ * generateListing(): SEO-friendly but natural titles + a complete, structured description ready to copy.
+ * Titles follow how people search on Vinted (garment + brand + style/model + colour + key detail + size).
+ * Only the attributes received are used: it never invents authenticity, materials, size, defects or
+ * provenance. Missing information is reported in `warnings` so the user can confirm it.
+ */
 export function generateListing(attrs: ListingAttributes): GeneratedListing {
   const singular = categorySingular(attrs.category);
   const brand = attrs.brand?.trim() || '';
   const style = attrs.style?.trim() || '';
-  const styleCap = style ? capitalize(style) : '';
+  const styleCap = style && style !== 'casual' ? capitalize(style) : '';
   const mainColor = attrs.colors[0];
   const colorIt = mainColor ? colorAdjective(mainColor, attrs.category) : '';
-  const graphic = attrs.graphic?.trim() ? capitalize(attrs.graphic.trim()) : '';
-  const sizePart = attrs.size ? `Taglia ${attrs.size}` : '';
+  const features = (attrs.features ?? []).map((f) => f.trim()).filter(Boolean);
+  const detail = attrs.graphic?.trim()
+    ? capitalize(attrs.graphic.trim())
+    : features[0]
+      ? capitalize(features[0])
+      : '';
   const model = attrs.model?.trim() ? capitalize(attrs.model.trim()) : '';
+  const size = attrs.size?.trim() || '';
 
-  const titleIt = clean([singular, brand, styleCap, model, colorIt, graphic, sizePart]);
-  const titleEn = clean([
-    brand,
-    styleCap,
-    model,
-    CATEGORY_EN[attrs.category],
-    mainColor ? colorEn(mainColor) : '',
-    sizePart,
-  ]);
-  const titleShort = clean([brand, singular, styleCap, sizePart]);
-  const titleOptions = Array.from(new Set([titleIt, titleEn, titleShort])).map((t) => t.slice(0, 90));
+  // 1) Italian, natural: "Felpa Nike Vintage Grigia Logo Ricamato Taglia M"
+  const titleIt = fitTitle(
+    [singular, brand, styleCap, model, colorIt, detail, size && `Taglia ${size}`],
+    [detail, styleCap, model],
+  );
+  // 2) Brand first (how many buyers search): "Nike Felpa Vintage Spellout Grigia Tg M"
+  const titleBrandFirst = fitTitle(
+    [brand, singular, styleCap, model, colorIt, size && `Tg ${size}`],
+    [styleCap, model],
+  );
+  // 3) International keywords: "Nike Vintage Hoodie Grey Taglia M"
+  const titleEn = fitTitle(
+    [
+      brand,
+      styleCap,
+      model,
+      CATEGORY_EN[attrs.category],
+      mainColor ? colorEn(mainColor) : '',
+      size && `Taglia ${size}`,
+    ],
+    [model, styleCap],
+  );
+  const titleOptions = Array.from(new Set([titleIt, titleBrandFirst, titleEn].filter((t) => t.length > 3)));
 
-  const lines: string[] = [];
   const colorText = attrs.colors.length
     ? attrs.colors.map((c) => colorAdjective(c, attrs.category).toLowerCase()).join(' e ')
     : '';
-  lines.push(
+  const intro =
     clean([
       singular,
       brand,
-      style ? style.toLowerCase() : '',
+      model,
+      style && style !== 'casual' ? style.toLowerCase() : '',
       colorText,
-      attrs.graphic ? `con ${attrs.graphic.toLowerCase()}` : '',
-    ]) + '.',
-  );
-  if (attrs.size) lines.push(`Taglia ${attrs.size}.`);
-  const cond = conditionSentence(attrs);
-  if (cond) lines.push(cond);
+      detail ? `con ${detail.toLowerCase()}` : '',
+    ]) + '.';
+
+  const facts: string[] = [];
+  if (brand) facts.push(`✔️ Brand: ${brand}`);
+  if (size) facts.push(`✔️ Taglia: ${size}${attrs.measurements ? ' (vedi misure)' : ''}`);
+  if (colorText) facts.push(`✔️ Colore: ${colorText}`);
+  if (attrs.material) facts.push(`✔️ Materiale: ${attrs.material.toLowerCase()} (da etichetta)`);
+  if (attrs.condition) facts.push(`✔️ Condizioni: ${CONDITION_SHORT[attrs.condition]}`);
+  const otherFeatures = features.filter((f) => f.toLowerCase() !== detail.toLowerCase());
+  if (otherFeatures.length) facts.push(`✔️ Dettagli: ${otherFeatures.join(', ').toLowerCase()}`);
   if (attrs.defects.length)
-    lines.push(`Da segnalare: ${attrs.defects.join(', ').toLowerCase()} (vedi foto).`);
-  if (attrs.material) lines.push(`Materiale: ${attrs.material.toLowerCase()} (come da etichetta).`);
+    facts.push(`⚠️ Da segnalare: ${attrs.defects.join(', ').toLowerCase()} (vedi foto)`);
+
   const niche = style.toLowerCase();
   const outfit =
     STYLE_OUTFITS[niche] ??
     (brand
       ? brandOrDefault(brand)
           .niches.map((n) => STYLE_OUTFITS[n] ?? n)
+          .filter((n) => n !== 'other')
           .slice(0, 2)
           .join(', ')
       : '');
-  if (outfit && outfit !== 'other') lines.push(`Perfetta per outfit ${outfit}.`);
-  lines.push('Per misure o altre foto scrivetemi pure.');
-  lines.push('Spedizione rapida e imballaggio curato.');
+
+  const closing = [
+    outfit ? `Perfetta per outfit ${outfit}.` : null,
+    '📦 Spedizione rapida e imballaggio curato.',
+    '💬 Per misure o altre foto scrivetemi pure.',
+  ].filter(Boolean) as string[];
 
   const hashtags = Array.from(
     new Set(
-      [brand, singular, style, mainColor, attrs.category === 'sneakers' ? 'sneakers' : null]
+      [
+        brand,
+        singular,
+        style && style !== 'casual' ? style : null,
+        model,
+        mainColor,
+        attrs.category === 'sneakers' ? 'sneakers' : null,
+      ]
         .filter(Boolean)
         .map(
           (t) =>
@@ -185,22 +238,26 @@ export function generateListing(attrs: ListingAttributes): GeneratedListing {
               .replace(/[^a-z0-9àèéìòù]/g, '')}`,
         ),
     ),
-  ).filter((t) => t.length > 1);
+  ).filter((t) => t.length > 2);
 
   const warnings: string[] = [];
   if (!brand) warnings.push('Brand non indicato: aggiungilo per aumentare le visualizzazioni.');
-  if (!attrs.size)
-    warnings.push('Taglia non confermata: controlla l’etichetta e inseriscila prima di pubblicare.');
+  if (!size) warnings.push('Taglia non confermata: controlla l’etichetta e inseriscila prima di pubblicare.');
   if (!attrs.condition) warnings.push('Condizione non confermata: valuta tu lo stato del capo.');
   if (!attrs.material) warnings.push('Materiale non indicato: aggiungilo solo se è scritto sull’etichetta.');
+  if (!attrs.measurements)
+    warnings.push('Aggiungi le misure (ascella-ascella e lunghezza): riducono domande e resi.');
   warnings.push('Non dichiarare autenticità o provenienza se non puoi dimostrarle.');
 
-  return {
-    title: titleOptions[0],
-    titleOptions,
-    description: [lines.join('\n'), hashtags.join(' ')].filter(Boolean).join('\n\n'),
-    hashtags,
-    warnings,
-    engine: 'mock',
-  };
+  const description = [
+    intro,
+    facts.join('\n'),
+    measurementLines(attrs.measurements).join('\n'),
+    closing.join('\n'),
+    hashtags.join(' '),
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
+  return { title: titleOptions[0], titleOptions, description, hashtags, warnings, engine: 'mock' };
 }
