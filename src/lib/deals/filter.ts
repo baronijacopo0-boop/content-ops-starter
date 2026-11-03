@@ -75,11 +75,12 @@ export function filterDeals(
     if (f.favoritesOnly && !favs.includes(item.brand.toLowerCase())) return false;
     if (f.source === 'live' && item.isDemo) return false;
     if (f.source === 'demo' && !item.isDemo) return false;
+    if (f.source === 'community') return Boolean(item.community);
     if (
       f.source &&
       f.source !== 'live' &&
       f.source !== 'demo' &&
-      (item.isDemo || item.marketplace !== f.source)
+      (item.isDemo || item.community || item.marketplace !== f.source)
     )
       return false;
     return true;

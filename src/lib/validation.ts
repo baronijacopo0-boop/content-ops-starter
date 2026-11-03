@@ -40,6 +40,26 @@ export const categorySchema = z.enum(categoryValues as [ItemCategory, ...ItemCat
 export const conditionSchema = z.enum(conditionValues as [Condition, ...Condition[]]);
 export const marketplaceSchema = z.enum(marketplaceValues as [MarketplaceId, ...MarketplaceId[]]);
 
+/** Link to a live marketplace listing: https only, known marketplaces only. */
+export const externalUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .url('Link non valido')
+  .refine((u) => {
+    try {
+      const url = new URL(u);
+      return (
+        url.protocol === 'https:' &&
+        /(^|\.)(vinted\.[a-z.]+|ebay\.[a-z.]+|etsy\.com|depop\.com|grailed\.com|vestiairecollective\.com|wallapop\.com)$/.test(
+          url.hostname,
+        )
+      );
+    } catch {
+      return false;
+    }
+  }, 'Incolla il link https dell’annuncio (Vinted, eBay, Etsy, Depop…)');
+
 export const emailSchema = z.string().trim().toLowerCase().email('Email non valida').max(254);
 export const passwordSchema = z
   .string()
@@ -120,6 +140,8 @@ export const listingSchema = z.object({
   status: z.enum(LISTING_STATUSES.map((s) => s.value) as [ListingStatus, ...ListingStatus[]]),
   marketplace: marketplaceSchema,
   publishedAt: z.string().nullable(),
+  externalUrl: externalUrlSchema.nullable().default(null),
+  sharedInCommunity: z.boolean().default(false),
 });
 
 export const markSoldSchema = z.object({

@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { DealBadge, DealScore } from './deal-score';
 
 export function sourceLabel(item: MarketItem) {
+  if (item.community) return `Community · ${item.sellerName}`;
   return item.isDemo ? `${marketplaceLabel(item.marketplace)} · demo` : marketplaceLabel(item.marketplace);
 }
 

@@ -325,7 +325,7 @@ function CreateListing() {
     }
   }
 
-  async function save(status: ListingStatus) {
+  async function save(status: ListingStatus, link?: { externalUrl: string | null; share: boolean }) {
     if (!repo) return;
     const linkedId = inventoryItemId === NONE ? null : inventoryItemId;
     const parsed = listingSchema.safeParse({
@@ -350,6 +350,8 @@ function CreateListing() {
       status,
       marketplace: 'vinted',
       publishedAt: status === 'draft' ? null : (editing?.publishedAt ?? new Date().toISOString()),
+      externalUrl: link ? link.externalUrl : (editing?.externalUrl ?? null),
+      sharedInCommunity: link ? link.share : (editing?.sharedInCommunity ?? false),
     });
     if (!parsed.success) return toast.error(firstError(parsed.error));
     setSaving(status);
@@ -462,7 +464,13 @@ function CreateListing() {
                 </p>
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
                   <div className="flex-1">
-                    <ImageUploader images={labelPhoto} onChange={setLabelPhoto} max={1} compact testId="label-input" />
+                    <ImageUploader
+                      images={labelPhoto}
+                      onChange={setLabelPhoto}
+                      max={1}
+                      compact
+                      testId="label-input"
+                    />
                   </div>
                   <Button
                     variant="secondary"
@@ -811,8 +819,10 @@ function CreateListing() {
           price: price === '' || Number.isNaN(Number(price)) ? null : Number(price),
           photos: [...existingPhotos, ...photos.map((p) => p.dataUrl)],
         }}
-        onMarkPublished={async () => {
-          await save('published');
+        initialUrl={editing?.externalUrl}
+        initialShare={editing?.sharedInCommunity}
+        onMarkPublished={async (link) => {
+          await save('published', link);
         }}
       />
     </>

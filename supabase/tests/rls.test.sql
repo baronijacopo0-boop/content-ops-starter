@@ -117,6 +117,37 @@ do $$ begin
   end;
 end $$;
 
+-- ---------------- community sharing (opt-in, limited columns)
+do $$
+declare v_item uuid; n int;
+begin
+  reset role;
+  -- Alice shares one published listing, keeps another private
+  insert into public.listings (user_id, title, category, condition, price, status, external_url, shared_in_community, published_at)
+  values ('11111111-1111-1111-1111-111111111111', 'Shared hoodie', 'hoodie', 'good', 25, 'published', 'https://www.vinted.it/items/1', true, now()),
+         ('11111111-1111-1111-1111-111111111111', 'Private hoodie', 'hoodie', 'good', 30, 'published', null, false, now());
+  update public.profiles set username = 'alice.flips' where user_id = '11111111-1111-1111-1111-111111111111';
+  -- sharing without a link is rejected
+  begin
+    insert into public.listings (user_id, title, category, condition, price, status, shared_in_community)
+    values ('11111111-1111-1111-1111-111111111111', 'x', 'hoodie', 'good', 1, 'published', true);
+    raise exception 'share without link should fail';
+  exception when check_violation then null;
+  end;
+  set local role authenticated;
+  perform set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222"}', true);
+  -- Bob still cannot read Alice's listings table directly…
+  assert (select count(*) from public.listings where user_id = '11111111-1111-1111-1111-111111111111') = 0, 'Bob reads Alice listings!';
+  -- …but sees only the shared one through community_listings, with the public username
+  select count(*) into n from public.community_listings();
+  assert n = 1, format('expected 1 community listing, got %s', n);
+  assert (select seller from public.community_listings()) = 'alice.flips', 'seller name';
+  assert (select title from public.community_listings()) = 'Shared hoodie', 'only shared listing';
+  -- Alice does not see her own listings in the community feed
+  perform set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111"}', true);
+  assert (select count(*) from public.community_listings()) = 0, 'own listings excluded';
+end $$;
+
 -- ---------------- anon has no access
 set local role anon;
 do $$ begin

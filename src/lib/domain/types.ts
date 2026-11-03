@@ -118,8 +118,27 @@ export interface Listing {
   status: ListingStatus;
   marketplace: MarketplaceId;
   publishedAt: string | null;
+  /** Link to the live listing on the marketplace (pasted by the user after publishing). */
+  externalUrl: string | null;
+  /** Opt-in: show this listing to other RIVENDO users in the Deal Finder community feed. */
+  sharedInCommunity: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+/** A listing another RIVENDO user chose to share (public fields only). */
+export interface CommunityListing {
+  id: string;
+  title: string;
+  brand: string;
+  category: ItemCategory;
+  size: string;
+  condition: Condition;
+  price: number;
+  photo: string | null;
+  externalUrl: string;
+  publishedAt: string | null;
+  seller: string;
 }
 
 export type ListingInput = Omit<Listing, 'id' | 'userId' | 'createdAt' | 'updatedAt'>;

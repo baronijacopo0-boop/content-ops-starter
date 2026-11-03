@@ -179,7 +179,7 @@ test('pubblica su Vinted: copia campi, apre Vinted e segna come pubblicato', asy
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(title);
   await vinted.close();
 
-  await dialog.getByRole('button', { name: /segna come pubblicato/ }).click();
+  await dialog.getByRole('button', { name: /salva come pubblicato/ }).click();
   await expect(page.getByText('Annuncio segnato come pubblicato su Vinted')).toBeVisible();
   await page.getByRole('tab', { name: /Attivi/ }).click();
   await expect(page.getByTestId('listing-card').filter({ hasText: title })).toContainText('Pubblicato');

@@ -264,6 +264,18 @@ export class LocalRepository implements DataRepository {
       const item = db.inventory.find((i) => i.id === id);
       if (!item) throw new Error('Articolo non trovato');
       Object.assign(item, patch, { updatedAt: now() });
+      // Keep the sale in sync when the prices of a sold item are corrected.
+      if (item.status === 'sold') {
+        db.sales.forEach((sale) => {
+          if (sale.inventoryItemId !== id) return;
+          if (patch.soldPrice !== undefined && patch.soldPrice !== null) sale.salePrice = patch.soldPrice;
+          if (patch.purchasePrice !== undefined) sale.purchasePrice = patch.purchasePrice;
+          if (patch.extraCosts !== undefined) sale.extraCosts = patch.extraCosts;
+          if (patch.name !== undefined) sale.productName = patch.name;
+          if (patch.brand !== undefined) sale.brand = patch.brand;
+          if (patch.category !== undefined) sale.category = patch.category;
+        });
+      }
       return item;
     });
   }
@@ -312,7 +324,18 @@ export class LocalRepository implements DataRepository {
   }
 
   async listListings() {
-    return [...this.load().listings].sort(byDateDesc);
+    // Listings saved by older versions lack the newer optional fields.
+    return [...this.load().listings]
+      .map((l) => ({
+        ...l,
+        externalUrl: l.externalUrl ?? null,
+        sharedInCommunity: l.sharedInCommunity ?? false,
+      }))
+      .sort(byDateDesc);
+  }
+  async listCommunityListings() {
+    // The community feed needs a shared database (Supabase): in local demo mode there is nobody else.
+    return [];
   }
   async createListing(input: Parameters<DataRepository['createListing']>[0]) {
     return this.mutate((db) => {

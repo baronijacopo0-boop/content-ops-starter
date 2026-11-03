@@ -283,6 +283,8 @@ export function buildDemoBundle(now = new Date(), idFactory: () => string): Demo
       status: 'sold',
       marketplace: 'vinted',
       publishedAt: iso(addDays(purchased, 1)),
+      externalUrl: null,
+      sharedInCommunity: false,
       createdAt: iso(addDays(purchased, 1)),
       updatedAt: iso(soldAt),
     });
@@ -346,6 +348,8 @@ export function buildDemoBundle(now = new Date(), idFactory: () => string): Demo
         status: status === 'reserved' ? 'reserved' : 'published',
         marketplace: 'vinted',
         publishedAt: iso(addDays(purchased, 2)),
+        externalUrl: null,
+        sharedInCommunity: false,
         createdAt: iso(addDays(purchased, 2)),
         updatedAt: iso(addDays(purchased, 2)),
       });
@@ -373,6 +377,8 @@ export function buildDemoBundle(now = new Date(), idFactory: () => string): Demo
       status: 'draft',
       marketplace: 'vinted',
       publishedAt: null,
+      externalUrl: null,
+      sharedInCommunity: false,
       createdAt: iso(now),
       updatedAt: iso(now),
     });

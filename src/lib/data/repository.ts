@@ -1,5 +1,6 @@
 import type {
   AppNotification,
+  CommunityListing,
   DealAnalysisRecord,
   InventoryItem,
   InventoryItemInput,
@@ -63,6 +64,8 @@ export interface DataRepository {
   markItemSold(id: string, input: MarkSoldInput): Promise<Sale>;
 
   listListings(): Promise<Listing[]>;
+  /** Listings other users chose to share with the RIVENDO community (public fields only). */
+  listCommunityListings(limit?: number): Promise<CommunityListing[]>;
   createListing(input: ListingInput): Promise<Listing>;
   updateListing(id: string, patch: Partial<ListingInput>): Promise<Listing>;
   deleteListing(id: string): Promise<void>;

@@ -3,6 +3,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   AppNotification,
+  CommunityListing,
   DealAnalysisRecord,
   InventoryItem,
   InventoryItemInput,
@@ -87,6 +88,8 @@ const toListing = (r: Row): Listing => ({
   status: r.status,
   marketplace: r.marketplace,
   publishedAt: r.published_at,
+  externalUrl: r.external_url ?? null,
+  sharedInCommunity: r.shared_in_community ?? false,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 });
@@ -110,6 +113,8 @@ const fromListing = (l: Partial<ListingInput>): Row =>
     status: l.status,
     marketplace: l.marketplace,
     published_at: l.publishedAt,
+    external_url: l.externalUrl,
+    shared_in_community: l.sharedInCommunity,
   });
 
 const toSale = (r: Row): Sale => ({
@@ -402,11 +407,25 @@ export class SupabaseRepository implements DataRepository {
     );
   }
   async updateInventoryItem(id: string, patch: Partial<InventoryItemInput>) {
-    return toInventory(
+    const item = toInventory(
       check(
         await this.sb.from('inventory_items').update(fromInventory(patch)).eq('id', id).select().single(),
       ),
     );
+    // Keep the sale in sync when the prices of a sold item are corrected.
+    if (item.status === 'sold') {
+      const salePatch = strip({
+        sale_price: patch.soldPrice ?? undefined,
+        purchase_price: patch.purchasePrice,
+        extra_costs: patch.extraCosts,
+        product_name: patch.name,
+        brand: patch.brand,
+        category: patch.category,
+      });
+      if (Object.keys(salePatch).length)
+        check(await this.sb.from('sales').update(salePatch).eq('inventory_item_id', id));
+    }
+    return item;
   }
   async deleteInventoryItem(id: string) {
     check(await this.sb.from('inventory_items').delete().eq('id', id));
@@ -422,6 +441,22 @@ export class SupabaseRepository implements DataRepository {
     return toSale(check(res) as Row);
   }
 
+  async listCommunityListings(limit = 60): Promise<CommunityListing[]> {
+    const rows = check(await this.sb.rpc('community_listings', { p_limit: limit })) as Row[] | null;
+    return (rows ?? []).map((r) => ({
+      id: r.id,
+      title: r.title,
+      brand: r.brand,
+      category: r.category,
+      size: r.size,
+      condition: r.condition,
+      price: Number(r.price),
+      photo: r.photo ?? null,
+      externalUrl: r.external_url,
+      publishedAt: r.published_at,
+      seller: r.seller,
+    }));
+  }
   async listListings() {
     return (
       check(await this.sb.from('listings').select('*').order('created_at', { ascending: false })) as Row[]

@@ -26,6 +26,8 @@ export interface MarketItem {
   url: string | null;
   /** True for locally generated demo data (MockVintedProvider). */
   isDemo: boolean;
+  /** Shared by another RIVENDO user (community feed). */
+  community?: boolean;
 }
 
 /** A historical/sold comparable used for market intelligence. */

@@ -81,6 +81,7 @@ function FiltersForm({
             { value: 'live', label: 'Solo annunci reali' },
             { value: 'ebay', label: 'eBay' },
             { value: 'etsy', label: 'Etsy' },
+            { value: 'community', label: 'Community RIVENDO' },
             { value: 'demo', label: 'Vinted (demo)' },
           ]}
         />
@@ -143,10 +144,14 @@ function SourcesBar({
   sources,
   loading,
   error,
+  communityCount,
+  communityAvailable,
 }: {
   sources: MarketSourceStatus[] | null;
   loading: boolean;
   error?: Error;
+  communityCount: number;
+  communityAvailable: boolean;
 }) {
   return (
     <div
@@ -159,6 +164,22 @@ function SourcesBar({
       <div className="flex flex-wrap gap-1.5">
         <span className="rounded-full border border-warning/30 bg-warning/10 px-2.5 py-0.5 text-[11px] font-medium text-warning">
           Vinted · demo
+        </span>
+        <span
+          title={
+            communityAvailable
+              ? 'Annunci che altri utenti RIVENDO hanno scelto di condividere'
+              : 'La community richiede l’account online (Supabase): in modalità demo locale non ci sono altri utenti'
+          }
+          className={cn(
+            'rounded-full border px-2.5 py-0.5 text-[11px] font-medium',
+            communityCount ? STATUS_STYLE.ok : STATUS_STYLE.disabled,
+          )}
+        >
+          Community ·{' '}
+          {communityAvailable
+            ? `${communityCount} ${communityCount === 1 ? 'annuncio' : 'annunci'}`
+            : 'non attiva'}
         </span>
         {loading && (
           <span className="flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] text-muted-foreground">
@@ -199,7 +220,17 @@ function SourcesBar({
 
 export default function DealsPage() {
   const router = useRouter();
-  const { data: deals, error, isLoading, mutate, sources, liveLoading, liveError } = useDealFeed();
+  const {
+    data: deals,
+    error,
+    isLoading,
+    mutate,
+    sources,
+    liveLoading,
+    liveError,
+    communityCount,
+    communityAvailable,
+  } = useDealFeed();
   const { data: bundle } = useProfile();
   const { repo } = useApp();
   const revalidate = useRevalidate();
@@ -257,7 +288,13 @@ export default function DealsPage() {
         }
       />
 
-      <SourcesBar sources={sources} loading={liveLoading} error={liveError} />
+      <SourcesBar
+        sources={sources}
+        loading={liveLoading}
+        error={liveError}
+        communityCount={communityCount}
+        communityAvailable={communityAvailable}
+      />
 
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex gap-2">

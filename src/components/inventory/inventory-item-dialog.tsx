@@ -49,6 +49,7 @@ export function InventoryItemDialog({
       item?.listedPrice !== null && item?.listedPrice !== undefined ? String(item.listedPrice) : '',
     extraCosts: item ? String(item.extraCosts) : '0',
     status: item?.status ?? 'to_photograph',
+    soldPrice: item?.soldPrice !== null && item?.soldPrice !== undefined ? String(item.soldPrice) : '',
     notes: item?.notes ?? '',
   });
   const [photos, setPhotos] = useState<string[]>(item?.photos ?? []);
@@ -73,7 +74,15 @@ export function InventoryItemDialog({
     try {
       const uploaded = await Promise.all(newPhotos.map((p) => repo.uploadImage(p.blob, p.name)));
       const data: InventoryItemInput = { ...parsed.data, photos: [...photos, ...uploaded].slice(0, 8) };
-      if (item) await repo.updateInventoryItem(item.id, isSold ? { ...data, status: 'sold' } : data);
+      if (item && isSold) {
+        const soldPrice = Number(form.soldPrice);
+        if (!Number.isFinite(soldPrice) || soldPrice < 0 || form.soldPrice === '') {
+          setErrors({ soldPrice: 'Inserisci il prezzo di vendita' });
+          return;
+        }
+        // Updates the linked sale too, so stats stay consistent.
+        await repo.updateInventoryItem(item.id, { ...data, status: 'sold', soldPrice });
+      } else if (item) await repo.updateInventoryItem(item.id, data);
       else await repo.createInventoryItem(data);
       toast.success(item ? 'Articolo aggiornato' : 'Articolo aggiunto all’inventario');
       onSaved();
@@ -189,6 +198,23 @@ export function InventoryItemDialog({
                 onChange={(e) => set('extraCosts')(e.target.value)}
               />
             </Field>
+            {isSold && (
+              <Field
+                label="Prezzo di vendita (€)"
+                htmlFor="i-sold"
+                error={errors.soldPrice}
+                hint="Aggiorna anche la vendita registrata"
+              >
+                <Input
+                  id="i-sold"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={form.soldPrice}
+                  onChange={(e) => set('soldPrice')(e.target.value)}
+                />
+              </Field>
+            )}
             <Field label="Stato" htmlFor="i-status">
               {isSold ? (
                 <Input id="i-status" value="Venduto" disabled />

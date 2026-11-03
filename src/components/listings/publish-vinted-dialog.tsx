@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Check, Copy, Download, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { externalUrlSchema } from '@/lib/validation';
 import {
   Dialog,
   DialogContent,
@@ -71,14 +74,21 @@ export function PublishVintedDialog({
   onOpenChange,
   payload,
   onMarkPublished,
+  initialUrl = null,
+  initialShare = false,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   payload: PublishPayload;
-  onMarkPublished?: () => Promise<void> | void;
+  onMarkPublished?: (opts: { externalUrl: string | null; share: boolean }) => Promise<void> | void;
+  initialUrl?: string | null;
+  initialShare?: boolean;
 }) {
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [marking, setMarking] = useState(false);
+  const [link, setLink] = useState(initialUrl ?? '');
+  const [share, setShare] = useState(initialShare);
+  const [linkError, setLinkError] = useState<string>();
   const mark = (k: string) => setDone((d) => ({ ...d, [k]: true }));
 
   async function copyField(key: string, label: string, text: string) {
@@ -160,6 +170,43 @@ export function PublishVintedDialog({
             </Button>
           </Step>
         </ol>
+        <div className="flex flex-col gap-2 rounded-xl border p-3">
+          <label htmlFor="pub-link" className="text-sm font-medium">
+            6 · Incolla il link del tuo annuncio Vinted
+          </label>
+          <Input
+            id="pub-link"
+            inputMode="url"
+            placeholder="https://www.vinted.it/items/…"
+            value={link}
+            onChange={(e) => {
+              setLink(e.target.value);
+              setLinkError(undefined);
+            }}
+          />
+          {linkError ? (
+            <p className="text-xs text-loss">{linkError}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Facoltativo: così apri l’annuncio dalla scheda con un tocco.
+            </p>
+          )}
+          <label className="flex items-start justify-between gap-3 text-sm">
+            <span>
+              Condividi nella community RIVENDO
+              <span className="block text-xs text-muted-foreground">
+                Gli altri utenti vedranno titolo, foto, prezzo, il tuo username e il link Vinted nel Deal
+                Finder. Mai prezzo d’acquisto o dati personali.
+              </span>
+            </span>
+            <Switch
+              checked={share}
+              onCheckedChange={setShare}
+              disabled={!link.trim()}
+              aria-label="Condividi nella community"
+            />
+          </label>
+        </div>
         <p className="rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
           Categoria, taglia, brand e condizione si scelgono dai menu di Vinted: usa quelli indicati
           nell’annuncio.
@@ -172,16 +219,23 @@ export function PublishVintedDialog({
             <Button
               loading={marking}
               onClick={async () => {
+                const trimmed = link.trim();
+                let externalUrl: string | null = null;
+                if (trimmed) {
+                  const parsed = externalUrlSchema.safeParse(trimmed);
+                  if (!parsed.success) return setLinkError(parsed.error.issues[0].message);
+                  externalUrl = parsed.data;
+                }
                 setMarking(true);
                 try {
-                  await onMarkPublished();
+                  await onMarkPublished({ externalUrl, share: Boolean(externalUrl) && share });
                   onOpenChange(false);
                 } finally {
                   setMarking(false);
                 }
               }}
             >
-              <Check /> Fatto: segna come pubblicato
+              <Check /> Fatto: salva come pubblicato
             </Button>
           )}
         </DialogFooter>

@@ -3,14 +3,19 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Tag } from 'lucide-react';
+import { RotateCcw, Search, Sparkles, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { CardGridSkeleton, EmptyState, ErrorState, PageHeader } from '@/components/shared/states';
 import { ListingCard } from '@/components/listings/listing-card';
 import { PublishVintedDialog } from '@/components/listings/publish-vinted-dialog';
 import { MarkSoldDialog } from '@/components/shared/mark-sold-dialog';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
+import { QuickEditListingDialog } from '@/components/listings/quick-edit-dialog';
+import { WorkflowNav } from '@/components/layout/workflow-nav';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { SimpleSelect } from '@/components/ui/select';
+import { CATEGORIES } from '@/lib/domain/constants';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useApp } from '@/components/providers/app-provider';
 import { useInventory, useListings, useProfile, useRevalidate } from '@/hooks/use-data';
@@ -18,6 +23,15 @@ import type { Listing, ListingInput } from '@/lib/domain/types';
 import { uid } from '@/lib/utils';
 
 type Filter = 'all' | 'active' | 'sold' | 'draft';
+type Sort = 'recent' | 'price-asc' | 'price-desc' | 'views';
+const SORTS: { value: Sort; label: string }[] = [
+  { value: 'recent', label: 'Più recenti' },
+  { value: 'price-asc', label: 'Prezzo crescente' },
+  { value: 'price-desc', label: 'Prezzo decrescente' },
+  { value: 'views', label: 'Più visti' },
+];
+const ALL = '__all';
+
 const FILTERS: { value: Filter; label: string; match: (l: Listing) => boolean }[] = [
   { value: 'all', label: 'Tutti', match: () => true },
   { value: 'active', label: 'Attivi', match: (l) => l.status === 'published' || l.status === 'reserved' },
@@ -36,11 +50,38 @@ export default function ListingsPage() {
   const [selling, setSelling] = useState<Listing | null>(null);
   const [deleting, setDeleting] = useState<Listing | null>(null);
   const [publishing, setPublishing] = useState<Listing | null>(null);
+  const [editing, setEditing] = useState<Listing | null>(null);
+  const [text, setText] = useState('');
+  const [category, setCategory] = useState(ALL);
+  const [brand, setBrand] = useState(ALL);
+  const [maxPrice, setMaxPrice] = useState('');
+  const [sort, setSort] = useState<Sort>('recent');
 
-  const visible = useMemo(
-    () => (listings ?? []).filter(FILTERS.find((f) => f.value === filter)!.match),
-    [listings, filter],
+  const brands = useMemo(
+    () => Array.from(new Set((listings ?? []).map((l) => l.brand).filter(Boolean))).sort(),
+    [listings],
   );
+  const inventoryNames = useMemo(() => new Map((inventory ?? []).map((i) => [i.id, i.name])), [inventory]);
+  const hasExtraFilters = text !== '' || category !== ALL || brand !== ALL || maxPrice !== '';
+  const visible = useMemo(() => {
+    const q = text.trim().toLowerCase();
+    const max = maxPrice === '' ? null : Number(maxPrice);
+    const rows = (listings ?? []).filter(
+      (l) =>
+        FILTERS.find((f) => f.value === filter)!.match(l) &&
+        (!q || `${l.title} ${l.brand}`.toLowerCase().includes(q)) &&
+        (category === ALL || l.category === category) &&
+        (brand === ALL || l.brand === brand) &&
+        (max === null || l.price <= max),
+    );
+    const cmp: Record<Sort, (a: Listing, b: Listing) => number> = {
+      recent: (a, b) => b.createdAt.localeCompare(a.createdAt),
+      'price-asc': (a, b) => a.price - b.price,
+      'price-desc': (a, b) => b.price - a.price,
+      views: (a, b) => b.views - a.views,
+    };
+    return [...rows].sort(cmp[sort]);
+  }, [listings, filter, text, category, brand, maxPrice, sort]);
   const counts = useMemo(
     () => Object.fromEntries(FILTERS.map((f) => [f.value, (listings ?? []).filter(f.match).length])),
     [listings],
@@ -70,6 +111,8 @@ export default function ListingsPage() {
       status: 'draft',
       marketplace: l.marketplace,
       publishedAt: null,
+      externalUrl: null,
+      sharedInCommunity: false,
     };
     const temp: Listing = {
       ...input,
@@ -103,7 +146,8 @@ export default function ListingsPage() {
           </Button>
         }
       />
-      <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)} className="mb-4">
+      <WorkflowNav />
+      <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)} className="mb-3">
         <TabsList>
           {FILTERS.map((f) => (
             <TabsTrigger key={f.value} value={f.value}>
@@ -112,6 +156,67 @@ export default function ListingsPage() {
           ))}
         </TabsList>
       </Tabs>
+      <div className="mb-4 grid grid-cols-2 gap-2 md:grid-cols-[1fr_auto_auto_auto_auto]">
+        <div className="relative col-span-2 md:col-span-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            className="pl-9"
+            placeholder="Cerca titolo o brand…"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            aria-label="Cerca annunci"
+          />
+        </div>
+        <SimpleSelect
+          className="md:w-40"
+          value={category}
+          onValueChange={setCategory}
+          ariaLabel="Categoria"
+          options={[
+            { value: ALL, label: 'Tutte le categorie' },
+            ...CATEGORIES.map((c) => ({ value: c.value, label: c.label })),
+          ]}
+        />
+        <SimpleSelect
+          className="md:w-40"
+          value={brand}
+          onValueChange={setBrand}
+          ariaLabel="Brand"
+          options={[{ value: ALL, label: 'Tutti i brand' }, ...brands.map((b) => ({ value: b, label: b }))]}
+        />
+        <Input
+          className="md:w-32"
+          type="number"
+          inputMode="decimal"
+          min={0}
+          placeholder="Prezzo max €"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+          aria-label="Prezzo massimo"
+        />
+        <SimpleSelect
+          className="md:w-44"
+          value={sort}
+          onValueChange={(v) => setSort(v as Sort)}
+          ariaLabel="Ordina"
+          options={SORTS}
+        />
+        {hasExtraFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="col-span-2 justify-self-start md:col-span-5"
+            onClick={() => {
+              setText('');
+              setCategory(ALL);
+              setBrand(ALL);
+              setMaxPrice('');
+            }}
+          >
+            <RotateCcw /> Azzera filtri · {visible.length} risultati
+          </Button>
+        )}
+      </div>
 
       {error ? (
         <ErrorState message={error.message} onRetry={() => mutate()} />
@@ -138,6 +243,8 @@ export default function ListingsPage() {
               onDuplicate={() => duplicate(l)}
               onSold={() => setSelling(l)}
               onPublish={() => setPublishing(l)}
+              onQuickEdit={() => setEditing(l)}
+              inventoryName={l.inventoryItemId ? inventoryNames.get(l.inventoryItemId) : null}
               onDelete={() => setDeleting(l)}
             />
           ))}
@@ -197,32 +304,62 @@ export default function ListingsPage() {
             price: publishing.price,
             photos: publishing.photos,
           }}
-          onMarkPublished={
-            publishing.status === 'published'
-              ? undefined
-              : async () => {
-                  if (!repo) return;
-                  try {
-                    await repo.updateListing(publishing.id, {
-                      status: 'published',
-                      marketplace: 'vinted',
-                      publishedAt: publishing.publishedAt ?? new Date().toISOString(),
-                    });
-                    const linked = publishing.inventoryItemId
-                      ? inventory?.find((i) => i.id === publishing.inventoryItemId && i.status !== 'sold')
-                      : undefined;
-                    if (linked)
-                      await repo.updateInventoryItem(linked.id, {
-                        status: 'listed',
-                        listedPrice: publishing.price,
-                      });
-                    await revalidate('listings', 'inventory');
-                    toast.success('Annuncio segnato come pubblicato su Vinted');
-                  } catch (e) {
-                    toast.error(e instanceof Error ? e.message : 'Errore');
-                  }
-                }
-          }
+          initialUrl={publishing.externalUrl}
+          initialShare={publishing.sharedInCommunity}
+          onMarkPublished={async ({ externalUrl, share }) => {
+            if (!repo) return;
+            try {
+              await repo.updateListing(publishing.id, {
+                status: publishing.status === 'reserved' ? 'reserved' : 'published',
+                marketplace: 'vinted',
+                publishedAt: publishing.publishedAt ?? new Date().toISOString(),
+                externalUrl,
+                sharedInCommunity: share,
+              });
+              const linked = publishing.inventoryItemId
+                ? inventory?.find((i) => i.id === publishing.inventoryItemId && i.status !== 'sold')
+                : undefined;
+              if (linked)
+                await repo.updateInventoryItem(linked.id, {
+                  status: 'listed',
+                  listedPrice: publishing.price,
+                });
+              await revalidate('listings', 'inventory');
+              toast.success('Annuncio segnato come pubblicato su Vinted');
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : 'Errore');
+            }
+          }}
+        />
+      )}
+
+      {editing && (
+        <QuickEditListingDialog
+          key={editing.id}
+          listing={editing}
+          onOpenChange={(o) => !o && setEditing(null)}
+          onSave={async (patch) => {
+            if (!repo) return;
+            const id = editing.id;
+            try {
+              await mutate(
+                async (current) => {
+                  const updated = await repo.updateListing(id, patch);
+                  return (current ?? []).map((l) => (l.id === id ? updated : l));
+                },
+                {
+                  optimisticData: (current) =>
+                    (current ?? []).map((l) => (l.id === id ? { ...l, ...patch } : l)),
+                  rollbackOnError: true,
+                  revalidate: false,
+                },
+              );
+              toast.success('Annuncio aggiornato');
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : 'Errore');
+              throw e;
+            }
+          }}
         />
       )}
 

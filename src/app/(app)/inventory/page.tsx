@@ -19,7 +19,8 @@ import { SimpleSelect } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useApp } from '@/components/providers/app-provider';
 import { useInventory, useProfile, useRevalidate } from '@/hooks/use-data';
-import { INVENTORY_STATUSES } from '@/lib/domain/constants';
+import { CATEGORIES, INVENTORY_STATUSES } from '@/lib/domain/constants';
+import { WorkflowNav } from '@/components/layout/workflow-nav';
 import { inventoryHealth, stockAgeBadge, stockAgeDays } from '@/lib/domain/stock';
 import type { InventoryItem, InventoryStatus } from '@/lib/domain/types';
 import { formatEUR } from '@/lib/format';
@@ -32,6 +33,14 @@ const AGE_OPTIONS: { value: AgeFilter; label: string }[] = [
   { value: 'slow', label: 'SLOW (31-60g)' },
   { value: 'old', label: 'OLD STOCK (60g+)' },
 ];
+type Sort = 'recent' | 'oldest' | 'cost-desc' | 'profit';
+const SORT_OPTIONS: { value: Sort; label: string }[] = [
+  { value: 'recent', label: 'Acquistati di recente' },
+  { value: 'oldest', label: 'Fermi da più tempo' },
+  { value: 'cost-desc', label: 'Costo più alto' },
+  { value: 'profit', label: 'Profitto più alto' },
+];
+const ALL = '__all';
 const AGE_MAP = { NEW: 'new', NORMAL: 'normal', SLOW: 'slow', 'OLD STOCK': 'old' } as const;
 
 function InventoryView() {
@@ -45,22 +54,37 @@ function InventoryView() {
   const [age, setAge] = useState<AgeFilter>(
     (AGE_OPTIONS.find((a) => a.value === params.get('age'))?.value ?? 'all') as AgeFilter,
   );
-  const [text, setText] = useState('');
+  const [text, setText] = useState(params.get('q') ?? '');
+  const [category, setCategory] = useState(ALL);
+  const [brand, setBrand] = useState(ALL);
+  const [sort, setSort] = useState<Sort>('recent');
   const [editing, setEditing] = useState<InventoryItem | null | undefined>(undefined);
   const [selling, setSelling] = useState<InventoryItem | null>(null);
   const [deleting, setDeleting] = useState<InventoryItem | null>(null);
 
   const health = useMemo(() => inventoryHealth(items ?? []), [items]);
+  const brands = useMemo(() => Array.from(new Set((items ?? []).map((i) => i.brand))).sort(), [items]);
   const visible = useMemo(() => {
     const q = text.trim().toLowerCase();
-    return (items ?? []).filter((i) => {
+    const rows = (items ?? []).filter((i) => {
       if (status !== 'all' && i.status !== status) return false;
       if (q && !`${i.name} ${i.brand}`.toLowerCase().includes(q)) return false;
+      if (category !== ALL && i.category !== category) return false;
+      if (brand !== ALL && i.brand !== brand) return false;
       if (age !== 'all' && (i.status === 'sold' || AGE_MAP[stockAgeBadge(stockAgeDays(i))] !== age))
         return false;
       return true;
     });
-  }, [items, status, text, age]);
+    const profit = (i: InventoryItem) =>
+      (i.soldPrice ?? i.listedPrice ?? i.purchasePrice) - i.purchasePrice - i.extraCosts;
+    const cmp: Record<Sort, (a: InventoryItem, b: InventoryItem) => number> = {
+      recent: (a, b) => b.purchaseDate.localeCompare(a.purchaseDate),
+      oldest: (a, b) => a.purchaseDate.localeCompare(b.purchaseDate),
+      'cost-desc': (a, b) => b.purchasePrice - a.purchasePrice,
+      profit: (a, b) => profit(b) - profit(a),
+    };
+    return [...rows].sort(cmp[sort]);
+  }, [items, status, text, age, category, brand, sort]);
   const counts = useMemo(
     () =>
       Object.fromEntries(
@@ -80,6 +104,7 @@ function InventoryView() {
           </Button>
         }
       />
+      <WorkflowNav />
 
       {error ? (
         <ErrorState message={error.message} onRetry={() => mutate()} />
@@ -144,6 +169,32 @@ function InventoryView() {
                   onValueChange={(v) => setAge(v as AgeFilter)}
                   options={AGE_OPTIONS}
                   ariaLabel="Filtra per età"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <SimpleSelect
+                  value={category}
+                  onValueChange={setCategory}
+                  ariaLabel="Categoria"
+                  options={[
+                    { value: ALL, label: 'Tutte le categorie' },
+                    ...CATEGORIES.map((c) => ({ value: c.value, label: c.label })),
+                  ]}
+                />
+                <SimpleSelect
+                  value={brand}
+                  onValueChange={setBrand}
+                  ariaLabel="Brand"
+                  options={[
+                    { value: ALL, label: 'Tutti i brand' },
+                    ...brands.map((b) => ({ value: b, label: b })),
+                  ]}
+                />
+                <SimpleSelect
+                  value={sort}
+                  onValueChange={(v) => setSort(v as Sort)}
+                  ariaLabel="Ordina"
+                  options={SORT_OPTIONS}
                 />
               </div>
             </div>

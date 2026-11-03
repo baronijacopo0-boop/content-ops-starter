@@ -5,7 +5,8 @@ import { getMarketplaceProvider } from '@/lib/marketplace';
 import type { LiveSearchResult, MarketItem, MarketplaceProvider } from '@/lib/marketplace/types';
 import { useProfile } from '@/hooks/use-data';
 import type { EvaluatedDeal } from '@/lib/deals/filter';
-import type { UserProfileBundle } from '@/lib/domain/types';
+import type { CommunityListing, UserProfileBundle } from '@/lib/domain/types';
+import { useApp } from '@/components/providers/app-provider';
 import { publicEnv } from '@/lib/config';
 import { evaluateWithMarket } from '@/services/ai/deal';
 
@@ -41,6 +42,34 @@ async function evaluate(
       return { item, evaluation };
     }),
   );
+}
+
+function communityToMarketItem(c: CommunityListing): MarketItem {
+  return {
+    id: `community-${c.id}`,
+    marketplace: 'vinted',
+    externalId: c.id,
+    title: c.title,
+    description: '',
+    brand: c.brand || 'Senza brand',
+    category: c.category,
+    model: null,
+    size: c.size || '—',
+    condition: c.condition,
+    color: '',
+    price: c.price,
+    shippingCost: null,
+    currency: 'EUR',
+    imageUrl: c.photo,
+    listedAt: c.publishedAt ?? new Date().toISOString(),
+    favorites: 0,
+    views: 0,
+    sellerName: c.seller,
+    sellerRating: null,
+    url: c.externalUrl,
+    isDemo: false,
+    community: true,
+  };
 }
 
 async function fetchLive(brands: string[]): Promise<LiveSearchResult | null> {
@@ -94,8 +123,21 @@ export function useDealFeed() {
     { revalidateOnFocus: false, dedupingInterval: 60_000 },
   );
 
+  // Listings other RIVENDO users chose to share (Supabase only; empty in local demo mode).
+  const { repo, user } = useApp();
+  const community = useSWR<EvaluatedDeal[]>(
+    scoring && repo && user ? ['community-feed', user.id, ...scoring] : null,
+    async () => {
+      const rows = await repo!.listCommunityListings(60);
+      return evaluate(rows.map(communityToMarketItem), getMarketplaceProvider('vinted'), bundle!);
+    },
+    { revalidateOnFocus: false, dedupingInterval: 60_000 },
+  );
+
   return {
-    data: demo.data ? [...(live.data?.deals ?? []), ...demo.data] : undefined,
+    data: demo.data ? [...(community.data ?? []), ...(live.data?.deals ?? []), ...demo.data] : undefined,
+    communityCount: community.data?.length ?? 0,
+    communityAvailable: repo?.mode === 'supabase',
     error: demo.error,
     isLoading: demo.isLoading,
     mutate: () => Promise.all([demo.mutate(), live.mutate()]),
